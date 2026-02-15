@@ -47,18 +47,18 @@ const solicitudSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     estadoInterno: {
       type: String,
       enum: [
-        "PENDIENTE_PRESTACIONES",
+        "PENDIENTE_INICIO_GESTION",
         "PENDIENTE_DIRECCION_MEDICA",
         "PENDIENTE_ASESORIA_JURIDICA",
-        "PENDIENTE_DOCUMENTACION",
+        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
+        "PENDIENTE_REVISION_PRESTACIONES",
         "AUTORIZADA",
         "RECHAZADA",
       ],
-      default: "PENDIENTE_PRESTACIONES",
+      default: "PENDIENTE_INICIO_GESTION",
     },
 
     currentDepartment: {
@@ -67,6 +67,11 @@ const solicitudSchema = new mongoose.Schema(
       default: "PRESTACIONES",
     },
 
+    lastTechnicalDepartment: {
+      type: String,
+      enum: ["DIRECCION_MEDICA", "ASESORIA_JURIDICA"],
+      default: null,
+    },
     historial: [
       {
         estado: String,

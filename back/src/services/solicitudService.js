@@ -1,4 +1,5 @@
 const Solicitud = require("../models/solicitudModel");
+const solicitudFlowRules = require("../core/solicitudFlowRules");
 
 const generateNumeroSolicitud = () => {
   const timestamp = Date.now();
@@ -11,18 +12,18 @@ const createSolicitud = async (data, user) => {
   const nuevaSolicitud = new Solicitud({
     numeroSolicitud,
     ...data,
-    estadoInterno: "PENDIENTE_PRESTACIONES",
+    estadoInterno: "PENDIENTE_INICIO_GESTION",
     currentDepartment: "PRESTACIONES",
+    lastTechnicalDepartment: null,
     historial: [
       {
-        estado: "PENDIENTE_PRESTACIONES",
+        estado: "PENDIENTE_INICIO_GESTION",
         changedBy: user.id,
       },
     ],
   });
 
   await nuevaSolicitud.save();
-
   return nuevaSolicitud;
 };
 
@@ -33,16 +34,67 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
     throw new Error("Solicitud no encontrada");
   }
 
-  // Validaciones básicas por rol
+  const estadoActual = solicitud.estadoInterno;
+
+  // Validación de responsabilidad por departamento
+  if (
+    solicitud.currentDepartment &&
+    solicitud.currentDepartment !== user.role
+  ) {
+    throw new Error(
+      "No puedes actuar sobre una solicitud que pertenece a otro departamento",
+    );
+  }
+
+  // 1️⃣ Validación estructural (máquina de estados)
+  const allowedNextStates = solicitudFlowRules[estadoActual];
+
+  if (!allowedNextStates || !allowedNextStates.includes(nuevoEstado)) {
+    throw new Error(
+      `Transición no permitida de ${estadoActual} a ${nuevoEstado}`,
+    );
+  }
+
+  // 2️⃣ Restricción específica para devolución tras revisión administrativa
+  if (estadoActual === "PENDIENTE_REVISION_PRESTACIONES") {
+    const expectedState =
+      solicitud.lastTechnicalDepartment === "DIRECCION_MEDICA"
+        ? "PENDIENTE_DIRECCION_MEDICA"
+        : "PENDIENTE_ASESORIA_JURIDICA";
+
+    if (nuevoEstado !== expectedState) {
+      throw new Error(
+        "Solo puede devolverse al departamento técnico que solicitó la documentación",
+      );
+    }
+  }
+
+  // 3️⃣ Validaciones por rol
+
   if (user.role === "PRESTACIONES") {
     if (
       ![
         "PENDIENTE_DIRECCION_MEDICA",
         "AUTORIZADA",
-        "PENDIENTE_DOCUMENTACION",
+        "RECHAZADA",
+        "PENDIENTE_REVISION_PRESTACIONES",
       ].includes(nuevoEstado)
     ) {
       throw new Error("Transición no permitida para PRESTACIONES");
+    }
+
+    // Si estamos en revisión tras documentación,
+    // Prestaciones solo redistribuye
+    if (estadoActual === "PENDIENTE_REVISION_PRESTACIONES") {
+      if (
+        !["PENDIENTE_DIRECCION_MEDICA", "PENDIENTE_ASESORIA_JURIDICA"].includes(
+          nuevoEstado,
+        )
+      ) {
+        throw new Error(
+          "Prestaciones solo puede devolver al departamento técnico correspondiente",
+        );
+      }
     }
   }
 
@@ -51,8 +103,7 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
       ![
         "AUTORIZADA",
         "RECHAZADA",
-        "PENDIENTE_DOCUMENTACION",
-        "PENDIENTE_ASESORIA_JURIDICA",
+        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
       ].includes(nuevoEstado)
     ) {
       throw new Error("Transición no permitida para DIRECCION_MEDICA");
@@ -61,18 +112,33 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
 
   if (user.role === "ASESORIA_JURIDICA") {
     if (
-      !["RECHAZADA", "AUTORIZADA", "PENDIENTE_DOCUMENTACION"].includes(
-        nuevoEstado,
-      )
+      ![
+        "AUTORIZADA",
+        "RECHAZADA",
+        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
+      ].includes(nuevoEstado)
     ) {
       throw new Error("Transición no permitida para ASESORIA_JURIDICA");
     }
   }
 
-  // Actualizar estado
+  // 4️⃣ Si un departamento técnico pide documentación,
+  // guardamos quién la solicitó
+  if (
+    nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO" &&
+    (user.role === "DIRECCION_MEDICA" || user.role === "ASESORIA_JURIDICA")
+  ) {
+    solicitud.lastTechnicalDepartment = user.role;
+  }
+
+  // 5️⃣ Actualizar estado
   solicitud.estadoInterno = nuevoEstado;
 
-  // Actualizar departamento actual
+  // 6️⃣ Actualizar departamento responsable
+  if (nuevoEstado === "PENDIENTE_INICIO_GESTION") {
+    solicitud.currentDepartment = "PRESTACIONES";
+  }
+
   if (nuevoEstado === "PENDIENTE_DIRECCION_MEDICA") {
     solicitud.currentDepartment = "DIRECCION_MEDICA";
   }
@@ -81,11 +147,19 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
     solicitud.currentDepartment = "ASESORIA_JURIDICA";
   }
 
+  if (nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
+    solicitud.currentDepartment = null; // Esperando al asegurado
+  }
+
+  if (nuevoEstado === "PENDIENTE_REVISION_PRESTACIONES") {
+    solicitud.currentDepartment = "PRESTACIONES";
+  }
+
   if (nuevoEstado === "AUTORIZADA" || nuevoEstado === "RECHAZADA") {
     solicitud.currentDepartment = null;
   }
 
-  // Añadir historial
+  // 7️⃣ Añadir historial
   solicitud.historial.push({
     estado: nuevoEstado,
     changedBy: user.id,
@@ -97,13 +171,50 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
 };
 
 const getSolicitudesByRole = async (user) => {
+  console.log(user.role);
   if (user.role === "ADMIN") {
     return await Solicitud.find().sort({ createdAt: -1 });
   }
 
-  return await Solicitud.find({
-    currentDepartment: user.role,
-  }).sort({ createdAt: -1 });
+  // PRESTACIONES
+  if (user.role === "PRESTACIONES") {
+    console.log("Filtro PRESTACIONES ejecutado");
+    return await Solicitud.find({
+      $or: [
+        { currentDepartment: "PRESTACIONES" },
+        { estadoInterno: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO" },
+        { estadoInterno: "PENDIENTE_REVISION_PRESTACIONES" },
+      ],
+    }).sort({ createdAt: -1 });
+  }
+
+  // DIRECCION_MEDICA
+  if (user.role === "DIRECCION_MEDICA") {
+    return await Solicitud.find({
+      $or: [
+        { currentDepartment: "DIRECCION_MEDICA" },
+        {
+          estadoInterno: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
+          lastTechnicalDepartment: "DIRECCION_MEDICA",
+        },
+      ],
+    }).sort({ createdAt: -1 });
+  }
+
+  // ASESORIA_JURIDICA
+  if (user.role === "ASESORIA_JURIDICA") {
+    return await Solicitud.find({
+      $or: [
+        { currentDepartment: "ASESORIA_JURIDICA" },
+        {
+          estadoInterno: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
+          lastTechnicalDepartment: "ASESORIA_JURIDICA",
+        },
+      ],
+    }).sort({ createdAt: -1 });
+  }
+
+  return [];
 };
 
 module.exports = { createSolicitud, changeStatus, getSolicitudesByRole };

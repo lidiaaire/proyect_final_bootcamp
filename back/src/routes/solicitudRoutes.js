@@ -7,12 +7,9 @@ const {
 } = require("../middlewares/authMiddleware");
 const {
   createSolicitudController,
-} = require("../controllers/solicitudController");
-const {
   changeStatusController,
-} = require("../controllers/solicitudController");
-const {
   getSolicitudesController,
+  getSolicitudByIdController,
 } = require("../controllers/solicitudController");
 
 router.post(
@@ -23,6 +20,8 @@ router.post(
 );
 
 router.get("/", verifyToken, getSolicitudesController);
+
+router.get("/:id", verifyToken, getSolicitudByIdController);
 
 router.patch("/:id/status", verifyToken, changeStatusController);
 

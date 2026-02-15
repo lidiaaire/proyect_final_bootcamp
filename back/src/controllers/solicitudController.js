@@ -1,6 +1,7 @@
 const { createSolicitud } = require("../services/solicitudService");
 const { changeStatus } = require("../services/solicitudService");
 const { getSolicitudesByRole } = require("../services/solicitudService");
+const Solicitud = require("../models/solicitudModel");
 
 const createSolicitudController = async (req, res) => {
   try {
@@ -34,8 +35,29 @@ const getSolicitudesController = async (req, res) => {
   }
 };
 
+const getSolicitudByIdController = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const solicitud = await Solicitud.findById(id);
+
+    if (!solicitud) {
+      return res.status(404).json({
+        message: "Solicitud no encontrada",
+      });
+    }
+
+    return res.status(200).json(solicitud);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener la solicitud",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   createSolicitudController,
   changeStatusController,
   getSolicitudesController,
+  getSolicitudByIdController,
 };
