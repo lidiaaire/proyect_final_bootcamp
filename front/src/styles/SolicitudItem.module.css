@@ -1,0 +1,60 @@
+.item {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.link {
+  cursor: pointer;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Colores por estado */
+.autorizada {
+  background-color: green;
+}
+
+.rechazada {
+  background-color: red;
+}
+
+.documentacion {
+  background-color: blue;
+}
+
+.pendiente {
+  background-color: orange;
+}
+
+.default {
+  background-color: gray;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  min-width: 130px;
+  text-align: center;
+}
+
+.departmentBadge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #444;
+  color: white;
+  opacity: 0.85;
+}

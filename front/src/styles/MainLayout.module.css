@@ -1,0 +1,46 @@
+.header {
+  height: 65px;
+  background-color: #1f2937;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+}
+
+.appName {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.role {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.logout {
+  background-color: #ef4444;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout:hover {
+  opacity: 0.85;
+}
+
+.content {
+  padding: 30px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}

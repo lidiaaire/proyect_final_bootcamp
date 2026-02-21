@@ -171,50 +171,7 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
 };
 
 const getSolicitudesByRole = async (user) => {
-  console.log(user.role);
-  if (user.role === "ADMIN") {
-    return await Solicitud.find().sort({ createdAt: -1 });
-  }
-
-  // PRESTACIONES
-  if (user.role === "PRESTACIONES") {
-    console.log("Filtro PRESTACIONES ejecutado");
-    return await Solicitud.find({
-      $or: [
-        { currentDepartment: "PRESTACIONES" },
-        { estadoInterno: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO" },
-        { estadoInterno: "PENDIENTE_REVISION_PRESTACIONES" },
-      ],
-    }).sort({ createdAt: -1 });
-  }
-
-  // DIRECCION_MEDICA
-  if (user.role === "DIRECCION_MEDICA") {
-    return await Solicitud.find({
-      $or: [
-        { currentDepartment: "DIRECCION_MEDICA" },
-        {
-          estadoInterno: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-          lastTechnicalDepartment: "DIRECCION_MEDICA",
-        },
-      ],
-    }).sort({ createdAt: -1 });
-  }
-
-  // ASESORIA_JURIDICA
-  if (user.role === "ASESORIA_JURIDICA") {
-    return await Solicitud.find({
-      $or: [
-        { currentDepartment: "ASESORIA_JURIDICA" },
-        {
-          estadoInterno: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-          lastTechnicalDepartment: "ASESORIA_JURIDICA",
-        },
-      ],
-    }).sort({ createdAt: -1 });
-  }
-
-  return [];
+  return await Solicitud.find().sort({ createdAt: -1 });
 };
 
 module.exports = { createSolicitud, changeStatus, getSolicitudesByRole };
