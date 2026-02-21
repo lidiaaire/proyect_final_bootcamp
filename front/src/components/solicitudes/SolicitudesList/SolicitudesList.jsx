@@ -26,13 +26,11 @@ export default function SolicitudesList() {
     });
 
   useEffect(() => {
-    console.log("Fetching solicitudes");
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
 
         const data = await getSolicitudes(token);
-        console.log("Solicitudes recibidas:", data);
         setSolicitudes(data);
       } catch (error) {
         setErrorMessage("No se pudieron cargar las solicitudes.");
