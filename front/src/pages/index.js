@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import SolicitudesList from "@/components/solicitudes/SolicitudesList/SolicitudesList";
+import MainLayout from "../components/layout/MainLayout/MainLayout";
 
 export default function Home() {
   const router = useRouter();
@@ -13,8 +15,8 @@ export default function Home() {
   }, [router]);
 
   return (
-    <main>
-      <h1>Panel interno de Autorizaciones</h1>
-    </main>
+    <MainLayout>
+      <SolicitudesList />
+    </MainLayout>
   );
 }

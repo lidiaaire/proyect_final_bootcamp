@@ -1,0 +1,77 @@
+.item {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.link {
+  cursor: pointer;
+}
+
+/* Colores por estado */
+.autorizada {
+  background-color: green;
+}
+
+.rechazada {
+  background-color: red;
+}
+
+.documentacion {
+  background-color: blue;
+}
+
+.pendiente {
+  background-color: orange;
+}
+
+.default {
+  background-color: gray;
+}
+
+.badge {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+
+.departmentBadge {
+  background-color: #e5e7eb;
+  color: #374151;
+  padding: 3px 8px;
+  font-size: 11px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.medicalInfo {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.medicalInfo span {
+  display: block;
+}
+
+.nameLink {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.dateCell {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.summary {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
