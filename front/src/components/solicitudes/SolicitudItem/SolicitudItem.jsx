@@ -31,9 +31,24 @@ export default function SolicitudItem({ solicitud }) {
   return (
     <tr>
       <td>
-        <Link href={`/solicitudes/${solicitud._id}`}>
-          <span className={styles.link}>{solicitud.nombreCompleto}</span>
+        <Link
+          href={`/solicitudes/${solicitud._id}`}
+          className={styles.nameLink}
+        >
+          {solicitud.nombreCompleto}
         </Link>
+
+        <div className={styles.medicalInfo}>
+          <span>
+            <strong>Prueba:</strong> {solicitud.nombrePrueba}
+          </span>
+          <span>
+            <strong>Especialidad:</strong> {solicitud.especialidad}
+          </span>
+          <span>
+            <strong>Centro:</strong> {solicitud.centroMedico}
+          </span>
+        </div>
       </td>
 
       <td>
@@ -54,7 +69,7 @@ export default function SolicitudItem({ solicitud }) {
         )}
       </td>
 
-      <td>{formatDate(solicitud.createdAt)}</td>
+      <td className={styles.dateCell}>{formatDate(solicitud.createdAt)}</td>
     </tr>
   );
 }

@@ -1,8 +1,18 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
-  table-layout: fixed;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table thead {
+  background: #f9fafb;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .table th {
@@ -13,7 +23,7 @@
 }
 
 .table td {
-  padding: 10px;
+  padding: 14px 8px;
   border-bottom: 1px solid #eee;
 }
 
@@ -44,21 +54,94 @@
   cursor: default;
 }
 
+.table tbody td {
+  padding: 10px 14px;
+  vertical-align: top;
+}
+
+.table tbody tr {
+  border-top: 1px solid #e5e7eb;
+  transition: background 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: #f3f4f6;
+}
+
 .sortable {
   cursor: pointer;
   user-select: none;
 }
 .searchInput {
-  padding: 6px 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 250px;
-  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
+  min-width: 220px;
 }
 
 .counter {
-  margin: 10px 0 15px 0;
-  font-size: 14px;
-  color: #555;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+.filters {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.searchInput:focus,
+.filterSelect:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+.kpiContainer {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.kpiCard {
+  background: white;
+  padding: 14px 20px;
+  border-radius: 10px;
+  min-width: 120px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.kpiCard:hover {
+  transform: translateY(-3px);
+}
+
+.kpiActive {
+  border: 2px solid #1f2d3d;
+  background-color: #f5f8ff;
+}
+
+.kpiNumber {
+  font-size: 20px;
+  font-weight: bold;
+  display: block;
+}
+
+.kpiLabel {
+  font-size: 12px;
+  color: #666;
 }

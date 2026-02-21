@@ -4,34 +4,30 @@ import { changeEstado } from "../../api/solicitudes";
 import styles from "../../styles/SolicitudDetalle.module.css";
 import MainLayout from "../../components/layout/MainLayout/MainLayout";
 
-export default function SolicitudDetalle() {
+function getRoleFromToken(token) {
+  try {
+    if (!token) return "";
+    const base64 = token.split(".")[1]?.replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64));
+    return payload.role || payload.rol || payload.userRole || "";
+  } catch {
+    return "";
+  }
+}
+
+export default function SolicitudDetallePage() {
   const router = useRouter();
   const { id } = router.query;
 
   const [solicitud, setSolicitud] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [userRole, setUserRole] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUserRole(payload.role);
-    } catch (error) {
-      console.error("Token inválido");
-      router.push("/login");
-    }
-  }, [router]);
+    setUserRole(getRoleFromToken(token));
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -59,8 +55,6 @@ export default function SolicitudDetalle() {
     fetchSolicitud();
   }, [id]);
 
-  if (!solicitud) return <p>Cargando...</p>;
-
   const handleCambio = async (nuevoEstado) => {
     const confirmacion = window.confirm(
       `¿Estás segura de que quieres marcar como ${nuevoEstado}?`,
@@ -71,7 +65,9 @@ export default function SolicitudDetalle() {
     try {
       setIsLoading(true);
 
-      const solicitudActualizada = await changeEstado(id, nuevoEstado);
+      const token = localStorage.getItem("token");
+
+      const solicitudActualizada = await changeEstado(id, nuevoEstado, token);
 
       setSolicitud(solicitudActualizada);
       setMensajeExito("Estado actualizado correctamente");
@@ -85,6 +81,8 @@ export default function SolicitudDetalle() {
       setIsLoading(false);
     }
   };
+
+  if (!solicitud) return <p>Cargando...</p>;
 
   return (
     <MainLayout>
@@ -118,6 +116,7 @@ export default function SolicitudDetalle() {
 
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Estado actual</div>
+
         <div className={styles.row}>
           <strong>Estado:</strong> {solicitud.estadoInterno}
         </div>
