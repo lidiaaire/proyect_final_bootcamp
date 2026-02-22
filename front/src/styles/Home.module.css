@@ -1,0 +1,98 @@
+.dashboardWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpiContainer {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 25px 0 30px;
+}
+
+.kpiCard {
+  background: #ffffff;
+  padding: 18px 26px;
+  border-radius: 14px;
+  min-width: 140px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.kpiCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.kpiActive {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+.kpiNumber {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.kpiLabel {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #6b7280;
+}
+
+.kpiActive .kpiNumber,
+.kpiActive .kpiLabel {
+  color: #ffffff;
+}
+
+.kpiContainer:has(.kpiActive) .kpiCard:not(.kpiActive) {
+  opacity: 0.6;
+}
+
+.kpiInactive {
+  opacity: 0.6;
+}
+
+.dashboardWrapper {
+  display: grid;
+  grid-template-columns: 3.2fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.sideColumn {
+  grid-column: 2;
+}
+
+.dashboardHeader {
+  margin-bottom: 20px;
+}
+
+.dashboardTitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dashboardSubtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.contentCard {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+}

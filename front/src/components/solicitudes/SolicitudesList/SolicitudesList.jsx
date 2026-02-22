@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
-import { getSolicitudes } from "../../../api/solicitudes";
+import { useState } from "react";
 import SolicitudItem from "../SolicitudItem/SolicitudItem";
 import styles from "../../../styles/SolicitudesList.module.css";
 
-export default function SolicitudesList() {
-  const [solicitudes, setSolicitudes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [filtroEstado, setFiltroEstado] = useState("TODOS");
+export default function SolicitudesList({
+  solicitudes = [],
+  filtroEstado,
+  setFiltroEstado,
+}) {
   const [filtroDepartamento, setFiltroDepartamento] = useState("TODOS");
   const [busqueda, setBusqueda] = useState("");
   const [ordenDesc, setOrdenDesc] = useState(true);
@@ -32,15 +31,6 @@ export default function SolicitudesList() {
     "RECHAZADA",
   ];
 
-  const resumenEstados = solicitudes.reduce((acc, s) => {
-    acc[s.estadoInterno] = (acc[s.estadoInterno] || 0) + 1;
-    return acc;
-  }, {});
-
-  const resumenOrdenado = ordenEstados
-    .filter((estado) => resumenEstados[estado])
-    .map((estado) => [estado, resumenEstados[estado]]);
-
   const solicitudesFiltradas = solicitudes
     .filter((s) =>
       filtroEstado === "TODOS" ? true : s.estadoInterno === filtroEstado,
@@ -51,7 +41,7 @@ export default function SolicitudesList() {
         : s.currentDepartment === filtroDepartamento,
     )
     .filter((s) =>
-      s.nombreCompleto.toLowerCase().includes(busqueda.toLowerCase()),
+      (s.nombreCompleto || "").toLowerCase().includes(busqueda.toLowerCase()),
     )
     .sort((a, b) => {
       const fechaA = new Date(a.createdAt);
@@ -59,33 +49,7 @@ export default function SolicitudesList() {
       return ordenDesc ? fechaB - fechaA : fechaA - fechaB;
     });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const data = await getSolicitudes(token);
-        setSolicitudes(data);
-      } catch {
-        setErrorMessage("No se pudieron cargar las solicitudes.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleKpiClick = (estado) => {
-    if (filtroEstado === estado) {
-      setFiltroEstado("TODOS");
-    } else {
-      setFiltroEstado(estado);
-    }
-  };
-
-  if (isLoading) return <p>Cargando solicitudes...</p>;
-  if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
-  if (!isLoading && solicitudes.length === 0) {
+  if (solicitudes.length === 0) {
     return <p>No hay solicitudes disponibles para tu rol.</p>;
   }
 
@@ -126,22 +90,6 @@ export default function SolicitudesList() {
         </select>
       </div>
 
-      {/* KPI Dashboard */}
-      <div className={styles.kpiContainer}>
-        {resumenOrdenado.map(([estado, cantidad]) => (
-          <div
-            key={estado}
-            onClick={() => handleKpiClick(estado)}
-            className={`${styles.kpiCard} ${
-              filtroEstado === estado ? styles.kpiActive : ""
-            }`}
-          >
-            <span className={styles.kpiNumber}>{cantidad}</span>
-            <span className={styles.kpiLabel}>{labelEstado[estado]}</span>
-          </div>
-        ))}
-      </div>
-
       {/* Contador */}
       <div className={styles.counter}>
         Mostrando {solicitudesFiltradas.length}{" "}
@@ -149,26 +97,28 @@ export default function SolicitudesList() {
       </div>
 
       {/* Tabla */}
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Departamento</th>
-            <th
-              className={styles.sortable}
-              onClick={() => setOrdenDesc(!ordenDesc)}
-            >
-              Creada {ordenDesc ? "↓" : "↑"}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {solicitudesFiltradas.map((s) => (
-            <SolicitudItem key={s._id} solicitud={s} />
-          ))}
-        </tbody>
-      </table>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Departamento</th>
+              <th
+                className={styles.sortable}
+                onClick={() => setOrdenDesc(!ordenDesc)}
+              >
+                Creada {ordenDesc ? "↓" : "↑"}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {solicitudesFiltradas.map((s) => (
+              <SolicitudItem key={s._id} solicitud={s} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

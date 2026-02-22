@@ -1,0 +1,33 @@
+.badge {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.autorizada {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.rechazada {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.documentacion {
+  background-color: #dbeafe;
+  color: #1e3a8a;
+}
+
+.pendiente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.default {
+  background-color: #e5e7eb;
+  color: #374151;
+}

@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  gap: 16px; /* antes 20px */
+  margin-bottom: 24px; /* antes 40px */
+  flex-wrap: wrap;
+}
+
+.card {
+  flex: 1;
+  min-width: 160px; /* antes 180px */
+  padding: 16px 18px; /* antes 24px */
+  border-radius: 12px; /* antes 16px */
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* más ligera */
+}
+
+.card:hover {
+  transform: translateY(-2px); /* antes -4px */
+}
+
+.number {
+  font-size: 20px; /* antes 28px */
+  font-weight: 700;
+  display: block;
+  line-height: 1;
+}
+
+.label {
+  font-size: 12px; /* antes 14px */
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+/* Colores */
+
+.principal {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: white;
+}
+
+.success {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.danger {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  color: white;
+}
+
+.info {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: white;
+}
