@@ -5,12 +5,30 @@
 }
 
 .container h3 {
-  font-size: 16px;
-  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #374151;
 }
 
+.header {
+  margin-bottom: 18px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+}
 .card {
-  background: white;
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
   padding: 14px 16px;
   border-radius: 14px;
   margin-bottom: 14px;
@@ -18,7 +36,7 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
   transition: 0.2s ease;
 }
 
@@ -34,23 +52,32 @@
   gap: 10px;
 }
 
+.card.criticoCard {
+  border-left: 4px solid #ef4444;
+}
+
+.card.alertaCard {
+  border-left: 4px solid #f59e0b;
+}
+
 .days {
   min-width: 110px;
   text-align: right;
-}
-
-.normal {
-  color: #6b7280;
-}
-
-.alerta {
-  color: #f59e0b;
+  font-size: 13px;
   font-weight: 600;
 }
 
+.normal {
+  color: #92400e;
+}
+
+.alerta {
+  color: #b45309;
+  font-weight: 600;
+}
 .critico {
-  color: #ef4444;
-  font-weight: 700;
+  color: #b91c1c;
+  font-weight: 600;
 }
 
 .info {

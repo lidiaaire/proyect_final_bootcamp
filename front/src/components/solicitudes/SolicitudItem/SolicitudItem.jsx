@@ -28,8 +28,13 @@ export default function SolicitudItem({ solicitud }) {
     });
   };
 
+  const hoy = new Date();
+  const fecha = new Date(solicitud.createdAt);
+  const dias = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24));
+  const esAntigua = dias >= 5;
+
   return (
-    <tr>
+    <tr className={esAntigua ? styles.rowWarning : ""}>
       <td>
         <Link
           href={`/solicitudes/${solicitud._id}`}
@@ -69,7 +74,13 @@ export default function SolicitudItem({ solicitud }) {
         )}
       </td>
 
-      <td className={styles.dateCell}>{formatDate(solicitud.createdAt)}</td>
+      <td className={styles.dateCell}>
+        <div className={styles.dateWrapper}>
+          <span>{formatDate(solicitud.createdAt)}</span>
+
+          {esAntigua && <span className={styles.urgencyBadge}>+5 días</span>}
+        </div>
+      </td>
     </tr>
   );
 }

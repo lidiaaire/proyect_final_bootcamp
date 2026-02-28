@@ -1,7 +1,8 @@
 .table {
   width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
+  border-collapse: separate;
+  border-spacing: 0 8px; /* antes 12 */
+  font-size: 13px;
 }
 
 .table thead {
@@ -9,14 +10,10 @@
 }
 
 .table th {
-  text-align: left;
-  padding: 20px 18px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.7px;
+  padding: 8px 10px;
+  font-size: 11px;
   text-transform: uppercase;
-  color: #64748b;
-  border-bottom: 1px solid #e2e8f0;
+  color: #6b7280;
 }
 
 .table thead th {
@@ -27,18 +24,18 @@
 }
 
 .table td {
-  padding: 22px 18px;
-  font-size: 14px;
-  border-bottom: 1px solid #f1f5f9;
-  vertical-align: top;
+  padding: 10px 10px;
+  background: #ffffff;
 }
 
 .table tbody tr {
-  transition: background 0.2s ease;
+  box-shadow: none; /* quita sensación flotante */
+  border: 1px solid var(--border-color);
 }
 
 .table tbody tr:hover {
-  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
 .table th:nth-child(1),
@@ -67,11 +64,9 @@
 }
 
 .tableWrapper {
-  max-height: 360px;
-  overflow-y: auto;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 .sortable {
   cursor: pointer;

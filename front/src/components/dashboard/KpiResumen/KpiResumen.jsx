@@ -1,68 +1,76 @@
 import styles from "@/styles/KpiResumen.module.css";
 
 export default function KpiResumen({
-  solicitudes,
+  solicitudes = [],
   filtroEstado,
   setFiltroEstado,
 }) {
-  const hoy = new Date();
+  // =========================
+  // Cálculo por fase del flujo
+  // =========================
 
-  const pendientes = solicitudes.filter((s) =>
-    s.estadoInterno.startsWith("PENDIENTE"),
+  const inicioGestion = solicitudes.filter(
+    (s) => s.estadoInterno === "PENDIENTE_INICIO_GESTION",
   );
 
-  const autorizadasHoy = solicitudes.filter(
-    (s) =>
-      s.estadoInterno === "AUTORIZADA" &&
-      new Date(s.updatedAt).toDateString() === hoy.toDateString(),
+  const direccionMedica = solicitudes.filter(
+    (s) => s.estadoInterno === "PENDIENTE_DIRECCION_MEDICA",
   );
 
-  const rechazadasHoy = solicitudes.filter(
-    (s) =>
-      s.estadoInterno === "RECHAZADA" &&
-      new Date(s.updatedAt).toDateString() === hoy.toDateString(),
+  const documentacion = solicitudes.filter(
+    (s) => s.estadoInterno === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
   );
 
-  const enRevision = solicitudes.filter(
-    (s) => s.estadoInterno === "PENDIENTE_REVISION_PRESTACIONES",
+  const asesoria = solicitudes.filter(
+    (s) => s.estadoInterno === "PENDIENTE_ASESORIA_JURIDICA",
   );
 
   const isActive = (estado) => filtroEstado === estado;
 
   return (
     <div className={styles.container}>
+      {/* Inicio */}
       <div
-        className={`${styles.card} ${styles.principal} ${
+        className={`${styles.card} ${styles.inicio} ${
           isActive("PENDIENTE_INICIO_GESTION") ? styles.active : ""
         }`}
         onClick={() => setFiltroEstado("PENDIENTE_INICIO_GESTION")}
       >
-        <span className={styles.number}>{pendientes.length}</span>
-        <span className={styles.label}>Pendientes</span>
+        <span className={styles.number}>{inicioGestion.length}</span>
+        <span className={styles.label}>Inicio gestión</span>
       </div>
 
+      {/* Documentación */}
       <div
-        className={`${styles.card} ${styles.success}`}
-        onClick={() => setFiltroEstado("AUTORIZADA")}
+        className={`${styles.card} ${styles.doc} ${
+          isActive("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") ? styles.active : ""
+        }`}
+        onClick={() => setFiltroEstado("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")}
       >
-        <span className={styles.number}>{autorizadasHoy.length}</span>
-        <span className={styles.label}>Autorizadas hoy</span>
+        <span className={styles.number}>{documentacion.length}</span>
+        <span className={styles.label}>Documentación</span>
       </div>
 
+      {/* Dirección médica */}
       <div
-        className={`${styles.card} ${styles.danger}`}
-        onClick={() => setFiltroEstado("RECHAZADA")}
+        className={`${styles.card} ${styles.medica} ${
+          isActive("PENDIENTE_DIRECCION_MEDICA") ? styles.active : ""
+        }`}
+        onClick={() => setFiltroEstado("PENDIENTE_DIRECCION_MEDICA")}
       >
-        <span className={styles.number}>{rechazadasHoy.length}</span>
-        <span className={styles.label}>Rechazadas hoy</span>
+        <span className={styles.number}>{direccionMedica.length}</span>
+        <span className={styles.label}>Dirección médica</span>
       </div>
 
+      {/* Jurídica */}
       <div
-        className={`${styles.card} ${styles.info}`}
-        onClick={() => setFiltroEstado("PENDIENTE_REVISION_PRESTACIONES")}
+        className={`${styles.card} ${styles.juridica} ${
+          isActive("PENDIENTE_ASESORIA_JURIDICA") ? styles.active : ""
+        }`}
+        onClick={() => setFiltroEstado("PENDIENTE_ASESORIA_JURIDICA")}
       >
-        <span className={styles.number}>{enRevision.length}</span>
-        <span className={styles.label}>En revisión</span>
+        <span className={styles.number}>{asesoria.length}</span>
+        <span className={styles.label}>Asesoría jurídica</span>
       </div>
     </div>
   );

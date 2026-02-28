@@ -25,7 +25,14 @@ export default function AccionInmediata({ solicitudes }) {
 
   return (
     <div className={styles.container}>
-      <h3>Requieren acción inmediata</h3>
+      <div className={styles.header}>
+        <div>
+          <h3 className={styles.title}>Prioridad alta</h3>
+          <p className={styles.subtitle}>
+            {pendientes.length} solicitudes pendientes más antiguas
+          </p>
+        </div>
+      </div>
 
       <div className={styles.cardsWrapper}>
         {pendientes.map((s) => {
@@ -34,7 +41,13 @@ export default function AccionInmediata({ solicitudes }) {
           return (
             <div
               key={s._id}
-              className={styles.card}
+              className={`${styles.card} ${
+                s.dias >= 15
+                  ? styles.criticoCard
+                  : s.dias >= 7
+                    ? styles.alertaCard
+                    : ""
+              }`}
               onClick={() => router.push(`/solicitudes/${s._id}`)}
             >
               <div className={styles.info}>

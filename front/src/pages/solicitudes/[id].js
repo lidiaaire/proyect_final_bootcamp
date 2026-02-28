@@ -66,7 +66,6 @@ export default function SolicitudDetallePage() {
       setIsLoading(true);
 
       const token = localStorage.getItem("token");
-
       const solicitudActualizada = await changeEstado(id, nuevoEstado, token);
 
       setSolicitud(solicitudActualizada);
@@ -86,94 +85,113 @@ export default function SolicitudDetallePage() {
 
   return (
     <MainLayout>
-      <h1>Detalle de Solicitud</h1>
+      {/* HEADER */}
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>{solicitud.nombreCompleto}</h1>
+          <div className={styles.meta}>
+            Póliza {solicitud.numeroPoliza} · DNI {solicitud.dni}
+          </div>
+        </div>
 
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Información del asegurado</div>
-        <div className={styles.row}>
-          <strong>Nombre:</strong> {solicitud.nombreCompleto}
-        </div>
-        <div className={styles.row}>
-          <strong>Póliza:</strong> {solicitud.numeroPoliza}
-        </div>
-        <div className={styles.row}>
-          <strong>DNI:</strong> {solicitud.dni}
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Información médica</div>
-        <div className={styles.row}>
-          <strong>Prueba:</strong> {solicitud.nombrePrueba}
-        </div>
-        <div className={styles.row}>
-          <strong>Especialidad:</strong> {solicitud.especialidad}
-        </div>
-        <div className={styles.row}>
-          <strong>Centro:</strong> {solicitud.centroMedico}
+        <div className={styles.estadoBox}>
+          <span className={styles.estadoBadge}>{solicitud.estadoInterno}</span>
         </div>
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Estado actual</div>
-
-        <div className={styles.row}>
-          <strong>Estado:</strong> {solicitud.estadoInterno}
-        </div>
-
-        {mensajeExito && (
-          <div className={styles.successMessage}>{mensajeExito}</div>
-        )}
-
-        {solicitud.currentDepartment === userRole &&
-          solicitud.estadoInterno !== "AUTORIZADA" &&
-          solicitud.estadoInterno !== "RECHAZADA" && (
-            <div className={styles.actions}>
-              <button
-                className={`${styles.button} ${styles.buttonPrimary}`}
-                onClick={() => handleCambio("AUTORIZADA")}
-                disabled={isLoading}
-              >
-                {isLoading ? "Procesando..." : "Autorizar"}
-              </button>
-
-              <button
-                className={`${styles.button} ${styles.buttonDanger}`}
-                onClick={() => handleCambio("RECHAZADA")}
-                disabled={isLoading}
-              >
-                {isLoading ? "Procesando..." : "Rechazar"}
-              </button>
+      {/* LAYOUT 2 COLUMNAS */}
+      <div className={styles.layout}>
+        {/* COLUMNA IZQUIERDA */}
+        <div className={styles.leftColumn}>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Información del asegurado</div>
+            <div className={styles.row}>
+              <strong>Nombre:</strong> {solicitud.nombreCompleto}
             </div>
-          )}
+            <div className={styles.row}>
+              <strong>Póliza:</strong> {solicitud.numeroPoliza}
+            </div>
+            <div className={styles.row}>
+              <strong>DNI:</strong> {solicitud.dni}
+            </div>
+          </div>
+
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Información médica</div>
+            <div className={styles.row}>
+              <strong>Prueba:</strong> {solicitud.nombrePrueba}
+            </div>
+            <div className={styles.row}>
+              <strong>Especialidad:</strong> {solicitud.especialidad}
+            </div>
+            <div className={styles.row}>
+              <strong>Centro:</strong> {solicitud.centroMedico}
+            </div>
+          </div>
+        </div>
+
+        {/* COLUMNA DERECHA */}
+        <div className={styles.rightColumn}>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Estado actual</div>
+
+            {mensajeExito && (
+              <div className={styles.successMessage}>{mensajeExito}</div>
+            )}
+
+            {solicitud.currentDepartment === userRole &&
+              solicitud.estadoInterno !== "AUTORIZADA" &&
+              solicitud.estadoInterno !== "RECHAZADA" && (
+                <div className={styles.actions}>
+                  <button
+                    className={`${styles.button} ${styles.buttonPrimary}`}
+                    onClick={() => handleCambio("AUTORIZADA")}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Procesando..." : "Autorizar"}
+                  </button>
+
+                  <button
+                    className={`${styles.button} ${styles.buttonDanger}`}
+                    onClick={() => handleCambio("RECHAZADA")}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Procesando..." : "Rechazar"}
+                  </button>
+                </div>
+              )}
+          </div>
+
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Historial de cambios</div>
+
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Estado</th>
+                  <th>Cambiado por</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...solicitud.historial].reverse().map((entry, index) => (
+                  <tr key={index}>
+                    <td>{entry.estado}</td>
+                    <td>{entry.changedBy}</td>
+                    <td>
+                      {new Date(entry.fecha).toLocaleDateString("es-ES", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-
-      <h2>Historial de cambios</h2>
-
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Estado</th>
-            <th>Cambiado por</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          {[...solicitud.historial].reverse().map((entry, index) => (
-            <tr key={index}>
-              <td>{entry.estado}</td>
-              <td>{entry.changedBy}</td>
-              <td>
-                {new Date(entry.fecha).toLocaleDateString("es-ES", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </MainLayout>
   );
 }

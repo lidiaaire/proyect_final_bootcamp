@@ -1,5 +1,5 @@
 .item {
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -53,11 +53,11 @@
 }
 
 .medicalInfo {
-  margin-top: 6px;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: #6b7280;
   line-height: 1.4;
 }
@@ -68,7 +68,7 @@
 
 .nameLink {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #1f2937;
   text-decoration: none;
 }
@@ -86,4 +86,36 @@
   margin-bottom: 12px;
   font-size: 0.9rem;
   color: #4b5563;
+}
+
+.rowWarning td:first-child {
+  border-left: 3px solid #f59e0b;
+}
+
+.rowWarning {
+  border-left: 3px solid #f59e0b;
+}
+
+.daysBadge {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #b45309;
+  font-weight: 600;
+}
+
+.dateWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.urgencyBadge {
+  font-size: 11px;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  width: fit-content;
 }
