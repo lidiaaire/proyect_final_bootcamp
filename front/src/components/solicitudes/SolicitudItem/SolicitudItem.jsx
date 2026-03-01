@@ -1,85 +1,63 @@
 import Link from "next/link";
 import styles from "../../../styles/SolicitudItem.module.css";
+import { ESTADO_LABELS } from "@/utils/estadoLabels";
 
 export default function SolicitudItem({ solicitud }) {
+  const {
+    _id,
+    nombreCompleto,
+    nombrePrueba,
+    especialidad,
+    centroMedico,
+    estadoInterno,
+    createdAt,
+  } = solicitud;
+
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
   const getEstadoClass = (estado) => {
     switch (estado) {
       case "AUTORIZADA":
         return styles.autorizada;
       case "RECHAZADA":
         return styles.rechazada;
-      case "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO":
-        return styles.documentacion;
-      case "PENDIENTE_DIRECCION_MEDICA":
-      case "PENDIENTE_ASESORIA_JURIDICA":
-      case "PENDIENTE_REVISION_PRESTACIONES":
-      case "PENDIENTE_INICIO_GESTION":
-        return styles.pendiente;
       default:
-        return styles.default;
+        return styles.pendiente;
     }
   };
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("es-ES", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
-  const hoy = new Date();
-  const fecha = new Date(solicitud.createdAt);
-  const dias = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24));
-  const esAntigua = dias >= 5;
-
   return (
-    <tr className={esAntigua ? styles.rowWarning : ""}>
+    <tr>
       <td>
-        <Link
-          href={`/solicitudes/${solicitud._id}`}
-          className={styles.nameLink}
-        >
-          {solicitud.nombreCompleto}
-        </Link>
+        <div className={styles.nameCell}>
+          <span className={styles.idLabel}>#{_id.slice(-5)}</span>
 
-        <div className={styles.medicalInfo}>
-          <span>
-            <strong>Prueba:</strong> {solicitud.nombrePrueba}
-          </span>
-          <span>
-            <strong>Especialidad:</strong> {solicitud.especialidad}
-          </span>
-          <span>
-            <strong>Centro:</strong> {solicitud.centroMedico}
-          </span>
+          <Link href={`/solicitudes/${_id}`} className={styles.nameLink}>
+            {nombreCompleto}
+          </Link>
         </div>
       </td>
 
+      <td>{nombrePrueba}</td>
+
+      <td>{especialidad}</td>
+
+      <td>{centroMedico}</td>
+
       <td>
-        <span
-          className={`${styles.badge} ${getEstadoClass(
-            solicitud.estadoInterno,
-          )}`}
-        >
-          {solicitud.estadoInterno}
+        <span className={`${styles.badge} ${getEstadoClass(estadoInterno)}`}>
+          {ESTADO_LABELS[estadoInterno] || estadoInterno}
         </span>
       </td>
 
-      <td>
-        {solicitud.currentDepartment && (
-          <span className={styles.departmentBadge}>
-            {solicitud.currentDepartment}
-          </span>
-        )}
-      </td>
-
-      <td className={styles.dateCell}>
-        <div className={styles.dateWrapper}>
-          <span>{formatDate(solicitud.createdAt)}</span>
-
-          {esAntigua && <span className={styles.urgencyBadge}>+5 días</span>}
-        </div>
+      <td>{formatDate(createdAt)}</td>
+      <td className={styles.actionsCell}>
+        <button className={styles.actionsBtn}>⋯</button>
       </td>
     </tr>
   );

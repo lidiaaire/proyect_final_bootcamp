@@ -21,15 +21,7 @@ export default function SolicitudesList({
     RECHAZADA: "Rechazadas",
   };
 
-  const ordenEstados = [
-    "PENDIENTE_INICIO_GESTION",
-    "PENDIENTE_DIRECCION_MEDICA",
-    "PENDIENTE_ASESORIA_JURIDICA",
-    "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-    "PENDIENTE_REVISION_PRESTACIONES",
-    "AUTORIZADA",
-    "RECHAZADA",
-  ];
+  const ordenEstados = Object.keys(labelEstado);
 
   const solicitudesFiltradas = solicitudes
     .filter((s) =>
@@ -48,10 +40,6 @@ export default function SolicitudesList({
       const fechaB = new Date(b.createdAt);
       return ordenDesc ? fechaB - fechaA : fechaA - fechaB;
     });
-
-  if (solicitudes.length === 0) {
-    return <p>No hay solicitudes disponibles para tu rol.</p>;
-  }
 
   return (
     <div>
@@ -101,23 +89,44 @@ export default function SolicitudesList({
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Nombre</th>
+              <th>Asegurado</th>
+              <th>Prueba</th>
+              <th>Especialidad</th>
+              <th>Centro</th>
               <th>Estado</th>
-              <th>Departamento</th>
               <th
                 className={styles.sortable}
                 onClick={() => setOrdenDesc(!ordenDesc)}
               >
                 Creada {ordenDesc ? "↓" : "↑"}
               </th>
+              <th></th>
             </tr>
           </thead>
+
           <tbody>
-            {solicitudesFiltradas.map((s) => (
-              <SolicitudItem key={s._id} solicitud={s} />
-            ))}
+            {solicitudesFiltradas.length === 0 ? (
+              <tr>
+                <td colSpan="7" className={styles.emptyState}>
+                  No hay solicitudes que coincidan con los filtros.
+                </td>
+              </tr>
+            ) : (
+              solicitudesFiltradas.map((s) => (
+                <SolicitudItem key={s._id} solicitud={s} />
+              ))
+            )}
           </tbody>
         </table>
+      </div>
+
+      {/* Paginación */}
+      <div className={styles.pagination}>
+        <button>‹</button>
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <button>›</button>
       </div>
     </div>
   );

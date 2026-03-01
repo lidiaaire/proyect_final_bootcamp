@@ -7,6 +7,7 @@ import {
   FolderIcon,
   CogIcon,
 } from "@/components/ui/StatusBadge/icons";
+
 export default function MainLayout({ children }) {
   const router = useRouter();
   const [role, setRole] = useState("");
@@ -32,7 +33,6 @@ export default function MainLayout({ children }) {
 
   return (
     <div className={styles.layout}>
-      {/* Overlay móvil */}
       {mobileOpen && (
         <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
       )}
@@ -43,15 +43,23 @@ export default function MainLayout({ children }) {
           className={`${styles.sidebar} ${mobileOpen ? styles.mobileOpen : ""}`}
         >
           <div>
-            <div className={styles.logo}>Flowly</div>
+            {/* Logo */}
+            <div className={styles.logoBlock}>
+              <div className={styles.logoIcon}>F</div>
+              <span className={styles.logoText}>Flowly</span>
+            </div>
 
-            <nav className={styles.nav}>
+            <hr className={styles.divider} />
+
+            {/* GENERAL */}
+            <div className={styles.section}>
+              <span className={styles.sectionTitle}>GENERAL</span>
+
               <Link
                 href="/"
                 className={`${styles.navItem} ${
                   isActive("/") ? styles.active : ""
                 }`}
-                onClick={() => setMobileOpen(false)}
               >
                 <HomeIcon className={styles.icon} />
                 <span>Home</span>
@@ -62,25 +70,60 @@ export default function MainLayout({ children }) {
                 className={`${styles.navItem} ${
                   isActive("/solicitudes") ? styles.active : ""
                 }`}
-                onClick={() => setMobileOpen(false)}
               >
                 <FolderIcon className={styles.icon} />
                 <span>Solicitudes</span>
+                <span className={styles.badge}>80</span>
+              </Link>
+            </div>
+
+            <hr className={styles.divider} />
+
+            {/* GESTIÓN */}
+            <div className={styles.section}>
+              <span className={styles.sectionTitle}>GESTIÓN</span>
+
+              <Link href="#" className={styles.navItem}>
+                <FolderIcon className={styles.icon} />
+                <span>Asegurados</span>
               </Link>
 
               <Link href="#" className={styles.navItem}>
+                <FolderIcon className={styles.icon} />
+                <span>Documentación</span>
+              </Link>
+
+              <Link href="#" className={styles.navItem}>
+                <FolderIcon className={styles.icon} />
+                <span>Análisis</span>
+              </Link>
+            </div>
+
+            <hr className={styles.divider} />
+
+            {/* CONFIGURACIÓN */}
+            <div className={styles.section}>
+              <span className={styles.sectionTitle}>CONFIGURACIÓN</span>
+
+              <Link
+                href="/ajustes"
+                className={`${styles.navItem} ${
+                  isActive("/ajustes") ? styles.active : ""
+                }`}
+              >
                 <CogIcon className={styles.icon} />
                 <span>Ajustes</span>
               </Link>
-            </nav>
+            </div>
           </div>
 
-          <div className={styles.footer}>
+          {/* Footer usuario */}
+          <div className={styles.sidebarFooter}>
             <div className={styles.userBox}>
               <div className={styles.avatar}>{role ? role.charAt(0) : "U"}</div>
-              <div className={styles.userInfo}>
-                <span>{role || "Usuario"}</span>
-                <span>Activo</span>
+              <div>
+                <div className={styles.userName}>{role || "Usuario"}</div>
+                <div className={styles.userRole}>Administración</div>
               </div>
             </div>
           </div>
@@ -91,9 +134,7 @@ export default function MainLayout({ children }) {
       <main
         className={`${styles.main} ${!sidebarVisible ? styles.fullWidth : ""}`}
       >
-        {/* Top Header */}
         <div className={styles.topHeader}>
-          {/* Botón ocultar sidebar */}
           <button
             className={styles.sidebarToggle}
             onClick={() => setSidebarVisible(!sidebarVisible)}
@@ -113,7 +154,7 @@ export default function MainLayout({ children }) {
               <div className={styles.avatarSmall}>
                 {role ? role.charAt(0) : "U"}
               </div>
-              <span className={styles.profileName}>Maria López</span>
+              <span className={styles.profileName}>María López</span>
             </div>
           </div>
         </div>

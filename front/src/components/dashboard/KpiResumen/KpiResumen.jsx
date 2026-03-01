@@ -1,4 +1,5 @@
 import styles from "@/styles/KpiResumen.module.css";
+import { Folder, FileText, Stethoscope, Scale } from "lucide-react";
 
 export default function KpiResumen({
   solicitudes = [],
@@ -29,15 +30,21 @@ export default function KpiResumen({
 
   return (
     <div className={styles.container}>
-      {/* Inicio */}
+      {/* Inicio gestión */}
       <div
         className={`${styles.card} ${styles.inicio} ${
           isActive("PENDIENTE_INICIO_GESTION") ? styles.active : ""
         }`}
         onClick={() => setFiltroEstado("PENDIENTE_INICIO_GESTION")}
       >
+        <div className={styles.cardHeader}>
+          <div className={styles.iconBox}>
+            <Folder size={16} />
+          </div>
+          <span className={styles.label}>Inicio gestión</span>
+        </div>
+
         <span className={styles.number}>{inicioGestion.length}</span>
-        <span className={styles.label}>Inicio gestión</span>
       </div>
 
       {/* Documentación */}
@@ -47,8 +54,14 @@ export default function KpiResumen({
         }`}
         onClick={() => setFiltroEstado("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")}
       >
+        <div className={styles.cardHeader}>
+          <div className={styles.iconBox}>
+            <FileText size={16} />
+          </div>
+          <span className={styles.label}>Documentación</span>
+        </div>
+
         <span className={styles.number}>{documentacion.length}</span>
-        <span className={styles.label}>Documentación</span>
       </div>
 
       {/* Dirección médica */}
@@ -58,19 +71,31 @@ export default function KpiResumen({
         }`}
         onClick={() => setFiltroEstado("PENDIENTE_DIRECCION_MEDICA")}
       >
+        <div className={styles.cardHeader}>
+          <div className={styles.iconBox}>
+            <Stethoscope size={16} />
+          </div>
+          <span className={styles.label}>Dirección médica</span>
+        </div>
+
         <span className={styles.number}>{direccionMedica.length}</span>
-        <span className={styles.label}>Dirección médica</span>
       </div>
 
-      {/* Jurídica */}
+      {/* Asesoría jurídica */}
       <div
         className={`${styles.card} ${styles.juridica} ${
           isActive("PENDIENTE_ASESORIA_JURIDICA") ? styles.active : ""
         }`}
         onClick={() => setFiltroEstado("PENDIENTE_ASESORIA_JURIDICA")}
       >
+        <div className={styles.cardHeader}>
+          <div className={styles.iconBox}>
+            <Scale size={16} />
+          </div>
+          <span className={styles.label}>Asesoría jurídica</span>
+        </div>
+
         <span className={styles.number}>{asesoria.length}</span>
-        <span className={styles.label}>Asesoría jurídica</span>
       </div>
     </div>
   );

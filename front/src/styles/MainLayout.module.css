@@ -1,5 +1,5 @@
 /* ============================= */
-/* ===== Layout ===== */
+/* ===== Layout Base ===== */
 /* ============================= */
 
 .layout {
@@ -13,14 +13,227 @@
 /* ============================= */
 
 .sidebar {
-  width: 240px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-color);
+  width: 260px;
+  background: linear-gradient(180deg, #0f172a 0%, #0b1324 100%);
+  color: #e5e7eb;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 24px 16px;
+  padding: 24px 20px;
 }
+
+/* ===== Logo ===== */
+
+.logoBlock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.logoIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.logoText {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+/* ===== Dividers ===== */
+
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 20px 0;
+}
+
+/* ===== Sections ===== */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+/* ===== Nav Items ===== */
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+/* Active */
+
+.active {
+  background: rgba(59, 130, 246, 0.18);
+  color: white;
+  font-weight: 500;
+}
+
+/* ===== Badge contador ===== */
+
+.badge {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #e5e7eb;
+}
+
+/* ===== Icons ===== */
+
+.icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.9;
+}
+
+/* ============================= */
+/* ===== Sidebar Footer ===== */
+/* ============================= */
+
+.sidebarFooter {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.userBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.userRole {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ============================= */
+/* ===== Main Area ===== */
+/* ============================= */
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  padding: 32px;
+  width: 100%;
+}
+
+/* Ajustamos el área de contenido para que siempre ocupe todo el espacio disponible */
+.content {
+  flex: 1;
+  padding: 16px 24px;
+  width: 100%;
+  max-width: 1350px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ============================= */
+/* ===== Sidebar Footer ===== */
+/* ============================= */
+
+.sidebarFooter {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.userBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.userRole {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ============================= */
+/* ===== Top Header ===== */
+/* ============================= */
+
+.topHeader {
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #e6eaf0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+/* Toggle botón sidebar */
 
 .sidebarToggle {
   border: none;
@@ -35,140 +248,15 @@
   background: #e2e8f0;
 }
 
-.fullWidth {
-  width: 100%;
-}
-
-/* ===== Logo ===== */
-
-.logo {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: var(--brand-primary);
-}
-
-/* ===== Nav ===== */
-
-.nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.navItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  color: var(--text-primary);
-  text-decoration: none;
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-.navItem:hover {
-  background: var(--hover-bg);
-}
-
-/* ===== Active ===== */
-
-.active {
-  background: var(--active-bg);
-  color: var(--brand-primary);
-  font-weight: 500;
-}
-
-.active::before {
-  content: "";
-  position: absolute;
-  left: -16px;
-  top: 6px;
-  bottom: 6px;
-  width: 4px;
-  border-radius: 4px;
-  background: var(--brand-primary);
-}
-
-/* ===== Icons ===== */
-
-.icon {
-  width: 18px;
-  height: 18px;
-}
-
-/* ============================= */
-/* ===== Sidebar Footer ===== */
-/* ============================= */
-
-.footer {
-  margin-top: 30px;
-}
-
-.userBox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  background: var(--brand-primary);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.userInfo span:first-child {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.userInfo span:last-child {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* ============================= */
-/* ===== Main Area ===== */
-/* ============================= */
-
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 14px 20px;
-}
-
-/* ===== Top Header ===== */
-
-.topHeader {
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #e6eaf0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-}
-
 /* ===== Search ===== */
 
 .searchBox input {
-  width: 280px;
+  width: 320px;
   padding: 8px 16px;
   border-radius: 999px;
   background: #f1f5f9;
   border: none;
-}
-
-.searchBox input:focus {
-  border-color: var(--brand-primary);
+  outline: none;
 }
 
 /* ===== Header Right ===== */
@@ -204,7 +292,7 @@
 .avatarSmall {
   width: 32px;
   height: 32px;
-  background: var(--brand-primary);
+  background: #3b82f6;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -216,17 +304,7 @@
 .profileName {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
-}
-
-/* ===== Content ===== */
-
-.content {
-  flex: 1;
-  padding: 20px 24px 28px 24px;
-  max-width: 1350px;
-  margin: 0 auto;
-  width: 100%;
+  color: #111827;
 }
 
 /* ============================= */
@@ -255,19 +333,6 @@
 }
 
 @media (max-width: 1024px) {
-  .sidebar {
-    position: fixed;
-    left: -240px;
-    top: 0;
-    bottom: 0;
-    z-index: 20;
-    transition: left 0.25s ease;
-  }
-
-  .mobileOpen {
-    left: 0;
-  }
-
   .mobileToggle {
     display: block;
   }

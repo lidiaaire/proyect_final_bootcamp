@@ -70,13 +70,14 @@ export default function Home() {
 
   return (
     <MainLayout>
-      {/* Header del dashboard */}
+      {/* Header */}
       <div className={styles.dashboardHeader}>
         <h2 className={styles.dashboardTitle}>Buenos días</h2>
         <p className={styles.dashboardSubtitle}>
           {totalPendientesAntiguos > 0 ? (
             <>
-              Tienes <strong>{solicitudes.length}</strong> solicitudes activas
+              Tienes <strong>{solicitudes.length}</strong> solicitudes
+              registradas
             </>
           ) : (
             <>No tienes solicitudes bloqueadas. Buen ritmo de gestión.</>
@@ -84,58 +85,22 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Contenedor principal */}
-      <div className={styles.dashboardWrapper}>
+      {/* PANEL ÚNICO */}
+      <div className={styles.dashboardCard}>
         {/* KPIs */}
-        <div className={styles.kpiSection}>
-          <KpiResumen
-            solicitudes={solicitudes}
-            filtroEstado={filtroEstado}
-            setFiltroEstado={setFiltroEstado}
-            pendientesAntiguos={totalPendientesAntiguos}
-          />
-        </div>
+        <KpiResumen
+          solicitudes={solicitudes}
+          filtroEstado={filtroEstado}
+          setFiltroEstado={setFiltroEstado}
+          pendientesAntiguos={totalPendientesAntiguos}
+        />
 
-        {/* Grid principal */}
-        <div className={styles.dashboardGrid}>
-          {/* Tabla principal */}
-          <div className={styles.tableBlock}>
-            <SolicitudesList
-              solicitudes={solicitudes}
-              filtroEstado={filtroEstado}
-              setFiltroEstado={setFiltroEstado}
-            />
-          </div>
-
-          {/* Panel derecho */}
-          <div className={styles.rightPanel}>
-            <button
-              className={styles.quickBtn}
-              onClick={() =>
-                router.push("/solicitudes?estado=pendiente&area=mi")
-              }
-            >
-              <span className={styles.btnIcon}>📥</span>
-              Pendientes de mi área
-            </button>
-
-            <button
-              className={styles.quickBtn}
-              onClick={() => router.push("/solicitudes?hoy=true")}
-            >
-              <span className={styles.btnIcon}>🕒</span>
-              En revisión hoy
-            </button>
-
-            <button
-              className={styles.quickBtn}
-              onClick={() => router.push("/solicitudes?tipo=gestionadas")}
-            >
-              <span className={styles.btnIcon}>📂</span>
-              Solicitudes gestionadas
-            </button>
-          </div>
-        </div>
+        {/* Tabla + filtros (ya vienen dentro de SolicitudesList) */}
+        <SolicitudesList
+          solicitudes={solicitudes}
+          filtroEstado={filtroEstado}
+          setFiltroEstado={setFiltroEstado}
+        />
       </div>
     </MainLayout>
   );
