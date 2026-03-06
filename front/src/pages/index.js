@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import Image from "next/image";
 import { getSolicitudes } from "@/api/solicitudes";
 import MainLayout from "@/components/layout/MainLayout/MainLayout";
-import SolicitudesList from "@/components/solicitudes/SolicitudesList/SolicitudesList";
 import KpiResumen from "@/components/dashboard/KpiResumen/KpiResumen";
-import AccionInmediata from "@/components/dashboard/AccionInmediata/AccionInmediata";
 import styles from "@/styles/Home.module.css";
+import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
+import NotificationsWidget from "@/components/dashboard/NotificationsWidget/NotificationsWidget";
+import TeamWidget from "@/components/dashboard/TeamWidget/TeamWidget";
 
 export default function Home() {
   const router = useRouter();
@@ -41,6 +42,10 @@ export default function Home() {
   if (isLoading) return <p>Cargando...</p>;
   if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
 
+  /* -----------------------------
+     Lógica de negocio del dashboard
+  ----------------------------- */
+
   const solicitudesUrgentes = solicitudes.filter(
     (s) =>
       s.estadoInterno === "PENDIENTE_INICIO_GESTION" ||
@@ -66,41 +71,91 @@ export default function Home() {
 
   const totalPendientesAntiguos = pendientesAntiguos.length;
 
-  const totalUrgentes = solicitudesUrgentes.length;
+  /* -----------------------------
+     UI
+  ----------------------------- */
 
   return (
     <MainLayout>
-      {/* Header */}
-      <div className={styles.dashboardHeader}>
-        <h2 className={styles.dashboardTitle}>Buenos días</h2>
-        <p className={styles.dashboardSubtitle}>
-          {totalPendientesAntiguos > 0 ? (
-            <>
-              Tienes <strong>{solicitudes.length}</strong> solicitudes
-              registradas
-            </>
-          ) : (
-            <>No tienes solicitudes bloqueadas. Buen ritmo de gestión.</>
-          )}
-        </p>
-      </div>
+      <div className={styles.dashboardGrid}>
+        {/* COLUMNA IZQUIERDA */}
+        <div className={styles.dashboardMain}>
+          {/* SALUDO */}
+          <div className={styles.welcomeCard}>
+            <div className={styles.welcomeText}>
+              <h3>Hola María</h3>
 
-      {/* PANEL ÚNICO */}
-      <div className={styles.dashboardCard}>
-        {/* KPIs */}
-        <KpiResumen
-          solicitudes={solicitudes}
-          filtroEstado={filtroEstado}
-          setFiltroEstado={setFiltroEstado}
-          pendientesAntiguos={totalPendientesAntiguos}
-        />
+              <p>
+                Tienes <strong>{solicitudes.length}</strong> solicitudes
+                activas.
+                <br />
+                Revisa el estado de las autorizaciones.
+              </p>
+            </div>
 
-        {/* Tabla + filtros (ya vienen dentro de SolicitudesList) */}
-        <SolicitudesList
-          solicitudes={solicitudes}
-          filtroEstado={filtroEstado}
-          setFiltroEstado={setFiltroEstado}
-        />
+            <Image
+              src="/illustrations/medical-team-2.png"
+              alt="Equipo médico"
+              width={320}
+              height={220}
+              priority
+              className={styles.welcomeIllustration}
+            />
+          </div>
+
+          {/* KPIs */}
+          <div className={styles.dashboardCard}>
+            <KpiResumen
+              solicitudes={solicitudes}
+              filtroEstado={filtroEstado}
+              setFiltroEstado={setFiltroEstado}
+              pendientesAntiguos={totalPendientesAntiguos}
+            />
+          </div>
+
+          {/* ÚLTIMAS SOLICITUDES */}
+          <div className={styles.recentBlock}>
+            <div className={styles.recentHeader}>
+              <h3>Últimas solicitudes</h3>
+            </div>
+
+            <table className={styles.recentTable}>
+              <thead>
+                <tr>
+                  <th>Solicitud</th>
+                  <th>Paciente</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {solicitudes.slice(0, 5).map((s) => (
+                  <tr key={s._id}>
+                    <td className={styles.idCell}>
+                      {(s.numeroSolicitud || s._id).slice(0, 8)}
+                    </td>
+
+                    <td>{s.nombreCompleto || "—"}</td>
+
+                    <td>
+                      <StatusBadge status={s.estadoInterno} />
+                    </td>
+
+                    <td>{new Date(s.createdAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* SIDEBAR DERECHA */}
+        <div className={styles.dashboardSide}>
+          <NotificationsWidget solicitudes={solicitudes} />
+
+          <TeamWidget />
+        </div>
       </div>
     </MainLayout>
   );

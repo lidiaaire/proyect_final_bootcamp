@@ -2,10 +2,14 @@ import styles from "@/styles/StatusBadge.module.css";
 
 export default function StatusBadge({ status }) {
   const getClass = () => {
+    if (!status) return styles.default;
+
     if (status === "AUTORIZADA") return styles.autorizada;
     if (status === "RECHAZADA") return styles.rechazada;
+
     if (status.includes("DOCUMENTACION")) return styles.documentacion;
     if (status.includes("PENDIENTE")) return styles.pendiente;
+
     return styles.default;
   };
 
@@ -21,7 +25,7 @@ export default function StatusBadge({ status }) {
 
   return (
     <span className={`${styles.badge} ${getClass()}`}>
-      {labelMap[status] || status}
+      {labelMap[status] || status || "—"}
     </span>
   );
 }

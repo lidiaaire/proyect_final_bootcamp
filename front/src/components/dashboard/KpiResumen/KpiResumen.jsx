@@ -32,70 +32,66 @@ export default function KpiResumen({
     <div className={styles.container}>
       {/* Inicio gestión */}
       <div
-        className={`${styles.card} ${styles.inicio} ${
-          isActive("PENDIENTE_INICIO_GESTION") ? styles.active : ""
-        }`}
+        className={`${styles.card} ${styles.inicio} ${isActive("PENDIENTE_INICIO_GESTION") ? styles.active : ""}`}
         onClick={() => setFiltroEstado("PENDIENTE_INICIO_GESTION")}
       >
-        <div className={styles.cardHeader}>
-          <div className={styles.iconBox}>
-            <Folder size={16} />
-          </div>
-          <span className={styles.label}>Inicio gestión</span>
-        </div>
+        <div className={styles.number}>{inicioGestion.length}</div>
 
-        <span className={styles.number}>{inicioGestion.length}</span>
+        <div className={styles.kpiInfo}>
+          <span className={styles.label}>Inicio gestión</span>
+
+          <button className={`${styles.btn} ${styles.btnInicio}`}>
+            Ver pendientes
+          </button>
+        </div>
       </div>
 
       {/* Documentación */}
       <div
-        className={`${styles.card} ${styles.doc} ${
-          isActive("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") ? styles.active : ""
-        }`}
+        className={`${styles.card} ${styles.doc}`}
         onClick={() => setFiltroEstado("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")}
       >
-        <div className={styles.cardHeader}>
-          <div className={styles.iconBox}>
-            <FileText size={16} />
-          </div>
-          <span className={styles.label}>Documentación</span>
-        </div>
+        <div className={styles.number}>{documentacion.length}</div>
 
-        <span className={styles.number}>{documentacion.length}</span>
+        <div className={styles.kpiInfo}>
+          <span className={styles.label}>Documentación</span>
+
+          <button className={`${styles.btn} ${styles.btnDoc}`}>
+            Ver pendientes
+          </button>
+        </div>
       </div>
 
       {/* Dirección médica */}
       <div
-        className={`${styles.card} ${styles.medica} ${
-          isActive("PENDIENTE_DIRECCION_MEDICA") ? styles.active : ""
-        }`}
+        className={`${styles.card} ${styles.medica}`}
         onClick={() => setFiltroEstado("PENDIENTE_DIRECCION_MEDICA")}
       >
-        <div className={styles.cardHeader}>
-          <div className={styles.iconBox}>
-            <Stethoscope size={16} />
-          </div>
-          <span className={styles.label}>Dirección médica</span>
-        </div>
+        <div className={styles.number}>{direccionMedica.length}</div>
 
-        <span className={styles.number}>{direccionMedica.length}</span>
+        <div className={styles.kpiInfo}>
+          <span className={styles.label}>Dirección médica</span>
+
+          <button className={`${styles.btn} ${styles.btnMedica}`}>
+            Ver pendientes
+          </button>
+        </div>
       </div>
 
-      {/* Asesoría jurídica */}
+      {/* Jurídico */}
       <div
-        className={`${styles.card} ${styles.juridica} ${
-          isActive("PENDIENTE_ASESORIA_JURIDICA") ? styles.active : ""
-        }`}
+        className={`${styles.card} ${styles.juridica}`}
         onClick={() => setFiltroEstado("PENDIENTE_ASESORIA_JURIDICA")}
       >
-        <div className={styles.cardHeader}>
-          <div className={styles.iconBox}>
-            <Scale size={16} />
-          </div>
-          <span className={styles.label}>Asesoría jurídica</span>
-        </div>
+        <div className={styles.number}>{asesoria.length}</div>
 
-        <span className={styles.number}>{asesoria.length}</span>
+        <div className={styles.kpiInfo}>
+          <span className={styles.label}>Asesoría jurídica</span>
+
+          <button className={`${styles.btn} ${styles.btnJuridica}`}>
+            Ver pendientes
+          </button>
+        </div>
       </div>
     </div>
   );

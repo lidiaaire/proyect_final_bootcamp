@@ -1,81 +1,175 @@
-/* ============================= */
-/* HEADER */
-/* ============================= */
-
 .dashboardHeader {
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
-.dashboardCard {
-  background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-  overflow: hidden;
-}
 .dashboardTitle {
   font-size: 26px;
   font-weight: 700;
-  color: var(--text-primary);
 }
 
 .dashboardSubtitle {
-  margin-top: 2px;
-  margin-bottom: 8px;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #6b7280;
 }
 
-.dashboardSubtitle strong {
-  color: var(--brand-primary);
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+.dashboardMain {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboardSide {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* SALUDO */
+
+.welcomeCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #6366f1 0%, #7c3aed 50%, #9333ea 100%);
+  color: white;
+  min-height: 120px;
+  overflow: hidden;
+}
+
+.welcomeText {
+  max-width: 420px;
+  z-index: 2;
+}
+
+.welcomeText strong {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.welcomeText h3 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  margin-bottom: 8px;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.welcomeText p {
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.welcomeIllustration {
+  position: absolute;
+  right: 20px;
+  bottom: -40px;
+  height: 260px;
+  width: auto;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* KPI CARD */
+
+.dashboardCard {
+  background: white;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  grid-column: 1 / span 4;
+}
+
+/* ÚLTIMAS SOLICITUDES */
+
+.recentBlock {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px 22px;
+  grid-column: 1 / span 3;
+  max-width: 720px;
+}
+
+.recentHeader {
+  margin-bottom: 12px;
+}
+
+.recentHeader h3 {
+  font-size: 16px;
   font-weight: 600;
 }
 
-/* ============================= */
-/* WRAPPER PRINCIPAL */
-/* ============================= */
-
-.dashboardWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.recentTable {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-/* ============================= */
-/* KPIs */
-/* ============================= */
-
-.kpiSection {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+.recentTable th {
+  text-align: left;
+  font-size: 12px;
+  color: #6b7280;
+  padding-bottom: 8px;
 }
 
-/* ============================= */
-/* GRID PRINCIPAL */
-/* ============================= */
-
-.dashboardGrid {
-  display: block;
+.recentTable td {
+  padding: 10px 0;
+  border-top: 1px solid #f1f5f9;
+  font-size: 14px;
 }
 
-/* ============================= */
-/* TABLA */
-/* ============================= */
-
-.tableBlock {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
-}
-.tableFilters {
-  margin-bottom: 8px;
+.recentTable th:nth-child(1) {
+  width: 140px;
 }
 
-/* ============================= */
+.recentTable th:nth-child(2) {
+  width: 220px;
+}
+
+.recentTable th:nth-child(3) {
+  width: 180px;
+}
+
+.recentTable th:nth-child(4) {
+  width: 120px;
+}
+
+.idCell {
+  font-weight: 600;
+  color: #4f46e5;
+  font-family: monospace;
+  white-space: nowrap;
+}
+/* SIDEBAR */
+
+.calendarCard,
+.teamCard {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  grid-column: 4;
+}
+
 /* RESPONSIVE */
-/* ============================= */
 
 @media (max-width: 1100px) {
   .dashboardGrid {
