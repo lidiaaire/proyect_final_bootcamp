@@ -33,7 +33,11 @@
 .dashboardSide {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+}
+
+.dashboardSide > * {
+  flex: 1;
 }
 
 /* SALUDO */
@@ -121,6 +125,10 @@
 .recentTable {
   width: 100%;
   border-collapse: collapse;
+}
+
+.recentTable tbody tr:hover {
+  background: #f9fafb;
 }
 
 .recentTable th {

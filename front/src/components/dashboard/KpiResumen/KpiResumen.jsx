@@ -1,5 +1,4 @@
 import styles from "@/styles/KpiResumen.module.css";
-import { Folder, FileText, Stethoscope, Scale } from "lucide-react";
 
 export default function KpiResumen({
   solicitudes = [],
@@ -48,7 +47,9 @@ export default function KpiResumen({
 
       {/* Documentación */}
       <div
-        className={`${styles.card} ${styles.doc}`}
+        className={`${styles.card} ${styles.doc} ${
+          isActive("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") ? styles.active : ""
+        }`}
         onClick={() => setFiltroEstado("PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")}
       >
         <div className={styles.number}>{documentacion.length}</div>
@@ -64,7 +65,9 @@ export default function KpiResumen({
 
       {/* Dirección médica */}
       <div
-        className={`${styles.card} ${styles.medica}`}
+        className={`${styles.card} ${styles.medica} ${
+          isActive("PENDIENTE_DIRECCION_MEDICA") ? styles.active : ""
+        }`}
         onClick={() => setFiltroEstado("PENDIENTE_DIRECCION_MEDICA")}
       >
         <div className={styles.number}>{direccionMedica.length}</div>
@@ -80,7 +83,9 @@ export default function KpiResumen({
 
       {/* Jurídico */}
       <div
-        className={`${styles.card} ${styles.juridica}`}
+        className={`${styles.card} ${styles.juridica} ${
+          isActive("PENDIENTE_ASESORIA_JURIDICA") ? styles.active : ""
+        }`}
         onClick={() => setFiltroEstado("PENDIENTE_ASESORIA_JURIDICA")}
       >
         <div className={styles.number}>{asesoria.length}</div>

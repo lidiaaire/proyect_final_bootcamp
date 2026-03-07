@@ -49,7 +49,7 @@
   color: white;
 }
 
-/* ===== Dividers ===== */
+/* ===== Divider ===== */
 
 .divider {
   border: none;
@@ -84,15 +84,12 @@
   text-decoration: none;
   font-size: 14px;
   transition: all 0.2s ease;
-  position: relative;
 }
 
 .navItem:hover {
   background: rgba(255, 255, 255, 0.05);
   color: white;
 }
-
-/* Active */
 
 .active {
   background: rgba(59, 130, 246, 0.18);
@@ -109,6 +106,7 @@
   border-radius: 20px;
   font-size: 12px;
   color: #e5e7eb;
+  font-weight: 500;
 }
 
 /* ===== Icons ===== */
@@ -170,7 +168,6 @@
   width: 100%;
 }
 
-/* Ajustamos el área de contenido para que siempre ocupe todo el espacio disponible */
 .content {
   flex: 1;
   padding: 16px 24px;
@@ -178,45 +175,6 @@
   max-width: 1350px;
   margin: 0 auto;
   box-sizing: border-box;
-}
-
-/* ============================= */
-/* ===== Sidebar Footer ===== */
-/* ============================= */
-
-.sidebarFooter {
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.userBox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #1e293b;
-  color: #fbbf24;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.userName {
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-}
-
-.userRole {
-  font-size: 12px;
-  color: #94a3b8;
 }
 
 /* ============================= */
@@ -233,7 +191,7 @@
   padding: 0 24px;
 }
 
-/* Toggle botón sidebar */
+/* Toggle sidebar */
 
 .sidebarToggle {
   border: none;

@@ -8,8 +8,9 @@ import {
   CogIcon,
 } from "@/components/ui/StatusBadge/icons";
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children, solicitudesCount = 0 }) {
   const router = useRouter();
+
   const [role, setRole] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -73,7 +74,9 @@ export default function MainLayout({ children }) {
               >
                 <FolderIcon className={styles.icon} />
                 <span>Solicitudes</span>
-                <span className={styles.badge}>80</span>
+
+                {/* contador recibido desde Home */}
+                <span className={styles.badge}>{solicitudesCount}</span>
               </Link>
             </div>
 

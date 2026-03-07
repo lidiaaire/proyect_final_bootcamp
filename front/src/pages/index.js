@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import Link from "next/link";
 import { getSolicitudes } from "@/api/solicitudes";
 import MainLayout from "@/components/layout/MainLayout/MainLayout";
 import KpiResumen from "@/components/dashboard/KpiResumen/KpiResumen";
@@ -71,12 +72,54 @@ export default function Home() {
 
   const totalPendientesAntiguos = pendientesAntiguos.length;
 
-  /* -----------------------------
-     UI
-  ----------------------------- */
+  // ==============================
+  // FILTRO DEL DASHBOARD
+  // ==============================
+
+  const solicitudesFiltradas =
+    filtroEstado === "TODOS"
+      ? solicitudes
+      : solicitudes.filter((s) => s.estadoInterno === filtroEstado);
+
+  // ==============================
+  // ACTIVIDAD RECIENTE (desde historial)
+  // ==============================
+
+  // ==============================
+  // ACTIVIDAD RECIENTE (desde historial)
+  // ==============================
+
+  const actividadReciente = solicitudes
+    .flatMap((s) =>
+      (s.historial || [])
+        .filter(
+          (h) =>
+            h.changedBy === "DIRECCION_MEDICA" ||
+            h.changedBy === "ASESORIA_JURIDICA",
+        )
+        .map((h) => {
+          let accion = "actualizó";
+
+          if (h.estado === "AUTORIZADA") accion = "autorizó";
+          if (h.estado === "RECHAZADA") accion = "rechazó";
+          if (h.estado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")
+            accion = "solicitó documentación para";
+
+          return {
+            solicitudId: s._id,
+            paciente: s.nombreCompleto,
+            prueba: s.nombrePrueba,
+            accion,
+            usuario: h.changedBy,
+            fecha: h.fecha,
+          };
+        }),
+    )
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+    .slice(0, 5);
 
   return (
-    <MainLayout>
+    <MainLayout solicitudesCount={solicitudes.length}>
       <div className={styles.dashboardGrid}>
         {/* COLUMNA IZQUIERDA */}
         <div className={styles.dashboardMain}>
@@ -130,10 +173,12 @@ export default function Home() {
               </thead>
 
               <tbody>
-                {solicitudes.slice(0, 5).map((s) => (
+                {solicitudesFiltradas.slice(0, 5).map((s) => (
                   <tr key={s._id}>
                     <td className={styles.idCell}>
-                      {(s.numeroSolicitud || s._id).slice(0, 8)}
+                      <Link href={`/solicitudes/${s._id}`}>
+                        {s.numeroSolicitud}
+                      </Link>
                     </td>
 
                     <td>{s.nombreCompleto || "—"}</td>
@@ -152,7 +197,7 @@ export default function Home() {
 
         {/* SIDEBAR DERECHA */}
         <div className={styles.dashboardSide}>
-          <NotificationsWidget solicitudes={solicitudes} />
+          <NotificationsWidget actividad={actividadReciente} />
 
           <TeamWidget />
         </div>

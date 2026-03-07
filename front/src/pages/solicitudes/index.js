@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import MainLayout from "@/components/layout/MainLayout/MainLayout";
 import SolicitudesList from "@/components/solicitudes/SolicitudesList/SolicitudesList";
 import { getSolicitudes } from "@/api/solicitudes";
-import styles from "@/styles/Solicitudes.module.css";
+import styles from "@/styles/SolicitudesList.module.css";
 
 export default function Solicitudes() {
   const router = useRouter();

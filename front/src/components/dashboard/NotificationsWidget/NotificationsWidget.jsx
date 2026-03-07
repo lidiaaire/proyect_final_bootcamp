@@ -14,7 +14,6 @@ function timeAgo(date) {
 
   for (const key in intervals) {
     const value = Math.floor(seconds / intervals[key]);
-
     if (value >= 1) {
       return `hace ${value} ${key}${value > 1 ? "s" : ""}`;
     }
@@ -23,103 +22,50 @@ function timeAgo(date) {
   return "hace unos segundos";
 }
 
-export default function NotificationsWidget({ solicitudes = [] }) {
-  const departmentMap = {
-    PRESTACIONES: "Prestaciones",
-    DIRECCION_MEDICA: "Dirección médica",
-    ASESORIA_JURIDICA: "Asesoría jurídica",
-    DOCUMENTACION: "Documentación",
-  };
+const departamentoLabel = {
+  DIRECCION_MEDICA: "Dirección médica",
+  ASESORIA_JURIDICA: "Asesoría jurídica",
+};
 
-  const deptClass = {
-    PRESTACIONES: styles.prestaciones,
-    DIRECCION_MEDICA: styles.medica,
-    ASESORIA_JURIDICA: styles.juridica,
-    DOCUMENTACION: styles.documentacion,
-  };
+export default function NotificationsWidget({ actividad = [] }) {
+  const notifications = actividad.slice(0, 3).map((item) => {
+    let accion = "actualizó";
 
-  const notifications = [...solicitudes]
+    if (item.estado === "AUTORIZADA") accion = "autorizó";
+    if (item.estado === "RECHAZADA") accion = "rechazó";
 
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt || b.createdAt) -
-        new Date(a.updatedAt || a.createdAt),
-    )
+    if (item.estado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
+      accion = "solicitó documentación para";
+    }
 
-    .slice(0, 3)
+    return {
+      id: item.solicitudId,
+      paciente: item.paciente,
+      prueba: item.prueba,
+      departamento: departamentoLabel[item.usuario],
+      accion,
+      time: timeAgo(item.fecha),
+    };
+  });
 
-    .map((s) => {
-      let action = "actualizó la solicitud";
-
-      if (s.estadoInterno === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
-        action = "solicita documentación del asegurado";
-      }
-
-      if (s.estadoInterno === "PENDIENTE_DIRECCION_MEDICA") {
-        action = "envió la solicitud a dirección médica";
-      }
-
-      if (s.estadoInterno === "PENDIENTE_ASESORIA_JURIDICA") {
-        action = "envió la solicitud a asesoría jurídica";
-      }
-
-      if (s.estadoInterno === "AUTORIZADA") {
-        action = "autorizó la solicitud";
-      }
-
-      if (s.estadoInterno === "RECHAZADA") {
-        action = "rechazó la solicitud";
-      }
-
-      const department = s.currentDepartment || "PRESTACIONES";
-
-      const actor = departmentMap[department];
-
-      const initials = actor
-        .split(" ")
-        .map((w) => w[0])
-        .slice(0, 2)
-        .join("");
-
-      return {
-        id: s._id,
-        numero: s.numeroSolicitud || s._id,
-        actor,
-        action,
-        initials,
-        department,
-        time: timeAgo(s.updatedAt || s.createdAt),
-      };
-    });
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.titleBlock}>
-          <h4>Actividad reciente</h4>
-          <span className={styles.count}>{notifications.length}</span>
-        </div>
-      </div>
+      <h4 className={styles.title}>Notificaciones</h4>
 
-      <div className={styles.list}>
+      <div className={styles.timeline}>
         {notifications.map((n, i) => (
-          <Link key={i} href={`/solicitudes/${n.id}`} className={styles.item}>
-            <div className={`${styles.avatar} ${deptClass[n.department]}`}>
-              {n.initials}
-            </div>
+          <Link key={i} href={`/solicitudes/${n.id}`} className={styles.event}>
+            <div className={styles.dot}></div>
 
             <div className={styles.content}>
-              <div className={styles.topRow}>
-                <p className={styles.text}>
-                  <strong>{n.actor}</strong> {n.action}
-                </p>
+              <p className={styles.text}>
+                <strong>{n.departamento}</strong> {n.accion}{" "}
+                <span className={styles.prueba}>{n.prueba}</span> de{" "}
+                <span className={styles.paciente}>{n.paciente}</span>
+              </p>
 
-                <span className={styles.time}>{n.time}</span>
-              </div>
-
-              <span className={styles.code}>Solicitud {n.numero}</span>
+              <span className={styles.time}>{n.time}</span>
             </div>
-
-            <span className={styles.dot}></span>
           </Link>
         ))}
       </div>
