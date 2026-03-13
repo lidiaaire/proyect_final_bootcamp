@@ -197,3 +197,24 @@
   color: #999;
   font-size: 14px;
 }
+
+.fullLayout {
+  width: 100%;
+}
+
+.splitLayout {
+  display: flex;
+  gap: 20px;
+}
+
+.listaSolicitudes {
+  width: 100%;
+}
+
+.splitLayout .listaSolicitudes {
+  width: 45%;
+}
+
+.detalleSolicitud {
+  width: 55%;
+}

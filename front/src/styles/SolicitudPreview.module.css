@@ -1,0 +1,107 @@
+.previewContainer {
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.meta {
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.estadoBadge {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.docItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.docButton {
+  background: #eef2ff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.viewer {
+  margin-top: 20px;
+}
+
+.buttonPrimary {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.buttonSecondary {
+  background: #e5e7eb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.buttonDanger {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.buttonOpen {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.buttonOpen:hover {
+  background: #1d4ed8;
+}
+
+.estadoBadge {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  background: #e8f5ec;
+  color: #166534;
+}

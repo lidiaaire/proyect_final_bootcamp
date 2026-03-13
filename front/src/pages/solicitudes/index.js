@@ -14,6 +14,7 @@ export default function Solicitudes() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [solicitudSeleccionada, setSolicitudSeleccionada] = useState(null);
+  const [selectedSolicitudId, setSelectedSolicitudId] = useState(null);
 
   const { estado, hoy, tipo, area } = router.query;
 
@@ -47,8 +48,11 @@ export default function Solicitudes() {
       <div className={styles.container}>
         <h2>Solicitudes</h2>
 
-        <div className={styles.splitLayout}>
-          {/* LISTA DE SOLICITUDES */}
+        <div
+          className={
+            solicitudSeleccionada ? styles.splitLayout : styles.fullLayout
+          }
+        >
           <div className={styles.listaSolicitudes}>
             <SolicitudesList
               solicitudes={solicitudes}
@@ -56,21 +60,16 @@ export default function Solicitudes() {
               setFiltroEstado={setFiltroEstado}
               solicitudSeleccionada={solicitudSeleccionada}
               setSolicitudSeleccionada={setSolicitudSeleccionada}
+              selectedSolicitudId={selectedSolicitudId}
+              setSelectedSolicitudId={setSelectedSolicitudId}
             />
           </div>
 
-          {/* DETALLE DE SOLICITUD */}
-          <div className={styles.detalleSolicitud}>
-            {!solicitudSeleccionada && (
-              <div className={styles.emptyState}>
-                Selecciona una solicitud para ver el detalle
-              </div>
-            )}
-
-            {solicitudSeleccionada && (
+          {solicitudSeleccionada && (
+            <div className={styles.detalleSolicitud}>
               <SolicitudPreview solicitud={solicitudSeleccionada} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </MainLayout>

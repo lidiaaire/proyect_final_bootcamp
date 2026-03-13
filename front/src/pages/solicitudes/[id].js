@@ -29,6 +29,7 @@ export default function SolicitudDetallePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUserRole(getRoleFromToken(token));
   }, []);
 
@@ -113,6 +114,11 @@ export default function SolicitudDetallePage() {
   };
 
   const autorizarSolicitud = async () => {
+    const confirmar = window.confirm(
+      "¿Estás seguro de que quieres autorizar esta solicitud?",
+    );
+
+    if (!confirmar) return;
     const token = localStorage.getItem("token");
 
     await fetch(`http://localhost:4000/api/solicitudes/${id}/autorizar`, {
@@ -123,25 +129,62 @@ export default function SolicitudDetallePage() {
     });
 
     await fetchSolicitud();
+    alert(
+      "Solicitud autorizada correctamente. Se ha enviado la autorización al asegurado.",
+    );
   };
 
   const rechazarSolicitud = async () => {
+    const motivo = prompt("Indica el motivo del rechazo");
+
+    if (!motivo || motivo.trim() === "") {
+      alert("Debes indicar el motivo del rechazo");
+      return;
+    }
+
+    const confirmar = window.confirm(
+      "¿Seguro que quieres rechazar esta solicitud?",
+    );
+
+    if (!confirmar) return;
+
     const token = localStorage.getItem("token");
 
     await fetch(`http://localhost:4000/api/solicitudes/${id}/rechazar`, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({
+        comentario: motivo,
+      }),
     });
 
     await fetchSolicitud();
+
+    alert("Solicitud rechazada. Se ha enviado la notificación al asegurado.");
   };
+
+  const mensajesHistorial = {
+    PENDIENTE_DOCUMENTACION_DEL_ASEGURADO:
+      "solicitó documentación al asegurado:",
+    PENDIENTE_DIRECCION_MEDICA: "envió el caso a Dirección Médica:",
+  };
+
+  const documentoAutorizacion =
+    solicitud?.documentos?.find((doc) => doc.tipo === "AUTORIZACION") || null;
+
+  const rechazo = solicitud?.historial
+    ?.slice()
+    .reverse()
+    .find((item) => item.estado === "RECHAZADA");
 
   if (!solicitud) return <p>Cargando...</p>;
 
   return (
     <MainLayout>
+      {/* MODAL SOLICITAR DOCUMENTACIÓN */}
       {showDocModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -172,6 +215,37 @@ export default function SolicitudDetallePage() {
         </div>
       )}
 
+      {/* MODAL DIRECCIÓN MÉDICA */}
+      {showDireccionModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Enviar a Dirección Médica</h3>
+
+            <textarea
+              placeholder="Indica el motivo de la consulta médica"
+              value={comentarioDireccion}
+              onChange={(e) => setComentarioDireccion(e.target.value)}
+            />
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.buttonSecondary}
+                onClick={() => setShowDireccionModal(false)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className={styles.buttonPrimary}
+                onClick={enviarDireccionMedica}
+              >
+                Enviar a Dirección Médica
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>{solicitud.nombreCompleto}</h1>
@@ -188,6 +262,36 @@ export default function SolicitudDetallePage() {
           </div>
         </div>
       </div>
+
+      {documentoAutorizacion && (
+        <div className={styles.autorizacionBox}>
+          <div className={styles.autorizacionInfo}>
+            📄 Documento de autorización disponible
+          </div>
+
+          <button
+            className={styles.buttonPrimary}
+            onClick={() =>
+              window.open(
+                `http://localhost:4000${documentoAutorizacion.url}`,
+                "_blank",
+              )
+            }
+          >
+            Descargar autorización
+          </button>
+        </div>
+      )}
+
+      {rechazo && (
+        <div className={styles.rechazoBox}>
+          <div className={styles.rechazoTitle}>❌ Solicitud rechazada</div>
+
+          <div className={styles.rechazoMotivo}>
+            Motivo: &quot;{rechazo.comentario}&quot;
+          </div>
+        </div>
+      )}
 
       <div className={styles.detailGrid}>
         <div className={styles.leftColumn}>
@@ -262,13 +366,12 @@ export default function SolicitudDetallePage() {
                 .map((item, index) => (
                   <div key={index} className={styles.noteItem}>
                     <div className={styles.noteHeader}>{item.changedBy}</div>
-
                     <div className={styles.noteText}>
-                      solicitó documentación al asegurado:
+                      {mensajesHistorial[item.estado]}
                     </div>
-
-                    <div className={styles.noteText}>"{item.comentario}"</div>
-
+                    <div className={styles.noteText}>
+                      &quot;{item.comentario}&quot;
+                    </div>
                     <div className={styles.noteDate}>
                       {new Date(item.fecha).toLocaleDateString()}
                     </div>
@@ -297,7 +400,7 @@ export default function SolicitudDetallePage() {
             <div className={styles.sectionTitle}>Información médica</div>
 
             <div>
-              <strong>Prueba:</strong> {solicitud.prueba}
+              <strong>Prueba:</strong> {solicitud.nombrePrueba}
             </div>
 
             <div>

@@ -1,22 +1,10 @@
-// src/controllers/rechazarSolicitudController.js
-
 const Solicitud = require("../models/solicitudModel");
 const { enviarEmailSimulado } = require("../services/emailSimulationService");
-
-/*
-POST /api/solicitudes/:id/rechazar
-
-Body:
-{
-  motivo: "NO_CUBIERTO_POLIZA",
-  comentario: "Texto opcional"
-}
-*/
 
 async function rechazarSolicitud(req, res) {
   try {
     const { id } = req.params;
-    const { motivo, comentario } = req.body;
+    const { comentario } = req.body;
 
     const solicitud = await Solicitud.findById(id);
 
@@ -26,41 +14,36 @@ async function rechazarSolicitud(req, res) {
       });
     }
 
-    // 1 Cambiar estado
+    // Cambiar estado
     solicitud.estadoInterno = "RECHAZADA";
     solicitud.currentDepartment = null;
 
-    // 2 Guardar motivo
-    solicitud.motivoRechazo = motivo;
-    solicitud.comentarioRechazo = comentario;
-
-    // 3 Historial
+    // Guardar en historial
     solicitud.historial.push({
       estado: "RECHAZADA",
       changedBy: "PRESTACIONES",
+      comentario: comentario,
       fecha: new Date(),
     });
 
     await solicitud.save();
 
-    // 4 Email simulado
+    // Email simulado
     const email = {
       to: solicitud.nombreCompleto,
-      subject: "Resolución de su solicitud",
+      subject: "Solicitud rechazada",
       body: `
 Estimado/a ${solicitud.nombreCompleto},
 
-Lamentamos informarle que su solicitud (${solicitud.numeroSolicitud})
-ha sido rechazada.
+Su solicitud (${solicitud.numeroSolicitud}) ha sido RECHAZADA.
 
 Motivo:
-${motivo}
+${comentario}
 
-Comentario adicional:
-${comentario || "No se proporcionó información adicional."}
+Si necesita más información puede contactar con su aseguradora.
 
 Atentamente,
-Departamento de Prestaciones
+Departamento de prestaciones
 `,
     };
 
@@ -68,7 +51,6 @@ Departamento de Prestaciones
 
     res.json({
       message: "Solicitud rechazada correctamente",
-      solicitud,
     });
   } catch (error) {
     console.error(error);

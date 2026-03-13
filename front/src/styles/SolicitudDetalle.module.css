@@ -458,6 +458,40 @@
   margin-top: 4px;
 }
 
+.autorizacionBox {
+  margin-top: 20px;
+  padding: 16px;
+  background: #e8f5ec;
+  border: 1px solid #b7e0c2;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.autorizacionInfo {
+  font-weight: 500;
+  color: #1e6b3a;
+}
+
+.rechazoBox {
+  margin-top: 20px;
+  padding: 16px;
+  background: #fdecea;
+  border: 1px solid #f5c2c0;
+  border-radius: 8px;
+}
+
+.rechazoTitle {
+  font-weight: 600;
+  color: #b42318;
+  margin-bottom: 6px;
+}
+
+.rechazoMotivo {
+  color: #7a271a;
+}
+
 /* ============================= */
 /* RESPONSIVE */
 /* ============================= */

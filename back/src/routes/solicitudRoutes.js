@@ -61,7 +61,7 @@ router.patch("/:id/status", verifyToken, changeStatusController);
 router.post(
   "/:id/solicitar-documentacion",
   verifyToken,
-  authorizeRoles("PRESTACIONES", "ADMIN"),
+  authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
   solicitarDocumentacion,
 );
 
@@ -72,7 +72,7 @@ router.post(
 router.post(
   "/:id/rechazar",
   verifyToken,
-  authorizeRoles("PRESTACIONES", "ADMIN"),
+  authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
   rechazarSolicitud,
 );
 
@@ -83,7 +83,7 @@ router.post(
 router.post(
   "/:id/autorizar",
   verifyToken,
-  authorizeRoles("DIRECCION_MEDICA", "ADMIN"),
+  authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
   autorizarSolicitud,
 );
 

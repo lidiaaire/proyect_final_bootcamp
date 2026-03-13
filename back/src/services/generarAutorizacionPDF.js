@@ -1,17 +1,6 @@
-// src/services/generarAutorizacionPDF.js
-
 const fs = require("fs");
 const path = require("path");
-const { spawn } = require("child_process");
-
-/*
-Este servicio genera un PDF de autorización simulado.
-Para simplificar la demo, generamos un archivo PDF básico usando
-un pequeño script de Python (reportlab) que ya viene preparado
-en el entorno del proyecto si se desea ampliar.
-
-En la demo simplemente generamos un PDF placeholder.
-*/
+const PDFDocument = require("pdfkit");
 
 function generarAutorizacionPDF(solicitud) {
   const carpeta = path.join(__dirname, "../../public/autorizaciones");
@@ -23,29 +12,36 @@ function generarAutorizacionPDF(solicitud) {
   const nombreArchivo = `autorizacion_${solicitud.numeroSolicitud}.pdf`;
   const rutaArchivo = path.join(carpeta, nombreArchivo);
 
-  const contenido = `
-AUTORIZACIÓN MÉDICA
+  const doc = new PDFDocument();
 
-Solicitud: ${solicitud.numeroSolicitud}
+  doc.pipe(fs.createWriteStream(rutaArchivo));
 
-Asegurado: ${solicitud.nombreCompleto}
+  doc.fontSize(20).text("AUTORIZACIÓN MÉDICA", { align: "center" });
 
-Prueba autorizada:
-${solicitud.nombrePrueba}
+  doc.moveDown();
 
-Centro médico:
-${solicitud.centroMedico}
+  doc.fontSize(12).text(`Solicitud: ${solicitud.numeroSolicitud}`);
+  doc.text(`Asegurado: ${solicitud.nombreCompleto}`);
+  doc.text(`Póliza: ${solicitud.numeroPoliza}`);
 
-Estado: AUTORIZADA
+  doc.moveDown();
 
-Fecha: ${new Date().toLocaleDateString()}
+  doc.text("Prueba autorizada:");
+  doc.text(`${solicitud.prueba}`);
 
----------------------------------------
-Documento generado automáticamente
-Sistema de autorizaciones
-`;
+  doc.moveDown();
 
-  fs.writeFileSync(rutaArchivo, contenido);
+  doc.text("Centro médico:");
+  doc.text(`${solicitud.centroMedico}`);
+
+  doc.moveDown();
+
+  doc.text(`Fecha autorización: ${new Date().toLocaleDateString()}`);
+
+  doc.moveDown();
+  doc.text("Documento generado automáticamente por Flowly");
+
+  doc.end();
 
   return {
     nombre: nombreArchivo,

@@ -6,6 +6,10 @@ export default function SolicitudesList({
   solicitudes = [],
   filtroEstado,
   setFiltroEstado,
+  solicitudSeleccionada,
+  setSolicitudSeleccionada,
+  selectedSolicitudId,
+  setSelectedSolicitudId,
 }) {
   const [filtroDepartamento, setFiltroDepartamento] = useState("TODOS");
   const [busqueda, setBusqueda] = useState("");
@@ -113,7 +117,15 @@ export default function SolicitudesList({
               </tr>
             ) : (
               solicitudesFiltradas.map((s) => (
-                <SolicitudItem key={s._id} solicitud={s} />
+                <SolicitudItem
+                  key={s._id}
+                  solicitud={s}
+                  onSelect={() => {
+                    setSolicitudSeleccionada(s);
+                    setSelectedSolicitudId(s._id);
+                  }}
+                  isSelected={selectedSolicitudId === s._id}
+                />
               ))
             )}
           </tbody>

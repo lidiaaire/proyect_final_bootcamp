@@ -1,13 +1,17 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import ModalSolicitarDocumentacion from "../ModalSolicitarDocumentacion/ModalSolicitarDocumentacion";
 import ModalRechazarSolicitud from "../ModalRechazarSolicitud/ModalRechazarSolicitud";
 import PDFViewer from "@/components/ui/PDFViewer/PDFViewer";
 import ActivityTimeline from "@/components/ui/ActivityTimeLine/ActivityTimeLine";
+import styles from "@/styles/SolicitudPreview.module.css";
 
 export default function SolicitudPreview({ solicitud }) {
   const [mostrarModalDocs, setMostrarModalDocs] = useState(false);
   const [mostrarModalRechazo, setMostrarModalRechazo] = useState(false);
   const [documentoSeleccionado, setDocumentoSeleccionado] = useState(null);
+
+  const router = useRouter();
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -79,53 +83,89 @@ export default function SolicitudPreview({ solicitud }) {
   }
 
   return (
-    <div>
-      <h2>{solicitud.nombreCompleto}</h2>
+    <div className={styles.previewContainer}>
+      {/* HEADER */}
+      <div className={styles.header}>
+        <div>
+          <h2 className={styles.title}>{solicitud.nombreCompleto}</h2>
 
-      <p>Póliza {solicitud.numeroPoliza}</p>
+          <div className={styles.meta}>
+            Póliza {solicitud.numeroPoliza} · {solicitud.nombrePrueba}
+          </div>
 
-      <p>{solicitud.nombrePrueba}</p>
+          <span className={styles.estadoBadge}>{solicitud.estadoInterno}</span>
+        </div>
 
-      <div>Estado: {solicitud.estadoInterno}</div>
+        {/* BOTÓN ABRIR CASO COMPLETO */}
+        <button
+          className={styles.buttonOpen}
+          onClick={() => router.push(`/solicitudes/${solicitud._id}`)}
+        >
+          Abrir caso completo
+        </button>
+      </div>
 
-      <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-        <button onClick={autorizarSolicitud}>Autorizar</button>
+      {/* ACCIONES */}
+      <div className={styles.actions}>
+        <button onClick={autorizarSolicitud} className={styles.buttonPrimary}>
+          Autorizar
+        </button>
 
-        <button onClick={() => setMostrarModalDocs(true)}>
+        <button
+          onClick={() => setMostrarModalDocs(true)}
+          className={styles.buttonSecondary}
+        >
           Solicitar documentación
         </button>
 
-        <button onClick={() => setMostrarModalRechazo(true)}>Rechazar</button>
+        <button
+          onClick={() => setMostrarModalRechazo(true)}
+          className={styles.buttonDanger}
+        >
+          Rechazar
+        </button>
       </div>
 
-      <h3 style={{ marginTop: "30px" }}>Documentos</h3>
+      {/* GRID INFO */}
+      <div className={styles.grid}>
+        {/* DOCUMENTOS */}
+        <div className={styles.card}>
+          <h3>Documentos</h3>
 
-      {solicitud.documentos?.length === 0 && (
-        <div>No hay documentos disponibles</div>
-      )}
+          {solicitud.documentos?.length === 0 && (
+            <div>No hay documentos disponibles</div>
+          )}
 
-      {solicitud.documentos?.map((doc, index) => (
-        <div key={index} style={{ marginBottom: "8px" }}>
-          📄 {doc.nombre}
-          <button
-            style={{ marginLeft: "10px" }}
-            onClick={() => setDocumentoSeleccionado(doc.url)}
-          >
-            Ver
-          </button>
+          {solicitud.documentos?.map((doc, index) => (
+            <div key={index} className={styles.docItem}>
+              <span>📄 {doc.nombre}</span>
+
+              <button
+                onClick={() => setDocumentoSeleccionado(doc.url)}
+                className={styles.docButton}
+              >
+                Ver
+              </button>
+            </div>
+          ))}
         </div>
-      ))}
 
+        {/* ACTIVIDAD */}
+        <div className={styles.card}>
+          <h3>Actividad</h3>
+
+          <ActivityTimeline historial={solicitud.historial} />
+        </div>
+      </div>
+
+      {/* VISOR PDF */}
       {documentoSeleccionado && (
-        <div style={{ marginTop: "20px" }}>
+        <div className={styles.viewer}>
           <PDFViewer url={`http://localhost:4000${documentoSeleccionado}`} />
         </div>
       )}
 
-      <h3 style={{ marginTop: "40px" }}>Actividad</h3>
-
-      <ActivityTimeline historial={solicitud.historial} />
-
+      {/* MODALES */}
       <ModalSolicitarDocumentacion
         isOpen={mostrarModalDocs}
         onClose={() => setMostrarModalDocs(false)}
