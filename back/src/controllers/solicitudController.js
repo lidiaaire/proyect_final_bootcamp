@@ -16,9 +16,18 @@ const createSolicitudController = async (req, res) => {
 const changeStatusController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nuevoEstado } = req.body;
+    const { nuevoEstado, docsSolicitados, comentarioDocs, comentario } =
+      req.body;
 
-    const solicitud = await changeStatus(id, nuevoEstado, req.user);
+    const comentarioFinal = comentarioDocs || comentario || "";
+
+    const solicitud = await changeStatus(
+      id,
+      nuevoEstado,
+      req.user,
+      docsSolicitados || [],
+      comentarioFinal,
+    );
 
     res.status(200).json(solicitud);
   } catch (error) {

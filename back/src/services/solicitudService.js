@@ -19,6 +19,8 @@ const createSolicitud = async (data, user) => {
       {
         estado: "PENDIENTE_INICIO_GESTION",
         changedBy: user.id,
+        fecha: new Date(),
+        tipo: "CREACION",
       },
     ],
   });
@@ -27,7 +29,13 @@ const createSolicitud = async (data, user) => {
   return nuevaSolicitud;
 };
 
-const changeStatus = async (solicitudId, nuevoEstado, user) => {
+const changeStatus = async (
+  solicitudId,
+  nuevoEstado,
+  user,
+  docsSolicitados = [],
+  comentarioDocs = "",
+) => {
   const solicitud = await Solicitud.findById(solicitudId);
 
   if (!solicitud) {
@@ -36,17 +44,6 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
 
   const estadoActual = solicitud.estadoInterno;
 
-  // Validación de responsabilidad por departamento
-  if (
-    solicitud.currentDepartment &&
-    solicitud.currentDepartment !== user.role
-  ) {
-    throw new Error(
-      "No puedes actuar sobre una solicitud que pertenece a otro departamento",
-    );
-  }
-
-  // 1️⃣ Validación estructural (máquina de estados)
   const allowedNextStates = solicitudFlowRules[estadoActual];
 
   if (!allowedNextStates || !allowedNextStates.includes(nuevoEstado)) {
@@ -55,7 +52,6 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
     );
   }
 
-  // 2️⃣ Restricción específica para devolución tras revisión administrativa
   if (estadoActual === "PENDIENTE_REVISION_PRESTACIONES") {
     const expectedState =
       solicitud.lastTechnicalDepartment === "DIRECCION_MEDICA"
@@ -69,8 +65,6 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
     }
   }
 
-  // 3️⃣ Validaciones por rol
-
   if (user.role === "PRESTACIONES") {
     if (
       ![
@@ -78,23 +72,10 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
         "AUTORIZADA",
         "RECHAZADA",
         "PENDIENTE_REVISION_PRESTACIONES",
+        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
       ].includes(nuevoEstado)
     ) {
       throw new Error("Transición no permitida para PRESTACIONES");
-    }
-
-    // Si estamos en revisión tras documentación,
-    // Prestaciones solo redistribuye
-    if (estadoActual === "PENDIENTE_REVISION_PRESTACIONES") {
-      if (
-        !["PENDIENTE_DIRECCION_MEDICA", "PENDIENTE_ASESORIA_JURIDICA"].includes(
-          nuevoEstado,
-        )
-      ) {
-        throw new Error(
-          "Prestaciones solo puede devolver al departamento técnico correspondiente",
-        );
-      }
     }
   }
 
@@ -122,19 +103,34 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
     }
   }
 
-  // 4️⃣ Si un departamento técnico pide documentación,
-  // guardamos quién la solicitó
   if (
     nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO" &&
-    (user.role === "DIRECCION_MEDICA" || user.role === "ASESORIA_JURIDICA")
+    (user.role === "DIRECCION_MEDICA" ||
+      user.role === "ASESORIA_JURIDICA" ||
+      user.role === "PRESTACIONES")
   ) {
     solicitud.lastTechnicalDepartment = user.role;
   }
 
-  // 5️⃣ Actualizar estado
   solicitud.estadoInterno = nuevoEstado;
 
-  // 6️⃣ Actualizar departamento responsable
+  solicitud.historial.push({
+    estado: nuevoEstado,
+    changedBy: user.role,
+    fecha: new Date(),
+    tipo:
+      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
+        ? "SOLICITUD_DOCUMENTACION"
+        : "CAMBIO_ESTADO",
+    documentosSolicitados:
+      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
+        ? docsSolicitados || []
+        : [],
+    comentario: comentarioDocs || "",
+  });
+
+  await solicitud.save();
+
   if (nuevoEstado === "PENDIENTE_INICIO_GESTION") {
     solicitud.currentDepartment = "PRESTACIONES";
   }
@@ -148,7 +144,7 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
   }
 
   if (nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
-    solicitud.currentDepartment = null; // Esperando al asegurado
+    solicitud.currentDepartment = null;
   }
 
   if (nuevoEstado === "PENDIENTE_REVISION_PRESTACIONES") {
@@ -159,10 +155,20 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
     solicitud.currentDepartment = null;
   }
 
-  // 7️⃣ Añadir historial
+  // Registrar historial SIEMPRE
   solicitud.historial.push({
     estado: nuevoEstado,
-    changedBy: user.id,
+    changedBy: user.role,
+    fecha: new Date(),
+    tipo:
+      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
+        ? "SOLICITUD_DOCUMENTACION"
+        : "CAMBIO_ESTADO",
+    documentosSolicitados:
+      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
+        ? docsSolicitados || []
+        : [],
+    comentario: comentarioDocs || "",
   });
 
   await solicitud.save();
@@ -170,7 +176,7 @@ const changeStatus = async (solicitudId, nuevoEstado, user) => {
   return solicitud;
 };
 
-const getSolicitudesByRole = async (user) => {
+const getSolicitudesByRole = async () => {
   return await Solicitud.find().sort({ createdAt: -1 });
 };
 
