@@ -55,25 +55,37 @@ export default function SolicitudDetallePage() {
   }, [id]);
 
   const solicitarDocumentacion = async () => {
+    if (!comentarioDocs.trim()) {
+      alert("Debes indicar el motivo de solicitud de documentación");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:4000/api/solicitudes/${id}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:4000/api/solicitudes/${id}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            nuevoEstado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
+            comentarioDocs: comentarioDocs,
+            docsSolicitados: [],
+          }),
         },
-        body: JSON.stringify({
-          nuevoEstado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-          docsSolicitados,
-          comentarioDocs,
-        }),
-      });
+      );
 
-      setDocsSolicitados([]);
-      setComentarioDocs("");
+      const data = await response.json();
+
+      console.log("respuesta cambio estado:", data);
+
       setShowDocModal(false);
+      setComentarioDocs("");
+
       await fetchSolicitud();
     } catch (error) {
       console.error(error);
@@ -139,7 +151,37 @@ export default function SolicitudDetallePage() {
 
   return (
     <MainLayout>
-      {/* HEADER */}
+      {showDocModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Solicitar documentación adicional</h3>
+
+            <textarea
+              placeholder="Indica el motivo o documentación requerida"
+              value={comentarioDocs}
+              onChange={(e) => setComentarioDocs(e.target.value)}
+              className={styles.textarea}
+            />
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.buttonSecondary}
+                onClick={() => setShowDocModal(false)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className={styles.buttonPrimary}
+                onClick={solicitarDocumentacion}
+              >
+                Solicitar documentación
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>{solicitud.nombreCompleto}</h1>
@@ -156,36 +198,28 @@ export default function SolicitudDetallePage() {
           </div>
 
           {/* TIMELINE */}
+
           <div className={styles.timeline}>
-            <div className={styles.timelineStep}>Inicio</div>
-            <div className={styles.timelineStep}>Documentación</div>
-            <div className={styles.timelineStep}>Dirección Médica</div>
-            <div className={styles.timelineStep}>Asesoría Jurídica</div>
-            <div className={styles.timelineStep}>Resolución</div>
+            <div className={styles.step}>Inicio</div>
+            <div className={styles.step}>Documentación</div>
+            <div className={styles.step}>Dirección Médica</div>
+            <div className={styles.step}>Asesoría Jurídica</div>
+            <div className={styles.step}>Resolución</div>
           </div>
         </div>
       </div>
 
       <div className={styles.detailGrid}>
-        {/* COLUMNA IZQUIERDA */}
+        {/* LEFT COLUMN */}
+
         <div className={styles.leftColumn}>
           <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <div className={styles.sectionTitle}>Documentación aportada</div>
-              <span className={styles.docCount}>
-                {solicitud.documentos?.length || 0} archivos
-              </span>
-            </div>
+            <div className={styles.sectionTitle}>Documentación aportada</div>
 
             <div className={styles.docsList}>
               {solicitud.documentos?.map((doc, index) => (
                 <div key={index} className={styles.docItem}>
-                  <div className={styles.docInfo}>
-                    <div className={styles.docName}>📄 {doc.nombre}</div>
-                    <div className={styles.docMeta}>
-                      {doc.subidoPor || "ASEGURADO"}
-                    </div>
-                  </div>
+                  <span>📄 {doc.nombre}</span>
 
                   <button
                     className={styles.docButton}
@@ -220,69 +254,69 @@ export default function SolicitudDetallePage() {
           </div>
 
           {/* ACTIVIDAD */}
+
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Actividad del caso</div>
 
             <div className={styles.activityFeed}>
-              {(solicitud.historial || [])
+              {solicitud.historial
                 .slice()
                 .reverse()
-                .map((entry, index) => (
+                .map((item, index) => (
                   <div key={index} className={styles.activityItem}>
-                    <div className={styles.activityDot}></div>
-
-                    <div className={styles.activityContent}>
-                      <strong>{entry.changedBy}</strong> cambió el estado a{" "}
-                      <b>{entry.estado}</b>
-                      {entry.comentario && (
-                        <div>
-                          Comentario: <b>{entry.comentario}</b>
-                        </div>
-                      )}
-                      <span className={styles.activityDate}>
-                        {entry.fecha &&
-                          new Date(entry.fecha).toLocaleDateString("es-ES")}
-                      </span>
-                    </div>
+                    <strong>{item.changedBy}</strong> cambió el estado a{" "}
+                    <b>{item.estado}</b>
+                    {item.comentario && (
+                      <div className={styles.notaBox}>
+                        Motivo: {item.comentario}
+                      </div>
+                    )}
                   </div>
                 ))}
             </div>
           </div>
         </div>
 
-        {/* COLUMNA DERECHA */}
+        {/* RIGHT COLUMN */}
+
         <div className={styles.rightColumn}>
+          {/* INFORMACION ASEGURADO */}
+
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Información del asegurado</div>
 
-            <div className={styles.row}>
+            <div>
               <strong>Nombre:</strong> {solicitud.nombreCompleto}
             </div>
 
-            <div className={styles.row}>
+            <div>
               <strong>Póliza:</strong> {solicitud.numeroPoliza}
             </div>
 
-            <div className={styles.row}>
+            <div>
               <strong>DNI:</strong> {solicitud.dni}
             </div>
           </div>
 
+          {/* INFORMACION MEDICA */}
+
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Información médica</div>
 
-            <div className={styles.row}>
-              <strong>Prueba:</strong> {solicitud.nombrePrueba}
+            <div>
+              <strong>Prueba:</strong> {solicitud.prueba}
             </div>
 
-            <div className={styles.row}>
+            <div>
               <strong>Especialidad:</strong> {solicitud.especialidad}
             </div>
 
-            <div className={styles.row}>
+            <div>
               <strong>Centro:</strong> {solicitud.centroMedico}
             </div>
           </div>
+
+          {/* ACCIONES */}
 
           {!["AUTORIZADA", "RECHAZADA"].includes(solicitud.estadoInterno) && (
             <div className={styles.section}>

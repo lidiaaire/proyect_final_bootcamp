@@ -42,94 +42,7 @@ const changeStatus = async (
     throw new Error("Solicitud no encontrada");
   }
 
-  const estadoActual = solicitud.estadoInterno;
-
-  const allowedNextStates = solicitudFlowRules[estadoActual];
-
-  if (!allowedNextStates || !allowedNextStates.includes(nuevoEstado)) {
-    throw new Error(
-      `Transición no permitida de ${estadoActual} a ${nuevoEstado}`,
-    );
-  }
-
-  if (estadoActual === "PENDIENTE_REVISION_PRESTACIONES") {
-    const expectedState =
-      solicitud.lastTechnicalDepartment === "DIRECCION_MEDICA"
-        ? "PENDIENTE_DIRECCION_MEDICA"
-        : "PENDIENTE_ASESORIA_JURIDICA";
-
-    if (nuevoEstado !== expectedState) {
-      throw new Error(
-        "Solo puede devolverse al departamento técnico que solicitó la documentación",
-      );
-    }
-  }
-
-  if (user.role === "PRESTACIONES") {
-    if (
-      ![
-        "PENDIENTE_DIRECCION_MEDICA",
-        "AUTORIZADA",
-        "RECHAZADA",
-        "PENDIENTE_REVISION_PRESTACIONES",
-        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-      ].includes(nuevoEstado)
-    ) {
-      throw new Error("Transición no permitida para PRESTACIONES");
-    }
-  }
-
-  if (user.role === "DIRECCION_MEDICA") {
-    if (
-      ![
-        "AUTORIZADA",
-        "RECHAZADA",
-        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-      ].includes(nuevoEstado)
-    ) {
-      throw new Error("Transición no permitida para DIRECCION_MEDICA");
-    }
-  }
-
-  if (user.role === "ASESORIA_JURIDICA") {
-    if (
-      ![
-        "AUTORIZADA",
-        "RECHAZADA",
-        "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-      ].includes(nuevoEstado)
-    ) {
-      throw new Error("Transición no permitida para ASESORIA_JURIDICA");
-    }
-  }
-
-  if (
-    nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO" &&
-    (user.role === "DIRECCION_MEDICA" ||
-      user.role === "ASESORIA_JURIDICA" ||
-      user.role === "PRESTACIONES")
-  ) {
-    solicitud.lastTechnicalDepartment = user.role;
-  }
-
   solicitud.estadoInterno = nuevoEstado;
-
-  solicitud.historial.push({
-    estado: nuevoEstado,
-    changedBy: user.role,
-    fecha: new Date(),
-    tipo:
-      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
-        ? "SOLICITUD_DOCUMENTACION"
-        : "CAMBIO_ESTADO",
-    documentosSolicitados:
-      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
-        ? docsSolicitados || []
-        : [],
-    comentario: comentarioDocs || "",
-  });
-
-  await solicitud.save();
 
   if (nuevoEstado === "PENDIENTE_INICIO_GESTION") {
     solicitud.currentDepartment = "PRESTACIONES";
@@ -151,11 +64,10 @@ const changeStatus = async (
     solicitud.currentDepartment = "PRESTACIONES";
   }
 
-  if (nuevoEstado === "AUTORIZADA" || nuevoEstado === "RECHAZADA") {
+  if (["AUTORIZADA", "RECHAZADA"].includes(nuevoEstado)) {
     solicitud.currentDepartment = null;
   }
 
-  // Registrar historial SIEMPRE
   solicitud.historial.push({
     estado: nuevoEstado,
     changedBy: user.role,
@@ -166,13 +78,12 @@ const changeStatus = async (
         : "CAMBIO_ESTADO",
     documentosSolicitados:
       nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
-        ? docsSolicitados || []
+        ? docsSolicitados
         : [],
-    comentario: comentarioDocs || "",
+    comentario: comentarioDocs,
   });
 
   await solicitud.save();
-
   return solicitud;
 };
 
