@@ -154,6 +154,253 @@
   border-top: 1px solid #f3f4f6;
 }
 
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.placeholder {
+  color: #777;
+  font-size: 14px;
+}
+
+.noteInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.docCount {
+  font-size: 13px;
+  background: #eef2ff;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.docsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.docItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.docLeft {
+  font-size: 14px;
+}
+
+.docRight {
+  font-size: 13px;
+  color: #666;
+}
+
+.emptyDocs {
+  font-size: 14px;
+  color: #888;
+}
+
+.docsActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.buttonSecondary {
+  background: #f3f4f6;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.buttonSecondary:hover {
+  background: #e5e7eb;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 25px 0 35px 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #777;
+  font-size: 14px;
+}
+
+.circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d1d5db;
+}
+
+.active .circle {
+  background: #2563eb;
+}
+
+.active span {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.activityFeed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.activityItem {
+  display: flex;
+  gap: 10px;
+}
+
+.activityDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2563eb;
+  margin-top: 6px;
+}
+
+.activityContent {
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.activityDate {
+  color: #888;
+}
+
+.activityText {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.notesFeed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.noteItem {
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.noteHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.noteDate {
+  color: #888;
+}
+
+.noteText {
+  font-size: 14px;
+}
+
+.noteInputBox {
+  display: flex;
+  gap: 10px;
+}
+
+.emptyNotes {
+  font-size: 14px;
+  color: #777;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 25px 0 30px 0;
+}
+
+.timelineStep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #777;
+}
+
+.timelineCircle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d1d5db;
+}
+
+.timelineActive {
+  background: #2563eb;
+}
+
+.timelineActive + span {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.docInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.docName {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.docMeta {
+  font-size: 12px;
+  color: #777;
+}
+
+.docButton {
+  background: #eef2ff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.docButton:hover {
+  background: #dbeafe;
+}
 /* ============================= */
 /* RESPONSIVE */
 /* ============================= */

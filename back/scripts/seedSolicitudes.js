@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 const Solicitud = require("../src/models/solicitudModel");
+const { generarDocumentos } = require("../src/mocks/generarDocumentos");
 require("dotenv").config();
 
 /* =================================
@@ -103,19 +104,21 @@ const generarSolicitudes = (cantidad) => {
   for (let i = 0; i < cantidad; i++) {
     const estado = generarEstadoRealista();
 
+    const nombrePrueba = faker.helpers.arrayElement([
+      "Resonancia Magnética",
+      "TAC",
+      "Ecografía",
+      "Radiografía",
+      "Prueba genética",
+    ]);
+
     solicitudes.push({
       numeroSolicitud: `SOL-${1000 + i}`,
       nombreCompleto: faker.person.fullName(),
       numeroPoliza: faker.finance.accountNumber(8),
       dni: faker.string.alphanumeric(8).toUpperCase(),
 
-      nombrePrueba: faker.helpers.arrayElement([
-        "Resonancia Magnética",
-        "TAC",
-        "Ecografía",
-        "Radiografía",
-        "Prueba genética",
-      ]),
+      nombrePrueba: nombrePrueba,
 
       especialidad: faker.helpers.arrayElement([
         "Traumatología",
@@ -126,8 +129,7 @@ const generarSolicitudes = (cantidad) => {
 
       centroMedico: faker.company.name(),
 
-      informeMedico: "informe.pdf",
-      volanteMedico: "volante.pdf",
+      documentos: generarDocumentos(nombrePrueba),
 
       estadoInterno: estado,
       currentDepartment: generarDepartamento(estado),

@@ -28,6 +28,16 @@ const solicitudSchema = new mongoose.Schema(
       required: true,
     },
 
+    documentos: [
+      {
+        nombre: String,
+        tipo: String,
+        subidoPor: String,
+        fecha: Date,
+        url: String,
+      },
+    ],
+
     especialidad: {
       type: String,
       required: true,
@@ -38,15 +48,6 @@ const solicitudSchema = new mongoose.Schema(
       required: true,
     },
 
-    informeMedico: {
-      type: String,
-      required: true,
-    },
-
-    volanteMedico: {
-      type: String,
-      required: true,
-    },
     estadoInterno: {
       type: String,
       enum: [
