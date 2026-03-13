@@ -22,7 +22,6 @@ export default function SolicitudDetallePage() {
   const [userRole, setUserRole] = useState("");
 
   const [showDocModal, setShowDocModal] = useState(false);
-  const [docsSolicitados, setDocsSolicitados] = useState([]);
   const [comentarioDocs, setComentarioDocs] = useState("");
 
   const [showDireccionModal, setShowDireccionModal] = useState(false);
@@ -63,29 +62,21 @@ export default function SolicitudDetallePage() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `http://localhost:4000/api/solicitudes/${id}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            nuevoEstado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-            comentarioDocs: comentarioDocs,
-            docsSolicitados: [],
-          }),
+      await fetch(`http://localhost:4000/api/solicitudes/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
-
-      const data = await response.json();
-
-      console.log("respuesta cambio estado:", data);
+        body: JSON.stringify({
+          nuevoEstado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
+          comentarioDocs: comentarioDocs,
+          docsSolicitados: [],
+        }),
+      });
 
       setShowDocModal(false);
       setComentarioDocs("");
-
       await fetchSolicitud();
     } catch (error) {
       console.error(error);
@@ -195,41 +186,10 @@ export default function SolicitudDetallePage() {
               {solicitud.estadoInterno}
             </span>
           </div>
-
-          {/* TIMELINE */}
-
-          <div className={styles.timeline}>
-            <div className={styles.timelineStep}>
-              <div className={styles.timelineCircle}></div>
-              <span>Inicio</span>
-            </div>
-
-            <div className={styles.timelineStep}>
-              <div className={styles.timelineCircle}></div>
-              <span>Documentación</span>
-            </div>
-
-            <div className={styles.timelineStep}>
-              <div className={styles.timelineCircle}></div>
-              <span>Dirección Médica</span>
-            </div>
-
-            <div className={styles.timelineStep}>
-              <div className={styles.timelineCircle}></div>
-              <span>Asesoría Jurídica</span>
-            </div>
-
-            <div className={styles.timelineStep}>
-              <div className={styles.timelineCircle}></div>
-              <span>Resolución</span>
-            </div>
-          </div>
         </div>
       </div>
 
       <div className={styles.detailGrid}>
-        {/* LEFT COLUMN */}
-
         <div className={styles.leftColumn}>
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Documentación aportada</div>
@@ -271,48 +231,43 @@ export default function SolicitudDetallePage() {
             </div>
           </div>
 
-          {/* ACTIVIDAD */}
-
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Actividad del caso</div>
 
             <div className={styles.activityFeed}>
               {solicitud.historial
-                .slice()
+                ?.slice()
                 .reverse()
                 .map((item, index) => (
                   <div key={index} className={styles.activityItem}>
                     <strong>{item.changedBy}</strong> cambió el estado a{" "}
                     <b>{item.estado}</b>
-                    {item.comentario && (
-                      <div className={styles.noteText}>
-                        Motivo: {item.comentario}
-                      </div>
-                    )}
                   </div>
                 ))}
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN */}
-
         <div className={styles.rightColumn}>
-          {/* NOTAS INTERNAS */}
-
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Notas internas</div>
 
             <div className={styles.notesFeed}>
               {solicitud.historial
-                ?.filter((item) => item.comentario)
+                ?.filter(
+                  (item) => item.comentario && item.comentario.trim() !== "",
+                )
                 .slice()
                 .reverse()
                 .map((item, index) => (
                   <div key={index} className={styles.noteItem}>
                     <div className={styles.noteHeader}>{item.changedBy}</div>
 
-                    <div className={styles.noteText}>{item.comentario}</div>
+                    <div className={styles.noteText}>
+                      solicitó documentación al asegurado:
+                    </div>
+
+                    <div className={styles.noteText}>"{item.comentario}"</div>
 
                     <div className={styles.noteDate}>
                       {new Date(item.fecha).toLocaleDateString()}
@@ -322,23 +277,21 @@ export default function SolicitudDetallePage() {
             </div>
           </div>
 
-          {/* INFORMACION ASEGURADO */}
-
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Información del asegurado</div>
 
             <div>
               <strong>Nombre:</strong> {solicitud.nombreCompleto}
             </div>
+
             <div>
               <strong>Póliza:</strong> {solicitud.numeroPoliza}
             </div>
+
             <div>
               <strong>DNI:</strong> {solicitud.dni}
             </div>
           </div>
-
-          {/* INFORMACION MEDICA */}
 
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Información médica</div>
@@ -346,15 +299,15 @@ export default function SolicitudDetallePage() {
             <div>
               <strong>Prueba:</strong> {solicitud.prueba}
             </div>
+
             <div>
               <strong>Especialidad:</strong> {solicitud.especialidad}
             </div>
+
             <div>
               <strong>Centro:</strong> {solicitud.centroMedico}
             </div>
           </div>
-
-          {/* ACCIONES */}
 
           {!["AUTORIZADA", "RECHAZADA"].includes(solicitud.estadoInterno) && (
             <div className={styles.section}>

@@ -34,7 +34,7 @@ const changeStatus = async (
   nuevoEstado,
   user,
   docsSolicitados = [],
-  comentarioDocs = "",
+  comentario = "",
 ) => {
   const solicitud = await Solicitud.findById(solicitudId);
 
@@ -68,6 +68,7 @@ const changeStatus = async (
     solicitud.currentDepartment = null;
   }
 
+  console.log("comentario recibido:", comentario);
   solicitud.historial.push({
     estado: nuevoEstado,
     changedBy: user.role,
@@ -80,7 +81,7 @@ const changeStatus = async (
       nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
         ? docsSolicitados
         : [],
-    comentario: comentarioDocs,
+    comentario: comentario,
   });
 
   await solicitud.save();
