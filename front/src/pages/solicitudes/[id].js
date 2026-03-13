@@ -160,7 +160,6 @@ export default function SolicitudDetallePage() {
               placeholder="Indica el motivo o documentación requerida"
               value={comentarioDocs}
               onChange={(e) => setComentarioDocs(e.target.value)}
-              className={styles.textarea}
             />
 
             <div className={styles.modalActions}>
@@ -200,11 +199,30 @@ export default function SolicitudDetallePage() {
           {/* TIMELINE */}
 
           <div className={styles.timeline}>
-            <div className={styles.step}>Inicio</div>
-            <div className={styles.step}>Documentación</div>
-            <div className={styles.step}>Dirección Médica</div>
-            <div className={styles.step}>Asesoría Jurídica</div>
-            <div className={styles.step}>Resolución</div>
+            <div className={styles.timelineStep}>
+              <div className={styles.timelineCircle}></div>
+              <span>Inicio</span>
+            </div>
+
+            <div className={styles.timelineStep}>
+              <div className={styles.timelineCircle}></div>
+              <span>Documentación</span>
+            </div>
+
+            <div className={styles.timelineStep}>
+              <div className={styles.timelineCircle}></div>
+              <span>Dirección Médica</span>
+            </div>
+
+            <div className={styles.timelineStep}>
+              <div className={styles.timelineCircle}></div>
+              <span>Asesoría Jurídica</span>
+            </div>
+
+            <div className={styles.timelineStep}>
+              <div className={styles.timelineCircle}></div>
+              <span>Resolución</span>
+            </div>
           </div>
         </div>
       </div>
@@ -219,7 +237,7 @@ export default function SolicitudDetallePage() {
             <div className={styles.docsList}>
               {solicitud.documentos?.map((doc, index) => (
                 <div key={index} className={styles.docItem}>
-                  <span>📄 {doc.nombre}</span>
+                  <span>{doc.nombre}</span>
 
                   <button
                     className={styles.docButton}
@@ -267,7 +285,7 @@ export default function SolicitudDetallePage() {
                     <strong>{item.changedBy}</strong> cambió el estado a{" "}
                     <b>{item.estado}</b>
                     {item.comentario && (
-                      <div className={styles.notaBox}>
+                      <div className={styles.noteText}>
                         Motivo: {item.comentario}
                       </div>
                     )}
@@ -280,6 +298,30 @@ export default function SolicitudDetallePage() {
         {/* RIGHT COLUMN */}
 
         <div className={styles.rightColumn}>
+          {/* NOTAS INTERNAS */}
+
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Notas internas</div>
+
+            <div className={styles.notesFeed}>
+              {solicitud.historial
+                ?.filter((item) => item.comentario)
+                .slice()
+                .reverse()
+                .map((item, index) => (
+                  <div key={index} className={styles.noteItem}>
+                    <div className={styles.noteHeader}>{item.changedBy}</div>
+
+                    <div className={styles.noteText}>{item.comentario}</div>
+
+                    <div className={styles.noteDate}>
+                      {new Date(item.fecha).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
           {/* INFORMACION ASEGURADO */}
 
           <div className={styles.section}>
@@ -288,11 +330,9 @@ export default function SolicitudDetallePage() {
             <div>
               <strong>Nombre:</strong> {solicitud.nombreCompleto}
             </div>
-
             <div>
               <strong>Póliza:</strong> {solicitud.numeroPoliza}
             </div>
-
             <div>
               <strong>DNI:</strong> {solicitud.dni}
             </div>
@@ -306,11 +346,9 @@ export default function SolicitudDetallePage() {
             <div>
               <strong>Prueba:</strong> {solicitud.prueba}
             </div>
-
             <div>
               <strong>Especialidad:</strong> {solicitud.especialidad}
             </div>
-
             <div>
               <strong>Centro:</strong> {solicitud.centroMedico}
             </div>
@@ -322,19 +360,21 @@ export default function SolicitudDetallePage() {
             <div className={styles.section}>
               <div className={styles.sectionTitle}>Acciones</div>
 
-              <button
-                className={`${styles.button} ${styles.buttonSuccess}`}
-                onClick={autorizarSolicitud}
-              >
-                Autorizar
-              </button>
+              <div className={styles.actions}>
+                <button
+                  className={`${styles.button} ${styles.buttonPrimary}`}
+                  onClick={autorizarSolicitud}
+                >
+                  Autorizar
+                </button>
 
-              <button
-                className={`${styles.button} ${styles.buttonDanger}`}
-                onClick={rechazarSolicitud}
-              >
-                Rechazar
-              </button>
+                <button
+                  className={`${styles.button} ${styles.buttonDanger}`}
+                  onClick={rechazarSolicitud}
+                >
+                  Rechazar
+                </button>
+              </div>
             </div>
           )}
         </div>
