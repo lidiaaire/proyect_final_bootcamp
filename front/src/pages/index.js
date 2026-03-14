@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import { getSolicitudes } from "@/api/solicitudes";
-import MainLayout from "@/components/layout/MainLayout/MainLayout";
 import KpiResumen from "@/components/dashboard/KpiResumen/KpiResumen";
 import styles from "@/styles/Home.module.css";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
@@ -119,89 +118,86 @@ export default function Home() {
     .slice(0, 5);
 
   return (
-    <MainLayout solicitudesCount={solicitudes.length}>
-      <div className={styles.dashboardGrid}>
-        {/* COLUMNA IZQUIERDA */}
-        <div className={styles.dashboardMain}>
-          {/* SALUDO */}
-          <div className={styles.welcomeCard}>
-            <div className={styles.welcomeText}>
-              <h3>Hola María</h3>
+    <div className={styles.dashboardGrid}>
+      {/* COLUMNA IZQUIERDA */}
+      <div className={styles.dashboardMain}>
+        {/* SALUDO */}
+        <div className={styles.welcomeCard}>
+          <div className={styles.welcomeText}>
+            <h3>Hola María</h3>
 
-              <p>
-                Tienes <strong>{solicitudes.length}</strong> solicitudes
-                activas.
-                <br />
-                Revisa el estado de las autorizaciones.
-              </p>
-            </div>
-
-            <Image
-              src="/illustrations/medical-team-2.png"
-              alt="Equipo médico"
-              width={320}
-              height={220}
-              priority
-              className={styles.welcomeIllustration}
-            />
+            <p>
+              Tienes <strong>{solicitudes.length}</strong> solicitudes activas.
+              <br />
+              Revisa el estado de las autorizaciones.
+            </p>
           </div>
 
-          {/* KPIs */}
-          <div className={styles.dashboardCard}>
-            <KpiResumen
-              solicitudes={solicitudes}
-              filtroEstado={filtroEstado}
-              setFiltroEstado={setFiltroEstado}
-              pendientesAntiguos={totalPendientesAntiguos}
-            />
-          </div>
-
-          {/* ÚLTIMAS SOLICITUDES */}
-          <div className={styles.recentBlock}>
-            <div className={styles.recentHeader}>
-              <h3>Últimas solicitudes</h3>
-            </div>
-
-            <table className={styles.recentTable}>
-              <thead>
-                <tr>
-                  <th>Solicitud</th>
-                  <th>Paciente</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {solicitudesFiltradas.slice(0, 5).map((s) => (
-                  <tr key={s._id}>
-                    <td className={styles.idCell}>
-                      <Link href={`/solicitudes/${s._id}`}>
-                        {s.numeroSolicitud}
-                      </Link>
-                    </td>
-
-                    <td>{s.nombreCompleto || "—"}</td>
-
-                    <td>
-                      <StatusBadge status={s.estadoInterno} />
-                    </td>
-
-                    <td>{new Date(s.createdAt).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Image
+            src="/illustrations/medical-team-2.png"
+            alt="Equipo médico"
+            width={320}
+            height={220}
+            priority
+            className={styles.welcomeIllustration}
+          />
         </div>
 
-        {/* SIDEBAR DERECHA */}
-        <div className={styles.dashboardSide}>
-          <NotificationsWidget actividad={actividadReciente} />
+        {/* KPIs */}
+        <div className={styles.dashboardCard}>
+          <KpiResumen
+            solicitudes={solicitudes}
+            filtroEstado={filtroEstado}
+            setFiltroEstado={setFiltroEstado}
+            pendientesAntiguos={totalPendientesAntiguos}
+          />
+        </div>
 
-          <TeamWidget />
+        {/* ÚLTIMAS SOLICITUDES */}
+        <div className={styles.recentBlock}>
+          <div className={styles.recentHeader}>
+            <h3>Últimas solicitudes</h3>
+          </div>
+
+          <table className={styles.recentTable}>
+            <thead>
+              <tr>
+                <th>Solicitud</th>
+                <th>Paciente</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {solicitudesFiltradas.slice(0, 5).map((s) => (
+                <tr key={s._id}>
+                  <td className={styles.idCell}>
+                    <Link href={`/solicitudes/${s._id}`}>
+                      {s.numeroSolicitud}
+                    </Link>
+                  </td>
+
+                  <td>{s.nombreCompleto || "—"}</td>
+
+                  <td>
+                    <StatusBadge status={s.estadoInterno} />
+                  </td>
+
+                  <td>{new Date(s.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-    </MainLayout>
+
+      {/* SIDEBAR DERECHA */}
+      <div className={styles.dashboardSide}>
+        <NotificationsWidget actividad={actividadReciente} />
+
+        <TeamWidget />
+      </div>
+    </div>
   );
 }

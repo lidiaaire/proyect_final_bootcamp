@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/SolicitudDetalle.module.css";
-import MainLayout from "../../components/layout/MainLayout/MainLayout";
 
 function getRoleFromToken(token) {
   try {
@@ -183,7 +182,7 @@ export default function SolicitudDetallePage() {
   if (!solicitud) return <p>Cargando...</p>;
 
   return (
-    <MainLayout>
+    <>
       {/* MODAL SOLICITAR DOCUMENTACIÓN */}
       {showDocModal && (
         <div className={styles.modalOverlay}>
@@ -435,6 +434,6 @@ export default function SolicitudDetallePage() {
           )}
         </div>
       </div>
-    </MainLayout>
+    </>
   );
 }

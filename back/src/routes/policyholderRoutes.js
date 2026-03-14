@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { policyholders } = require("../mocks/policyholders");
+const {
+  getPolicyholders,
+  getPolicyholderById,
+} = require("../controllers/policyholdersController");
 
-router.get("/", (req, res) => {
-  res.json(policyholders);
-});
+router.get("/", getPolicyholders);
+router.get("/:id", getPolicyholderById);
 
 module.exports = router;

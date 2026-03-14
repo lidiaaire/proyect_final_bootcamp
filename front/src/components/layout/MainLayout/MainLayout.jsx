@@ -86,7 +86,7 @@ export default function MainLayout({ children, solicitudesCount = 0 }) {
             <div className={styles.section}>
               <span className={styles.sectionTitle}>GESTIÓN</span>
 
-              <Link href="#" className={styles.navItem}>
+              <Link href="/policyholders" className={styles.navItem}>
                 <FolderIcon className={styles.icon} />
                 <span>Asegurados</span>
               </Link>

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import styles from "../../styles/PolicyholderProfile.module.css";
 
 function calculateAge(dateOfBirth) {
@@ -17,126 +17,105 @@ function calculateAge(dateOfBirth) {
   return age;
 }
 
-function calculatePolicyTenure(startDate) {
-  const today = new Date();
-  const start = new Date(startDate);
-
-  let years = today.getFullYear() - start.getFullYear();
-  const m = today.getMonth() - start.getMonth();
-
-  if (m < 0 || (m === 0 && today.getDate() < start.getDate())) {
-    years--;
-  }
-
-  return years;
-}
-
 export default function PolicyholderProfile() {
   const router = useRouter();
   const { id } = router.query;
 
-  const policyholder = {
-    id: id,
-    name: "María López",
-    dni: "45034231",
-    dateOfBirth: "1983-06-12",
-    policyType: "Completa",
-    policyStartDate: "2019-03-15",
-    phone: "+34 600 123 456",
-    email: "maria.lopez@email.com",
-    address: "Calle Gran Vía 12, Madrid",
-  };
+  const [policyholder, setPolicyholder] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const age = calculateAge(policyholder.dateOfBirth);
-  const tenure = calculatePolicyTenure(policyholder.policyStartDate);
+  useEffect(() => {
+    if (!router.isReady) return;
 
-  const [noteInput, setNoteInput] = useState("");
+    async function loadData() {
+      try {
+        const resPolicyholder = await fetch(
+          `http://localhost:4000/policyholders/${id}`,
+        );
+        const policyholderData = await resPolicyholder.json();
 
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      text: "El asegurado llama preguntando estado de la autorización",
-      date: "2026-03-12",
-      author: "Carlos",
-    },
-    {
-      id: 2,
-      text: "Documentación médica solicitada",
-      date: "2026-03-11",
-      author: "Laura",
-    },
-  ]);
+        const resRequests = await fetch(
+          "http://localhost:4000/api/solicitudes",
+        );
+        const requestsData = await resRequests.json();
 
-  function addNote() {
-    if (!noteInput.trim()) return;
+        const filteredRequests = requestsData.filter(
+          (req) => String(req.policyholderId) === String(id),
+        );
 
-    const newNote = {
-      id: Date.now(),
-      text: noteInput,
-      date: new Date().toISOString().split("T")[0],
-      author: "Gestor",
-    };
+        setPolicyholder(policyholderData);
+        setRequests(filteredRequests);
+      } catch (error) {
+        console.error("Error cargando perfil:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    setNotes([newNote, ...notes]);
-    setNoteInput("");
+    loadData();
+  }, [router.isReady, id]);
+
+  function statusClass(status) {
+    if (!status) return styles.badge;
+    const s = status.toLowerCase();
+    if (s.includes("autoriz")) return styles.badgeApproved;
+    if (s.includes("rechaz")) return styles.badgeRejected;
+    if (s.includes("doc")) return styles.badgeDocs;
+    return styles.badge;
   }
 
-  const requests = [
-    {
-      id: "10234",
-      policyholderId: "823456",
-      service: "Resonancia magnética",
-      date: "2025-11-03",
-      status: "AUTORIZADA",
-    },
-    {
-      id: "10211",
-      policyholderId: "823456",
-      service: "Consulta traumatología",
-      date: "2025-10-20",
-      status: "RECHAZADA",
-    },
-    {
-      id: "10198",
-      policyholderId: "823456",
-      service: "Fisioterapia",
-      date: "2025-09-15",
-      status: "AUTORIZADA",
-    },
-  ];
+  if (loading) return <div className={styles.loading}>Cargando perfil...</div>;
+  if (!policyholder) return <div className={styles.loading}>No encontrado</div>;
 
-  const claimsHistory = requests.filter((req) => req.policyholderId === id);
+  const age = calculateAge(policyholder.dateOfBirth);
+
+  const total = requests.length;
+  const approved = requests.filter((r) =>
+    r.status?.toLowerCase().includes("autoriz"),
+  ).length;
+  const rejected = requests.filter((r) =>
+    r.status?.toLowerCase().includes("rechaz"),
+  ).length;
 
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.profileHeader}>
+    <div className={styles.container}>
+      <div className={styles.header}>
         <div className={styles.avatar}>{policyholder.name.charAt(0)}</div>
 
         <div>
-          <h1 className={styles.name}>{policyholder.name}</h1>
-
-          <div className={styles.metaRow}>
-            <span>DNI: {policyholder.dni}</span>
-            <span>Póliza: {policyholder.id}</span>
-            <span>Edad: {age}</span>
-            <span>Antigüedad: {tenure} años</span>
-            <span>Tipo: {policyholder.policyType}</span>
+          <h1>{policyholder.name}</h1>
+          <div className={styles.meta}>
+            DNI: {policyholder.dni} · Póliza: {policyholder.id} · Edad: {age} ·
+            Tipo: {policyholder.policyType}
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Link href={`/requests/new?policyholderId=${policyholder.id}`}>
-            <button className={styles.newRequestButton}>
-              + Nueva solicitud
-            </button>
-          </Link>
+        <Link href={`/requests/new?policyholderId=${policyholder.id}`}>
+          <button className={styles.newButton}>+ Nueva solicitud</button>
+        </Link>
+      </div>
+
+      <div className={styles.stats}>
+        <div className={styles.stat}>
+          <div className={styles.statNumber}>{total}</div>
+          <div className={styles.statLabel}>Solicitudes</div>
+        </div>
+
+        <div className={styles.stat}>
+          <div className={styles.statNumber}>{approved}</div>
+          <div className={styles.statLabel}>Autorizadas</div>
+        </div>
+
+        <div className={styles.stat}>
+          <div className={styles.statNumber}>{rejected}</div>
+          <div className={styles.statLabel}>Rechazadas</div>
         </div>
       </div>
 
-      <div className={styles.profileGrid}>
+      <div className={styles.grid}>
         <div className={styles.card}>
-          <h2>Datos del asegurado</h2>
-
+          <h3>Datos del asegurado</h3>
           <p>
             <strong>Teléfono:</strong> {policyholder.phone}
           </p>
@@ -147,43 +126,12 @@ export default function PolicyholderProfile() {
             <strong>Dirección:</strong> {policyholder.address}
           </p>
         </div>
-
-        <div className={styles.card}>
-          <h2>Notas internas</h2>
-
-          <div className={styles.noteInputRow}>
-            <textarea
-              placeholder="Añadir nota interna..."
-              rows="3"
-              value={noteInput}
-              onChange={(e) => setNoteInput(e.target.value)}
-              className={styles.textarea}
-            />
-
-            <button className={styles.addNoteButton} onClick={addNote}>
-              Añadir
-            </button>
-          </div>
-
-          <div className={styles.notesTimeline}>
-            {notes.map((note) => (
-              <div key={note.id} className={styles.noteItem}>
-                <div className={styles.noteHeader}>
-                  <span>{note.date}</span>
-                  <span>{note.author}</span>
-                </div>
-
-                <p>{note.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
-      <div className={styles.claimsSection}>
-        <h2>Claims history</h2>
+      <div className={styles.tableCard}>
+        <h3>Historial de solicitudes</h3>
 
-        <table className={styles.claimsTable}>
+        <table className={styles.table}>
           <thead>
             <tr>
               <th>ID</th>
@@ -195,15 +143,18 @@ export default function PolicyholderProfile() {
           </thead>
 
           <tbody>
-            {claimsHistory.map((claim) => (
-              <tr key={claim.id}>
-                <td>{claim.id}</td>
-                <td>{claim.service}</td>
-                <td>{claim.date}</td>
-                <td>{claim.status}</td>
+            {requests.map((r) => (
+              <tr key={r._id || r.id}>
+                <td>{r._id || r.id}</td>
+                <td>{r.service}</td>
+                <td>{r.date}</td>
 
                 <td>
-                  <Link href={`/requests/${claim.id}`}>Ver solicitud</Link>
+                  <span className={statusClass(r.status)}>{r.status}</span>
+                </td>
+
+                <td>
+                  <Link href={`/solicitudes/${r._id || r.id}`}>Ver</Link>
                 </td>
               </tr>
             ))}

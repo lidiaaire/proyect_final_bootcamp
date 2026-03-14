@@ -1,72 +1,38 @@
-const { createSolicitud } = require("../services/solicitudService");
-const { changeStatus } = require("../services/solicitudService");
-const { getSolicitudesByRole } = require("../services/solicitudService");
-const Solicitud = require("../models/solicitudModel");
+const requests = require("../mocks/requests");
 
-const createSolicitudController = async (req, res) => {
+const getSolicitudesController = (req, res) => {
   try {
-    const solicitud = await createSolicitud(req.body, req.user);
-
-    res.status(201).json(solicitud);
+    res.json(requests);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Error obteniendo solicitudes" });
   }
 };
 
-const changeStatusController = async (req, res) => {
+const getSolicitudByIdController = (req, res) => {
   try {
-    const { id } = req.params;
-    const { nuevoEstado, docsSolicitados, comentarioDocs, comentario } =
-      req.body;
-
-    const comentarioFinal = comentarioDocs || comentario || "";
-
-    const solicitud = await changeStatus(
-      id,
-      nuevoEstado,
-      req.user,
-      docsSolicitados || [],
-      comentarioFinal,
-    );
-
-    res.status(200).json(solicitud);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-const getSolicitudesController = async (req, res) => {
-  try {
-    const solicitudes = await getSolicitudesByRole(req.user);
-    res.status(200).json(solicitudes);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-const getSolicitudByIdController = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const solicitud = await Solicitud.findById(id);
+    const solicitud = requests.find((r) => r.id === req.params.id);
 
     if (!solicitud) {
-      return res.status(404).json({
-        message: "Solicitud no encontrada",
-      });
+      return res.status(404).json({ message: "Solicitud no encontrada" });
     }
 
-    return res.status(200).json(solicitud);
+    res.json(solicitud);
   } catch (error) {
-    return res.status(500).json({
-      message: "Error al obtener la solicitud",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Error obteniendo solicitud" });
   }
 };
+
+const createSolicitudController = (req, res) => {
+  res.json({ message: "Crear solicitud (mock)" });
+};
+
+const changeStatusController = (req, res) => {
+  res.json({ message: "Cambio de estado (mock)" });
+};
+
 module.exports = {
-  createSolicitudController,
-  changeStatusController,
   getSolicitudesController,
   getSolicitudByIdController,
+  createSolicitudController,
+  changeStatusController,
 };

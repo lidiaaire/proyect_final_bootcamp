@@ -38,15 +38,16 @@ router.post(
 
 /* ===============================
    LISTAR SOLICITUDES
+   (sin token para poder usarse desde frontend con mocks)
 ================================ */
 
-router.get("/", verifyToken, getSolicitudesController);
+router.get("/", getSolicitudesController);
 
 /* ===============================
    OBTENER SOLICITUD POR ID
 ================================ */
 
-router.get("/:id", verifyToken, getSolicitudByIdController);
+router.get("/:id", getSolicitudByIdController);
 
 /* ===============================
    CAMBIAR ESTADO

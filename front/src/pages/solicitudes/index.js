@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import MainLayout from "@/components/layout/MainLayout/MainLayout";
 import SolicitudesList from "@/components/solicitudes/SolicitudesList/SolicitudesList";
 import SolicitudPreview from "@/components/solicitudes/SolicitudPreview/SolicitudPreview";
 import { getSolicitudes } from "@/api/solicitudes";
@@ -44,34 +43,32 @@ export default function Solicitudes() {
   if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
 
   return (
-    <MainLayout>
-      <div className={styles.container}>
-        <h2>Solicitudes</h2>
+    <div className={styles.container}>
+      <h2>Solicitudes</h2>
 
-        <div
-          className={
-            solicitudSeleccionada ? styles.splitLayout : styles.fullLayout
-          }
-        >
-          <div className={styles.listaSolicitudes}>
-            <SolicitudesList
-              solicitudes={solicitudes}
-              filtroEstado={filtroEstado}
-              setFiltroEstado={setFiltroEstado}
-              solicitudSeleccionada={solicitudSeleccionada}
-              setSolicitudSeleccionada={setSolicitudSeleccionada}
-              selectedSolicitudId={selectedSolicitudId}
-              setSelectedSolicitudId={setSelectedSolicitudId}
-            />
-          </div>
-
-          {solicitudSeleccionada && (
-            <div className={styles.detalleSolicitud}>
-              <SolicitudPreview solicitud={solicitudSeleccionada} />
-            </div>
-          )}
+      <div
+        className={
+          solicitudSeleccionada ? styles.splitLayout : styles.fullLayout
+        }
+      >
+        <div className={styles.listaSolicitudes}>
+          <SolicitudesList
+            solicitudes={solicitudes}
+            filtroEstado={filtroEstado}
+            setFiltroEstado={setFiltroEstado}
+            solicitudSeleccionada={solicitudSeleccionada}
+            setSolicitudSeleccionada={setSolicitudSeleccionada}
+            selectedSolicitudId={selectedSolicitudId}
+            setSelectedSolicitudId={setSelectedSolicitudId}
+          />
         </div>
+
+        {solicitudSeleccionada && (
+          <div className={styles.detalleSolicitud}>
+            <SolicitudPreview solicitud={solicitudSeleccionada} />
+          </div>
+        )}
       </div>
-    </MainLayout>
+    </div>
   );
 }
