@@ -3,20 +3,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/PolicyholderProfile.module.css";
 
-function calculateAge(dateOfBirth) {
-  const today = new Date();
-  const birthDate = new Date(dateOfBirth);
-
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-
-  return age;
-}
-
 export default function PolicyholderProfile() {
   const router = useRouter();
   const { id } = router.query;
@@ -24,6 +10,9 @@ export default function PolicyholderProfile() {
   const [policyholder, setPolicyholder] = useState(null);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -33,19 +22,26 @@ export default function PolicyholderProfile() {
         const resPolicyholder = await fetch(
           `http://localhost:4000/policyholders/${id}`,
         );
+
         const policyholderData = await resPolicyholder.json();
+        console.log(policyholderData);
 
         const resRequests = await fetch(
           "http://localhost:4000/api/solicitudes",
         );
         const requestsData = await resRequests.json();
 
-        const filteredRequests = requestsData.filter(
+        const requestsArray = Array.isArray(requestsData)
+          ? requestsData
+          : requestsData.data || [];
+
+        const filteredRequests = requestsArray.filter(
           (req) => String(req.policyholderId) === String(id),
         );
 
         setPolicyholder(policyholderData);
         setRequests(filteredRequests);
+        setNotes(policyholderData.internalNotes || []);
       } catch (error) {
         console.error("Error cargando perfil:", error);
       } finally {
@@ -56,66 +52,70 @@ export default function PolicyholderProfile() {
     loadData();
   }, [router.isReady, id]);
 
-  function statusClass(status) {
-    if (!status) return styles.badge;
-    const s = status.toLowerCase();
-    if (s.includes("autoriz")) return styles.badgeApproved;
-    if (s.includes("rechaz")) return styles.badgeRejected;
-    if (s.includes("doc")) return styles.badgeDocs;
-    return styles.badge;
+  function addNote() {
+    if (!newNote.trim()) return;
+
+    const note = {
+      text: newNote,
+      date: new Date().toLocaleDateString(),
+      author: "Usuario",
+    };
+
+    setNotes([note, ...notes]);
+    setNewNote("");
   }
 
-  if (loading) return <div className={styles.loading}>Cargando perfil...</div>;
-  if (!policyholder) return <div className={styles.loading}>No encontrado</div>;
+  function calculatePolicyYears(startDate) {
+    const start = new Date(startDate);
+    const today = new Date();
 
-  const age = calculateAge(policyholder.dateOfBirth);
+    let years = today.getFullYear() - start.getFullYear();
 
-  const total = requests.length;
-  const approved = requests.filter((r) =>
-    r.status?.toLowerCase().includes("autoriz"),
-  ).length;
-  const rejected = requests.filter((r) =>
-    r.status?.toLowerCase().includes("rechaz"),
-  ).length;
+    const monthDiff = today.getMonth() - start.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < start.getDate())
+    ) {
+      years--;
+    }
+
+    return years;
+  }
+
+  const policyYears = policyholder
+    ? calculatePolicyYears(policyholder.policyStartDate)
+    : null;
+
+  if (loading) return <div className={styles.loading}>Cargando...</div>;
+  if (!policyholder) return <div>No encontrado</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.avatar}>{policyholder.name.charAt(0)}</div>
+        <div className={styles.profileInfo}>
+          <div className={styles.avatar}>{policyholder.name?.charAt(0)}</div>
 
-        <div>
-          <h1>{policyholder.name}</h1>
-          <div className={styles.meta}>
-            DNI: {policyholder.dni} · Póliza: {policyholder.id} · Edad: {age} ·
-            Tipo: {policyholder.policyType}
+          <div>
+            <h1>{policyholder.name}</h1>
+            <div className={styles.meta}>
+              DNI: {policyholder.dni} · Póliza: {policyholder.id} · Antigüedad:{" "}
+              {policyYears} años · Tipo: {policyholder.policyType}
+            </div>
           </div>
         </div>
 
-        <Link href={`/requests/new?policyholderId=${policyholder.id}`}>
-          <button className={styles.newButton}>+ Nueva solicitud</button>
-        </Link>
-      </div>
-
-      <div className={styles.stats}>
-        <div className={styles.stat}>
-          <div className={styles.statNumber}>{total}</div>
-          <div className={styles.statLabel}>Solicitudes</div>
-        </div>
-
-        <div className={styles.stat}>
-          <div className={styles.statNumber}>{approved}</div>
-          <div className={styles.statLabel}>Autorizadas</div>
-        </div>
-
-        <div className={styles.stat}>
-          <div className={styles.statNumber}>{rejected}</div>
-          <div className={styles.statLabel}>Rechazadas</div>
+        <div className={styles.headerActions}>
+          <Link href={`/requests/new?policyholderId=${policyholder.id}`}>
+            <button className={styles.primaryButton}>+ Nueva solicitud</button>
+          </Link>
         </div>
       </div>
 
-      <div className={styles.grid}>
+      <div className={styles.topGrid}>
         <div className={styles.card}>
           <h3>Datos del asegurado</h3>
+
           <p>
             <strong>Teléfono:</strong> {policyholder.phone}
           </p>
@@ -125,6 +125,30 @@ export default function PolicyholderProfile() {
           <p>
             <strong>Dirección:</strong> {policyholder.address}
           </p>
+        </div>
+
+        <div className={styles.card}>
+          <h3>Notas internas</h3>
+
+          <div className={styles.notesList}>
+            {notes.map((note, index) => (
+              <div key={index} className={styles.noteItem}>
+                <div className={styles.noteDate}>
+                  {note.date} — {note.author}
+                </div>
+                <div>{note.text}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.noteInput}>
+            <input
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Añadir nota interna..."
+            />
+            <button onClick={addNote}>Añadir</button>
+          </div>
         </div>
       </div>
 
@@ -138,26 +162,46 @@ export default function PolicyholderProfile() {
               <th>Servicio</th>
               <th>Fecha</th>
               <th>Estado</th>
-              <th></th>
+              <th>Acción</th>
             </tr>
           </thead>
 
           <tbody>
-            {requests.map((r) => (
-              <tr key={r._id || r.id}>
-                <td>{r._id || r.id}</td>
-                <td>{r.service}</td>
-                <td>{r.date}</td>
+            {requests.map((r) => {
+              const requestId = r._id || r.id;
 
-                <td>
-                  <span className={statusClass(r.status)}>{r.status}</span>
-                </td>
+              return (
+                <tr key={requestId}>
+                  <td>{requestId}</td>
 
-                <td>
-                  <Link href={`/solicitudes/${r._id || r.id}`}>Ver</Link>
-                </td>
-              </tr>
-            ))}
+                  <td>{r.service}</td>
+
+                  <td>{r.date}</td>
+
+                  <td>
+                    <span
+                      className={`${styles.badge} ${
+                        r.status === "AUTORIZADA"
+                          ? styles.badgeAutorizada
+                          : r.status === "RECHAZADA"
+                            ? styles.badgeRechazada
+                            : styles.badgePendiente
+                      }`}
+                    >
+                      {r.status}
+                    </span>
+                  </td>
+
+                  <td>
+                    <Link href={`/solicitudes/${requestId}`}>
+                      <button className={styles.viewButton}>
+                        Ver solicitud
+                      </button>
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
