@@ -7,6 +7,7 @@ const connectDB = require("./configuration/db");
 const authRoutes = require("./routes/authRoutes");
 const { verifyToken } = require("./middlewares/authMiddleware");
 const solicitudRoutes = require("./routes/solicitudRoutes");
+const policyholderRoutes = require("./routes/policyholderRoutes");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/solicitudes", solicitudRoutes);
+app.use("/policyholders", policyholderRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "API Autorizaciones funcionando" });
