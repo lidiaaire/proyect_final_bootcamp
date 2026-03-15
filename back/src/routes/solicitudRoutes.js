@@ -7,53 +7,24 @@ const {
 } = require("../middlewares/authMiddleware");
 
 const {
-  createSolicitudController,
-  changeStatusController,
-  getSolicitudesController,
-  getSolicitudByIdController,
-} = require("../controllers/solicitudController");
-
-const {
-  solicitarDocumentacion,
-} = require("../controllers/solicitarDocumentacionController");
-
-const {
-  rechazarSolicitud,
-} = require("../controllers/rechazarSolicitudController");
-
-const {
-  autorizarSolicitud,
-} = require("../controllers/autorizarSolicitudController");
-
-/* ===============================
-   CREAR SOLICITUD
-================================ */
-
-router.post(
-  "/",
-  verifyToken,
-  authorizeRoles("PRESTACIONES", "ADMIN"),
-  createSolicitudController,
-);
+  getRequests,
+  getRequestById,
+  authorizeRequest,
+  rejectRequest,
+  requestDocumentation,
+} = require("../controllers/requestController");
 
 /* ===============================
    LISTAR SOLICITUDES
-   (sin token para poder usarse desde frontend con mocks)
 ================================ */
 
-router.get("/", getSolicitudesController);
+router.get("/", getRequests);
 
 /* ===============================
    OBTENER SOLICITUD POR ID
 ================================ */
 
-router.get("/:id", getSolicitudByIdController);
-
-/* ===============================
-   CAMBIAR ESTADO
-================================ */
-
-router.patch("/:id/status", verifyToken, changeStatusController);
+router.get("/:id", getRequestById);
 
 /* ===============================
    SOLICITAR DOCUMENTACIÓN
@@ -63,7 +34,7 @@ router.post(
   "/:id/solicitar-documentacion",
   verifyToken,
   authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
-  solicitarDocumentacion,
+  requestDocumentation,
 );
 
 /* ===============================
@@ -74,7 +45,7 @@ router.post(
   "/:id/rechazar",
   verifyToken,
   authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
-  rechazarSolicitud,
+  rejectRequest,
 );
 
 /* ===============================
@@ -85,7 +56,7 @@ router.post(
   "/:id/autorizar",
   verifyToken,
   authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
-  autorizarSolicitud,
+  authorizeRequest,
 );
 
 module.exports = router;

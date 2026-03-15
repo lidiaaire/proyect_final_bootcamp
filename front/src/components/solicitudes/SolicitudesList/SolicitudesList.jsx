@@ -118,13 +118,13 @@ export default function SolicitudesList({
             ) : (
               solicitudesFiltradas.map((s) => (
                 <SolicitudItem
-                  key={s._id}
+                  key={s._id || s.id}
                   solicitud={s}
                   onSelect={() => {
                     setSolicitudSeleccionada(s);
-                    setSelectedSolicitudId(s._id);
+                    setSelectedSolicitudId(s._id || s.id);
                   }}
-                  isSelected={selectedSolicitudId === s._id}
+                  isSelected={selectedSolicitudId === (s._id || s.id)}
                 />
               ))
             )}

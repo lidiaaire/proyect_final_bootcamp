@@ -28,6 +28,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const data = await getSolicitudes(token);
+        console.log("SOLICITUDES HOME:", data);
         setSolicitudes(data);
       } catch {
         setErrorMessage("No se pudieron cargar las solicitudes.");
@@ -91,11 +92,7 @@ export default function Home() {
   const actividadReciente = solicitudes
     .flatMap((s) =>
       (s.historial || [])
-        .filter(
-          (h) =>
-            h.changedBy === "DIRECCION_MEDICA" ||
-            h.changedBy === "ASESORIA_JURIDICA",
-        )
+        .filter((h) => h.changedBy)
         .map((h) => {
           let accion = "actualizó";
 
@@ -109,7 +106,7 @@ export default function Home() {
             paciente: s.nombreCompleto,
             prueba: s.nombrePrueba,
             accion,
-            usuario: h.changedBy,
+            usuario: h.changedBy || h.usuario,
             fecha: h.fecha,
           };
         }),

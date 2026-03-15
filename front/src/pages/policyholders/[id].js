@@ -22,26 +22,24 @@ export default function PolicyholderProfile() {
         const resPolicyholder = await fetch(
           `http://localhost:4000/policyholders/${id}`,
         );
-
         const policyholderData = await resPolicyholder.json();
 
         const resRequests = await fetch(
           "http://localhost:4000/api/solicitudes",
         );
-
         const requestsData = await resRequests.json();
 
         const requestsArray =
           requestsData.data || requestsData.solicitudes || requestsData || [];
+        console.log("REQUESTS API:", requestsArray);
 
         const filteredRequests = requestsArray.filter(
-          (req) => String(req.policyholderId) === String(id),
+          (req) => String(req.poliza) === String(policyholderData.id),
         );
 
         setPolicyholder(policyholderData);
         setRequests(filteredRequests);
 
-        // Las notas ahora vienen dentro del policyholder
         setNotes(policyholderData.internalNotes || []);
       } catch (error) {
         console.error("Error cargando perfil:", error);
@@ -71,7 +69,6 @@ export default function PolicyholderProfile() {
     const today = new Date();
 
     let years = today.getFullYear() - start.getFullYear();
-
     const monthDiff = today.getMonth() - start.getMonth();
 
     if (
@@ -160,7 +157,7 @@ export default function PolicyholderProfile() {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Servicio</th>
+              <th>Prueba</th>
               <th>Fecha</th>
               <th>Estado</th>
               <th>Acción</th>
@@ -174,20 +171,24 @@ export default function PolicyholderProfile() {
               return (
                 <tr key={requestId}>
                   <td>{requestId}</td>
-                  <td>{r.service}</td>
-                  <td>{r.date}</td>
+                  <td>{r.nombrePrueba}</td>
+                  <td>
+                    {r.createdAt
+                      ? new Date(r.createdAt).toLocaleDateString()
+                      : "-"}
+                  </td>
 
                   <td>
                     <span
                       className={`${styles.badge} ${
-                        r.status === "AUTORIZADA"
+                        r.estadoInterno === "AUTORIZADA"
                           ? styles.badgeAutorizada
-                          : r.status === "RECHAZADA"
+                          : r.estadoInterno === "RECHAZADA"
                             ? styles.badgeRechazada
                             : styles.badgePendiente
                       }`}
                     >
-                      {r.status}
+                      {r.estadoInterno}
                     </span>
                   </td>
 

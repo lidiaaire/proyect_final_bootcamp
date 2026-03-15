@@ -16,10 +16,13 @@ export default function SolicitudPreview({ solicitud }) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
+  // ID normalizado para evitar problemas entre _id y id
+  const solicitudId = solicitud?._id || solicitud?.id;
+
   async function autorizarSolicitud() {
     try {
       await fetch(
-        `http://localhost:4000/api/solicitudes/${solicitud._id}/autorizar`,
+        `http://localhost:4000/api/solicitudes/${solicitudId}/autorizar`,
         {
           method: "POST",
           headers: {
@@ -39,7 +42,7 @@ export default function SolicitudPreview({ solicitud }) {
   async function handleEnviarDocumentos(documentos) {
     try {
       await fetch(
-        `http://localhost:4000/api/solicitudes/${solicitud._id}/solicitar-documentacion`,
+        `http://localhost:4000/api/solicitudes/${solicitudId}/solicitar-documentacion`,
         {
           method: "POST",
           headers: {
@@ -63,7 +66,7 @@ export default function SolicitudPreview({ solicitud }) {
   async function handleRechazarSolicitud(data) {
     try {
       await fetch(
-        `http://localhost:4000/api/solicitudes/${solicitud._id}/rechazar`,
+        `http://localhost:4000/api/solicitudes/${solicitudId}/rechazar`,
         {
           method: "POST",
           headers: {
@@ -84,7 +87,6 @@ export default function SolicitudPreview({ solicitud }) {
 
   return (
     <div className={styles.previewContainer}>
-      {/* HEADER */}
       <div className={styles.header}>
         <div>
           <h2 className={styles.title}>{solicitud.nombreCompleto}</h2>
@@ -96,16 +98,16 @@ export default function SolicitudPreview({ solicitud }) {
           <span className={styles.estadoBadge}>{solicitud.estadoInterno}</span>
         </div>
 
-        {/* BOTÓN ABRIR CASO COMPLETO */}
         <button
           className={styles.buttonOpen}
-          onClick={() => router.push(`/solicitudes/${solicitud._id}`)}
+          onClick={() => {
+            if (solicitudId) router.push(`/solicitudes/${solicitudId}`);
+          }}
         >
           Abrir caso completo
         </button>
       </div>
 
-      {/* ACCIONES */}
       <div className={styles.actions}>
         <button onClick={autorizarSolicitud} className={styles.buttonPrimary}>
           Autorizar
@@ -126,9 +128,7 @@ export default function SolicitudPreview({ solicitud }) {
         </button>
       </div>
 
-      {/* GRID INFO */}
       <div className={styles.grid}>
-        {/* DOCUMENTOS */}
         <div className={styles.card}>
           <h3>Documentos</h3>
 
@@ -150,7 +150,6 @@ export default function SolicitudPreview({ solicitud }) {
           ))}
         </div>
 
-        {/* ACTIVIDAD */}
         <div className={styles.card}>
           <h3>Actividad</h3>
 
@@ -158,14 +157,12 @@ export default function SolicitudPreview({ solicitud }) {
         </div>
       </div>
 
-      {/* VISOR PDF */}
       {documentoSeleccionado && (
         <div className={styles.viewer}>
           <PDFViewer url={`http://localhost:4000${documentoSeleccionado}`} />
         </div>
       )}
 
-      {/* MODALES */}
       <ModalSolicitarDocumentacion
         isOpen={mostrarModalDocs}
         onClose={() => setMostrarModalDocs(false)}
