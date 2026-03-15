@@ -1,4 +1,5 @@
 const { policyholders } = require("../mocks/policyholders");
+const { notes } = require("../mocks/notes");
 
 const getPolicyholders = (req, res) => {
   res.json(policyholders);
@@ -13,7 +14,15 @@ const getPolicyholderById = (req, res) => {
     return res.status(404).json({ message: "Policyholder not found" });
   }
 
-  res.json(policyholder);
+  // Filtrar notas del asegurado
+  const policyholderNotes = notes.filter(
+    (note) => String(note.policyholderId) === String(id),
+  );
+
+  res.json({
+    ...policyholder,
+    internalNotes: policyholderNotes,
+  });
 };
 
 module.exports = {

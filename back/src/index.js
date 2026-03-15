@@ -24,6 +24,7 @@ app.use(
   "/autorizaciones",
   express.static(path.join(process.cwd(), "public/autorizaciones")),
 );
+app.use("/docs", express.static(path.join(__dirname, "../docs")));
 
 // Rutas
 app.use("/api/auth", authRoutes);

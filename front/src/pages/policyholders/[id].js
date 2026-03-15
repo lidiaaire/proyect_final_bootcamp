@@ -24,16 +24,15 @@ export default function PolicyholderProfile() {
         );
 
         const policyholderData = await resPolicyholder.json();
-        console.log(policyholderData);
 
         const resRequests = await fetch(
           "http://localhost:4000/api/solicitudes",
         );
+
         const requestsData = await resRequests.json();
 
-        const requestsArray = Array.isArray(requestsData)
-          ? requestsData
-          : requestsData.data || [];
+        const requestsArray =
+          requestsData.data || requestsData.solicitudes || requestsData || [];
 
         const filteredRequests = requestsArray.filter(
           (req) => String(req.policyholderId) === String(id),
@@ -41,6 +40,8 @@ export default function PolicyholderProfile() {
 
         setPolicyholder(policyholderData);
         setRequests(filteredRequests);
+
+        // Las notas ahora vienen dentro del policyholder
         setNotes(policyholderData.internalNotes || []);
       } catch (error) {
         console.error("Error cargando perfil:", error);
@@ -173,9 +174,7 @@ export default function PolicyholderProfile() {
               return (
                 <tr key={requestId}>
                   <td>{requestId}</td>
-
                   <td>{r.service}</td>
-
                   <td>{r.date}</td>
 
                   <td>

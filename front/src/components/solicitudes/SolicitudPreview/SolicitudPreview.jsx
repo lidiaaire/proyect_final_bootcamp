@@ -154,7 +154,7 @@ export default function SolicitudPreview({ solicitud }) {
         <div className={styles.card}>
           <h3>Actividad</h3>
 
-          <ActivityTimeline historial={solicitud.historial} />
+          <ActivityTimeline historial={solicitud.historial || []} />
         </div>
       </div>
 

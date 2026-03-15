@@ -1,8 +1,64 @@
 const requests = require("../mocks/requests");
+const { policyholders } = require("../mocks/policyholders");
+
+const mapSolicitud = (req) => {
+  const policyholder = policyholders.find(
+    (p) => String(p.id) === String(req.policyholderId),
+  );
+
+  return {
+    _id: req.id,
+    id: req.id,
+    policyholderId: req.policyholderId,
+
+    nombreCompleto: policyholder ? `${policyholder.name}` : "Desconocido",
+    poliza: req.policyholderId,
+    dni: policyholder?.dni || "",
+
+    nombrePrueba: req.service,
+    especialidad: req.specialty,
+    centroMedico: req.medicalCenter,
+
+    estadoInterno: req.status,
+    createdAt: req.date,
+
+    documentos: [
+      {
+        nombre: "Informe médico",
+        url: "/docs/informe.pdf",
+      },
+      {
+        nombre: "Solicitud médica",
+        url: "/docs/solicitud.pdf",
+      },
+    ],
+
+    historial: [
+      {
+        estado: "SOLICITUD_CREADA",
+        fecha: req.date,
+        usuario: "Sistema",
+      },
+      {
+        estado: req.status,
+        fecha: req.date,
+        usuario: "Equipo Prestaciones",
+      },
+    ],
+    notasInternas: [
+      {
+        usuario: "Prestaciones",
+        fecha: req.date,
+        texto: "Pendiente de revisión inicial",
+      },
+    ],
+  };
+};
 
 const getSolicitudesController = (req, res) => {
   try {
-    res.json(requests);
+    const solicitudes = requests.map(mapSolicitud);
+    res.json(solicitudes);
   } catch (error) {
     res.status(500).json({ message: "Error obteniendo solicitudes" });
   }
@@ -16,7 +72,7 @@ const getSolicitudByIdController = (req, res) => {
       return res.status(404).json({ message: "Solicitud no encontrada" });
     }
 
-    res.json(solicitud);
+    res.json(mapSolicitud(solicitud));
   } catch (error) {
     res.status(500).json({ message: "Error obteniendo solicitud" });
   }

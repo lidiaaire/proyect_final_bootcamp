@@ -5,6 +5,7 @@ import { ESTADO_LABELS } from "@/utils/estadoLabels";
 export default function SolicitudItem({ solicitud, onSelect, isSelected }) {
   const {
     _id,
+    id,
     nombreCompleto,
     nombrePrueba,
     especialidad,
@@ -12,6 +13,9 @@ export default function SolicitudItem({ solicitud, onSelect, isSelected }) {
     estadoInterno,
     createdAt,
   } = solicitud;
+
+  // Soporta tanto Mongo (_id) como mocks (id)
+  const requestId = _id || id || "";
 
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("es-ES", {
@@ -41,7 +45,7 @@ export default function SolicitudItem({ solicitud, onSelect, isSelected }) {
     >
       <td>
         <div className={styles.nameCell}>
-          <span className={styles.idLabel}>#{_id.slice(-5)}</span>
+          <span className={styles.idLabel}>#{String(requestId).slice(-5)}</span>
           <span className={styles.nameLink}>{nombreCompleto}</span>
         </div>
       </td>
@@ -58,7 +62,7 @@ export default function SolicitudItem({ solicitud, onSelect, isSelected }) {
         </span>
       </td>
 
-      <td>{formatDate(createdAt)}</td>
+      <td>{createdAt ? formatDate(createdAt) : ""}</td>
 
       <td className={styles.actionsCell}>
         <button className={styles.actionsBtn}>⋯</button>
