@@ -1,4 +1,30 @@
+import { normalizeSolicitud } from "@/core/normalizers/solicitudNormalizer";
+
 const API_URL = "http://localhost:4000/api/solicitudes";
+
+/* ==============================
+GET solicitudes
+============================== */
+
+export async function getSolicitudes(token) {
+  const res = await fetch(API_URL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Error obteniendo solicitudes");
+  }
+
+  const data = await res.json();
+
+  const solicitudesNormalizadas = (data.solicitudes || []).map(
+    normalizeSolicitud,
+  );
+
+  return solicitudesNormalizadas;
+}
 
 /* ==============================
 GET solicitud
@@ -7,9 +33,13 @@ GET solicitud
 export async function getRequest(id) {
   const res = await fetch(`${API_URL}/${id}`);
 
-  if (!res.ok) throw new Error("Error obteniendo solicitud");
+  if (!res.ok) {
+    throw new Error("Error obteniendo solicitud");
+  }
 
-  return res.json();
+  const data = await res.json();
+
+  return normalizeSolicitud(data);
 }
 
 /* ==============================
@@ -25,7 +55,9 @@ export async function requestMoreDocs(id, documentosSolicitados) {
     body: JSON.stringify({ documentosSolicitados }),
   });
 
-  if (!res.ok) throw new Error("Error solicitando documentación");
+  if (!res.ok) {
+    throw new Error("Error solicitando documentación");
+  }
 
   return res.json();
 }
@@ -39,7 +71,9 @@ export async function sendToMedicalDirection(id) {
     method: "POST",
   });
 
-  if (!res.ok) throw new Error("Error enviando a dirección médica");
+  if (!res.ok) {
+    throw new Error("Error enviando a dirección médica");
+  }
 
   return res.json();
 }
@@ -53,7 +87,9 @@ export async function authorizeRequest(id) {
     method: "POST",
   });
 
-  if (!res.ok) throw new Error("Error autorizando solicitud");
+  if (!res.ok) {
+    throw new Error("Error autorizando solicitud");
+  }
 
   return res.json();
 }
@@ -71,7 +107,9 @@ export async function rejectRequest(id, comentario) {
     body: JSON.stringify({ comentario }),
   });
 
-  if (!res.ok) throw new Error("Error rechazando solicitud");
+  if (!res.ok) {
+    throw new Error("Error rechazando solicitud");
+  }
 
   return res.json();
 }

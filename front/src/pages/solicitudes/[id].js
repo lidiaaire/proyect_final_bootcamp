@@ -8,7 +8,7 @@ import {
   sendToMedicalDirection,
   authorizeRequest,
   rejectRequest,
-} from "src/api/solicitudes.js";
+} from "@/api/solicitudes";
 
 function getRoleFromToken(token) {
   try {

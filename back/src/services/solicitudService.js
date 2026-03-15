@@ -4,6 +4,13 @@ const ESTADOS = require("../core/constants/solicitudEstados");
 const ROLES = require("../core/constants/roles");
 const TIPOS = require("../core/constants/tiposHistorial");
 
+async function getSolicitudes() {
+  return await Solicitud.find().sort({ createdAt: -1 });
+}
+
+async function getSolicitudById(id) {
+  return await Solicitud.findById(id);
+}
 /* ==============================
 SOLICITAR DOCUMENTACION
 ============================== */
@@ -53,14 +60,14 @@ async function sendToDireccionMedica(id) {
 
   const estadoAnterior = solicitud.estadoInterno;
 
-  solicitud.estadoInterno = ESTADOS.EN_REVISION;
+  solicitud.estadoInterno = ESTADOS.DIRECCION_MEDICA;
   solicitud.currentDepartment = ROLES.DIRECCION_MEDICA;
 
   solicitud.historial.push({
     tipo: TIPOS.REVISION_MEDICA,
     estadoAnterior,
     estadoNuevo: ESTADOS.EN_REVISION,
-    changedBy: ROLES.PRESTACIONES,
+    changedBy: ROLES.DIRECCION_MEDICA,
     fecha: new Date(),
   });
 
@@ -82,14 +89,14 @@ async function sendToAsesoriaJuridica(id) {
 
   const estadoAnterior = solicitud.estadoInterno;
 
-  solicitud.estadoInterno = ESTADOS.EN_REVISION;
+  solicitud.estadoInterno = ESTADOS.ASESORIA_JURIDICA;
   solicitud.currentDepartment = ROLES.ASESORIA_JURIDICA;
 
   solicitud.historial.push({
     tipo: TIPOS.REVISION_JURIDICA,
     estadoAnterior,
-    estadoNuevo: ESTADOS.EN_REVISION,
-    changedBy: ROLES.PRESTACIONES,
+    estadoNuevo: ESTADOS.ASESORIA_JURIDICA,
+    changedBy: ROLES.ASESORIA_JURIDICA,
     fecha: new Date(),
   });
 
@@ -99,6 +106,8 @@ async function sendToAsesoriaJuridica(id) {
 }
 
 module.exports = {
+  getSolicitudes,
+  getSolicitudById,
   requestDocumentation,
   sendToDireccionMedica,
   sendToAsesoriaJuridica,

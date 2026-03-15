@@ -1,7 +1,7 @@
-import {
+const {
   getAllPolicyholders,
-  getPolicyholderById as _getPolicyholderById,
-} from "../services/policyHolderService";
+  getPolicyholderById: _getPolicyholderById,
+} = require("../services/policyholderService");
 
 async function getPolicyholders(req, res) {
   try {
@@ -26,7 +26,7 @@ async function getPolicyholderById(req, res) {
   }
 }
 
-export default {
+module.exports = {
   getPolicyholders,
   getPolicyholderById,
 };

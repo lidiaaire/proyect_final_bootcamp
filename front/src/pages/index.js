@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,44 @@ import styles from "@/styles/Home.module.css";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 import NotificationsWidget from "@/components/dashboard/NotificationsWidget/NotificationsWidget";
 import TeamWidget from "@/components/dashboard/TeamWidget/TeamWidget";
+import { ESTADOS } from "@/core/constants/solicitudEstados";
+
+function clasificarSolicitudes(solicitudes) {
+  const resultado = {
+    urgentes: [],
+    revisionMedica: [],
+    revisionJuridica: [],
+    autorizadas: [],
+    rechazadas: [],
+  };
+
+  solicitudes.forEach((s) => {
+    switch (s.estadoInterno) {
+      case ESTADOS.PENDIENTE_INICIO_GESTION:
+      case ESTADOS.DOCUMENTACION_SOLICITADA:
+        resultado.urgentes.push(s);
+        break;
+
+      case ESTADOS.DIRECCION_MEDICA:
+        resultado.revisionMedica.push(s);
+        break;
+
+      case ESTADOS.ASESORIA_JURIDICA:
+        resultado.revisionJuridica.push(s);
+        break;
+
+      case ESTADOS.AUTORIZADA:
+        resultado.autorizadas.push(s);
+        break;
+
+      case ESTADOS.RECHAZADA:
+        resultado.rechazadas.push(s);
+        break;
+    }
+  });
+
+  return resultado;
+}
 
 export default function Home() {
   const router = useRouter();
@@ -28,7 +66,6 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const data = await getSolicitudes(token);
-        console.log("SOLICITUDES HOME:", data);
         setSolicitudes(data);
       } catch {
         setErrorMessage("No se pudieron cargar las solicitudes.");
@@ -43,23 +80,12 @@ export default function Home() {
   if (isLoading) return <p>Cargando...</p>;
   if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
 
-  /* -----------------------------
-     Lógica de negocio del dashboard
-  ----------------------------- */
-
-  const solicitudesUrgentes = solicitudes.filter(
-    (s) =>
-      s.estadoInterno === "PENDIENTE_INICIO_GESTION" ||
-      s.estadoInterno === "DOCUMENTACION_SOLICITADA" ||
-      s.estadoInterno === "EN_REVISION",
-  );
-
   const hoy = new Date();
 
   const pendientesAntiguos = solicitudes.filter((s) => {
     if (
-      s.estadoInterno !== "PENDIENTE_REVISION_PRESTACIONES" &&
-      s.estadoInterno !== "PENDIENTE_DIRECCION_MEDICA"
+      s.estadoInterno !== ESTADOS.PENDIENTE_REVISION_PRESTACIONES &&
+      s.estadoInterno !== ESTADOS.PENDIENTE_DIRECCION_MEDICA
     ) {
       return false;
     }
@@ -72,22 +98,10 @@ export default function Home() {
 
   const totalPendientesAntiguos = pendientesAntiguos.length;
 
-  // ==============================
-  // FILTRO DEL DASHBOARD
-  // ==============================
-
   const solicitudesFiltradas =
     filtroEstado === "TODOS"
       ? solicitudes
       : solicitudes.filter((s) => s.estadoInterno === filtroEstado);
-
-  // ==============================
-  // ACTIVIDAD RECIENTE (desde historial)
-  // ==============================
-
-  // ==============================
-  // ACTIVIDAD RECIENTE (desde historial)
-  // ==============================
 
   const actividadReciente = solicitudes
     .flatMap((s) =>
@@ -96,9 +110,9 @@ export default function Home() {
         .map((h) => {
           let accion = "actualizó";
 
-          if (h.estado === "AUTORIZADA") accion = "autorizó";
-          if (h.estado === "RECHAZADA") accion = "rechazó";
-          if (h.estado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")
+          if (h.estado === ESTADOS.AUTORIZADA) accion = "autorizó";
+          if (h.estado === ESTADOS.RECHAZADA) accion = "rechazó";
+          if (h.estado === ESTADOS.PENDIENTE_DOCUMENTACION_DEL_ASEGURADO)
             accion = "solicitó documentación para";
 
           return {
@@ -116,13 +130,10 @@ export default function Home() {
 
   return (
     <div className={styles.dashboardGrid}>
-      {/* COLUMNA IZQUIERDA */}
       <div className={styles.dashboardMain}>
-        {/* SALUDO */}
         <div className={styles.welcomeCard}>
           <div className={styles.welcomeText}>
             <h3>Hola María</h3>
-
             <p>
               Tienes <strong>{solicitudes.length}</strong> solicitudes activas.
               <br />
@@ -140,7 +151,6 @@ export default function Home() {
           />
         </div>
 
-        {/* KPIs */}
         <div className={styles.dashboardCard}>
           <KpiResumen
             solicitudes={solicitudes}
@@ -150,7 +160,6 @@ export default function Home() {
           />
         </div>
 
-        {/* ÚLTIMAS SOLICITUDES */}
         <div className={styles.recentBlock}>
           <div className={styles.recentHeader}>
             <h3>Últimas solicitudes</h3>
@@ -189,10 +198,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* SIDEBAR DERECHA */}
       <div className={styles.dashboardSide}>
         <NotificationsWidget actividad={actividadReciente} />
-
         <TeamWidget />
       </div>
     </div>
