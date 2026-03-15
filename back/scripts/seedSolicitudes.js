@@ -52,16 +52,19 @@ async function seedSolicitudes() {
             nombre: "informe_medico.pdf",
             tipo: "informe_medico",
             subidoPor: "ASEGURADO",
+            url: "/docs/informe_medico.pdf",
           },
           {
             nombre: "prescripcion_medica.pdf",
             tipo: "prescripcion_medica",
             subidoPor: "ASEGURADO",
+            url: "/docs/prescripcion_medica.pdf",
           },
           {
             nombre: "historia_clinica.pdf",
             tipo: "historia_clinica",
             subidoPor: "ASEGURADO",
+            url: "/docs/historia_clinica.pdf",
           },
         ],
 

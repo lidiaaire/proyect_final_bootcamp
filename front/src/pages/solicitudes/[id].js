@@ -2,6 +2,14 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/SolicitudDetalle.module.css";
 
+import {
+  getRequest,
+  requestMoreDocs,
+  sendToMedicalDirection,
+  authorizeRequest,
+  rejectRequest,
+} from "../../api/requestsApi";
+
 function getRoleFromToken(token) {
   try {
     if (!token) return "";
@@ -28,28 +36,20 @@ export default function SolicitudDetallePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setUserRole(getRoleFromToken(token));
   }, []);
 
   const fetchSolicitud = async () => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(
-      `http://localhost:4000/api/solicitudes/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    const data = await response.json();
+    const data = await getRequest(id);
+    console.log("DATA API:", data);
     setSolicitud(data);
   };
 
   useEffect(() => {
     if (!id) return;
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSolicitud();
   }, [id]);
@@ -61,20 +61,7 @@ export default function SolicitudDetallePage() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-
-      await fetch(`http://localhost:4000/api/solicitudes/${id}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nuevoEstado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-          comentarioDocs: comentarioDocs,
-          docsSolicitados: [],
-        }),
-      });
+      await requestMoreDocs(id, comentarioDocs);
 
       setShowDocModal(false);
       setComentarioDocs("");
@@ -91,19 +78,7 @@ export default function SolicitudDetallePage() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-
-      await fetch(`http://localhost:4000/api/solicitudes/${id}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nuevoEstado: "PENDIENTE_DIRECCION_MEDICA",
-          comentario: comentarioDireccion,
-        }),
-      });
+      await sendToMedicalDirection(id, comentarioDireccion);
 
       setComentarioDireccion("");
       setShowDireccionModal(false);
@@ -119,16 +94,11 @@ export default function SolicitudDetallePage() {
     );
 
     if (!confirmar) return;
-    const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:4000/api/solicitudes/${id}/autorizar`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await authorizeRequest(id);
 
     await fetchSolicitud();
+
     alert(
       "Solicitud autorizada correctamente. Se ha enviado la autorización al asegurado.",
     );
@@ -148,18 +118,7 @@ export default function SolicitudDetallePage() {
 
     if (!confirmar) return;
 
-    const token = localStorage.getItem("token");
-
-    await fetch(`http://localhost:4000/api/solicitudes/${id}/rechazar`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        comentario: motivo,
-      }),
-    });
+    await rejectRequest(id, motivo);
 
     await fetchSolicitud();
 
@@ -184,7 +143,6 @@ export default function SolicitudDetallePage() {
 
   return (
     <>
-      {/* MODAL SOLICITAR DOCUMENTACIÓN */}
       {showDocModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -215,7 +173,6 @@ export default function SolicitudDetallePage() {
         </div>
       )}
 
-      {/* MODAL DIRECCIÓN MÉDICA */}
       {showDireccionModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -299,23 +256,32 @@ export default function SolicitudDetallePage() {
             <div className={styles.sectionTitle}>Documentación aportada</div>
 
             <div className={styles.docsList}>
-              {solicitud.documentos?.map((doc, index) => (
-                <div key={index} className={styles.docItem}>
-                  <span>{doc.nombre}</span>
+              {solicitud.documentos?.map((doc, index) => {
+                const fileMap = {
+                  "Informe médico": "informe_medico.pdf",
+                  "Solicitud médica": "prescripcion_medica.pdf",
+                };
 
-                  <button
-                    className={styles.docButton}
-                    onClick={() =>
-                      window.open(
-                        `http://localhost:4000/docs/${doc.nombre}`,
-                        "_blank",
-                      )
-                    }
-                  >
-                    Ver
-                  </button>
-                </div>
-              ))}
+                const file = fileMap[doc.nombre];
+
+                return (
+                  <div key={index} className={styles.docItem}>
+                    <span>{doc.nombre}</span>
+
+                    <button
+                      className={styles.docButton}
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:4000/docs/${file}`,
+                          "_blank",
+                        )
+                      }
+                    >
+                      Ver
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
             <div className={styles.docsActions}>
@@ -344,7 +310,7 @@ export default function SolicitudDetallePage() {
                 .reverse()
                 .map((item, index) => (
                   <div key={index} className={styles.activityItem}>
-                    <strong>{item.changedBy}</strong> cambió el estado a{" "}
+                    <strong>{item.usuario}</strong> cambió el estado a{" "}
                     <b>{item.estado}</b>
                   </div>
                 ))}
@@ -357,23 +323,17 @@ export default function SolicitudDetallePage() {
             <div className={styles.sectionTitle}>Notas internas</div>
 
             <div className={styles.notesFeed}>
-              {solicitud.historial
-                ?.filter(
-                  (item) => item.comentario && item.comentario.trim() !== "",
-                )
-                .slice()
+              {solicitud.notasInternas
+                ?.slice()
                 .reverse()
-                .map((item, index) => (
+                .map((nota, index) => (
                   <div key={index} className={styles.noteItem}>
-                    <div className={styles.noteHeader}>{item.changedBy}</div>
-                    <div className={styles.noteText}>
-                      {mensajesHistorial[item.estado]}
-                    </div>
-                    <div className={styles.noteText}>
-                      &quot;{item.comentario}&quot;
-                    </div>
+                    <div className={styles.noteHeader}>{nota.usuario}</div>
+
+                    <div className={styles.noteText}>{nota.texto}</div>
+
                     <div className={styles.noteDate}>
-                      {new Date(item.fecha).toLocaleDateString()}
+                      {new Date(nota.fecha).toLocaleDateString()}
                     </div>
                   </div>
                 ))}
@@ -388,7 +348,7 @@ export default function SolicitudDetallePage() {
             </div>
 
             <div>
-              <strong>Póliza:</strong> {solicitud.numeroPoliza}
+              <strong>Póliza:</strong> {solicitud.poliza}
             </div>
 
             <div>

@@ -349,7 +349,7 @@
 }
 
 .activityItem {
-  display: flex;
+  display: block;
   gap: 10px;
 }
 
