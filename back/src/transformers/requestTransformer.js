@@ -19,6 +19,8 @@ function mapRequest(solicitud) {
 
     historial: solicitud.historial || [],
 
+    notas: solicitud.notas || [], // ← AÑADIR ESTA LÍNEA
+
     createdAt: solicitud.createdAt,
   };
 }

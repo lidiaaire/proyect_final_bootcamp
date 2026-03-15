@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 const Solicitud = require("../src/models/solicitudModel");
 
+// IMPORTAR MOCKS
+const { policyholders } = require("../src/mocks/policyholders");
+const { notes } = require("../src/mocks/notes");
+
 const MONGO_URI = process.env.MONGO_URI;
 
 async function seedSolicitudes() {
@@ -16,16 +20,28 @@ async function seedSolicitudes() {
     console.log("Solicitudes eliminadas");
 
     const solicitudes = [];
+    const totalSolicitudes = 500;
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < totalSolicitudes; i++) {
+      // asegurado rotativo
+      const policyholder = policyholders[i % policyholders.length];
+
+      // en tu mock la póliza es el identificador
+      const poliza = String(policyholder.id);
+
+      const policyholderNotes = notes.filter(
+        (note) => note.policyholderId === poliza,
+      );
+
+      console.log("POLIZA:", poliza, "NOTAS:", policyholderNotes.length);
       const solicitud = new Solicitud({
         numeroSolicitud: `SOL-${1000 + i}`,
 
-        nombreCompleto: faker.person.fullName(),
-        numeroPoliza: faker.number
-          .int({ min: 10000000, max: 99999999 })
-          .toString(),
-        dni: faker.string.alphanumeric(8).toUpperCase(),
+        nombreCompleto: policyholder.name,
+
+        numeroPoliza: poliza,
+
+        dni: policyholder.dni,
 
         nombrePrueba: faker.helpers.arrayElement([
           "TAC",
@@ -45,46 +61,29 @@ async function seedSolicitudes() {
 
         estadoInterno: "PENDIENTE_INICIO_GESTION",
         currentDepartment: "PRESTACIONES",
-        lastTechnicalDepartment: null,
 
-        documentos: [
-          {
-            nombre: "informe_medico.pdf",
-            tipo: "informe_medico",
-            subidoPor: "ASEGURADO",
-            url: "/docs/informe_medico.pdf",
-          },
-          {
-            nombre: "prescripcion_medica.pdf",
-            tipo: "prescripcion_medica",
-            subidoPor: "ASEGURADO",
-            url: "/docs/prescripcion_medica.pdf",
-          },
-          {
-            nombre: "historia_clinica.pdf",
-            tipo: "historia_clinica",
-            subidoPor: "ASEGURADO",
-            url: "/docs/historia_clinica.pdf",
-          },
-        ],
+        notas: policyholderNotes.map((note) => ({
+          text: note.text,
+          author: note.author,
+          date: new Date(note.date),
+        })),
 
-        // HISTORIAL LIMPIO Y COHERENTE
         historial: [
           {
             estado: "PENDIENTE_INICIO_GESTION",
             changedBy: "PRESTACIONES",
             fecha: new Date(),
             tipo: "CREACION",
+            documentosSolicitados: [],
           },
         ],
       });
-
       solicitudes.push(solicitud);
     }
 
     await Solicitud.insertMany(solicitudes);
 
-    console.log("500 solicitudes generadas correctamente");
+    console.log("500 solicitudes generadas correctamente con notas");
     process.exit();
   } catch (error) {
     console.error(error);

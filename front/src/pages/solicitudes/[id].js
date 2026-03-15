@@ -323,19 +323,17 @@ export default function SolicitudDetallePage() {
             <div className={styles.sectionTitle}>Notas internas</div>
 
             <div className={styles.notesFeed}>
-              {(solicitud.notasInternas || solicitud.historial || [])
+              {(solicitud.notas || [])
                 .slice()
                 .reverse()
                 .map((nota, index) => (
                   <div key={index} className={styles.noteItem}>
-                    <div className={styles.noteHeader}>{nota.usuario}</div>
+                    <div className={styles.noteHeader}>{nota.author}</div>
 
-                    <div className={styles.noteText}>
-                      {nota.texto || nota.estado}
-                    </div>
+                    <div className={styles.noteText}>{nota.text}</div>
 
                     <div className={styles.noteDate}>
-                      {new Date(nota.fecha).toLocaleDateString()}
+                      {new Date(nota.date).toLocaleDateString()}
                     </div>
                   </div>
                 ))}
