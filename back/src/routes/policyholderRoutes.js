@@ -1,12 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  getPolicyholders,
-  getPolicyholderById,
-} = require("../controllers/policyholdersController");
+const controller = require("../controllers/policyholderController");
 
-router.get("/", getPolicyholders);
-router.get("/:id", getPolicyholderById);
+router.get("/", controller.getPolicyholders);
+router.get("/:id", controller.getPolicyholderById);
 
 module.exports = router;

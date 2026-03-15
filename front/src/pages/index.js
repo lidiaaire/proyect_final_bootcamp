@@ -50,8 +50,8 @@ export default function Home() {
   const solicitudesUrgentes = solicitudes.filter(
     (s) =>
       s.estadoInterno === "PENDIENTE_INICIO_GESTION" ||
-      s.estadoInterno === "PENDIENTE_REVISION_PRESTACIONES" ||
-      s.estadoInterno === "PENDIENTE_DIRECCION_MEDICA",
+      s.estadoInterno === "DOCUMENTACION_SOLICITADA" ||
+      s.estadoInterno === "EN_REVISION",
   );
 
   const hoy = new Date();

@@ -1,46 +1,77 @@
-import { apiFetch } from "./apiClient";
+const API_URL = "http://localhost:4000/api/solicitudes";
 
-// Normaliza el modelo de datos para que todo el frontend pueda usar SIEMPRE el mismo identificador.
-// Si el backend devuelve _id (Mongo), lo convertimos también en id para evitar undefined en rutas.
-const normalizeSolicitud = (solicitud) => {
-  return {
-    ...solicitud,
-    id: solicitud._id || solicitud.id,
-  };
-};
+/* ==============================
+GET solicitud
+============================== */
 
-export const getSolicitudes = async () => {
-  const response = await apiFetch("http://localhost:4000/api/solicitudes");
+export async function getRequest(id) {
+  const res = await fetch(`${API_URL}/${id}`);
 
-  if (!response.ok) {
-    throw new Error("Error al obtener solicitudes");
-  }
+  if (!res.ok) throw new Error("Error obteniendo solicitud");
 
-  const data = await response.json();
+  return res.json();
+}
 
-  // El backend a veces devuelve {data: []}, {solicitudes: []} o directamente []
-  const solicitudesArray = data?.data || data?.solicitudes || data || [];
+/* ==============================
+SOLICITAR DOCUMENTACION
+============================== */
 
-  return solicitudesArray.map(normalizeSolicitud);
-};
-
-export const changeEstado = async (id, nuevoEstado) => {
-  const response = await apiFetch(
-    `http://localhost:4000/api/solicitudes/${id}/status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nuevoEstado }),
+export async function requestMoreDocs(id, documentosSolicitados) {
+  const res = await fetch(`${API_URL}/${id}/solicitar-documentacion`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({ documentosSolicitados }),
+  });
 
-  if (!response.ok) {
-    throw new Error("Error al cambiar estado");
-  }
+  if (!res.ok) throw new Error("Error solicitando documentación");
 
-  const data = await response.json();
+  return res.json();
+}
 
-  return normalizeSolicitud(data);
-};
+/* ==============================
+ENVIAR A DIRECCION MEDICA
+============================== */
+
+export async function sendToMedicalDirection(id) {
+  const res = await fetch(`${API_URL}/${id}/enviar-direccion-medica`, {
+    method: "POST",
+  });
+
+  if (!res.ok) throw new Error("Error enviando a dirección médica");
+
+  return res.json();
+}
+
+/* ==============================
+AUTORIZAR
+============================== */
+
+export async function authorizeRequest(id) {
+  const res = await fetch(`${API_URL}/${id}/autorizar`, {
+    method: "POST",
+  });
+
+  if (!res.ok) throw new Error("Error autorizando solicitud");
+
+  return res.json();
+}
+
+/* ==============================
+RECHAZAR
+============================== */
+
+export async function rejectRequest(id, comentario) {
+  const res = await fetch(`${API_URL}/${id}/rechazar`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ comentario }),
+  });
+
+  if (!res.ok) throw new Error("Error rechazando solicitud");
+
+  return res.json();
+}

@@ -34,7 +34,7 @@ export default function PolicyholderProfile() {
         console.log("REQUESTS API:", requestsArray);
 
         const filteredRequests = requestsArray.filter(
-          (req) => String(req.poliza) === String(policyholderData.id),
+          (req) => String(req.numeroPoliza) === String(policyholderData.id),
         );
 
         setPolicyholder(policyholderData);

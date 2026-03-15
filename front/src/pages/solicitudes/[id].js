@@ -8,7 +8,7 @@ import {
   sendToMedicalDirection,
   authorizeRequest,
   rejectRequest,
-} from "../../api/requestsApi";
+} from "src/api/solicitudes.js";
 
 function getRoleFromToken(token) {
   try {
@@ -44,7 +44,7 @@ export default function SolicitudDetallePage() {
   const fetchSolicitud = async () => {
     const data = await getRequest(id);
     console.log("DATA API:", data);
-    setSolicitud(data);
+    setSolicitud(data.solicitud || data);
   };
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function SolicitudDetallePage() {
     }
 
     try {
-      await requestMoreDocs(id, comentarioDocs);
+      await requestMoreDocs(id, [comentarioDocs]);
 
       setShowDocModal(false);
       setComentarioDocs("");
@@ -256,32 +256,20 @@ export default function SolicitudDetallePage() {
             <div className={styles.sectionTitle}>Documentación aportada</div>
 
             <div className={styles.docsList}>
-              {solicitud.documentos?.map((doc, index) => {
-                const fileMap = {
-                  "Informe médico": "informe_medico.pdf",
-                  "Solicitud médica": "prescripcion_medica.pdf",
-                };
+              {solicitud.documentos?.map((doc, index) => (
+                <div key={index} className={styles.docItem}>
+                  <span>{doc.nombre}</span>
 
-                const file = fileMap[doc.nombre];
-
-                return (
-                  <div key={index} className={styles.docItem}>
-                    <span>{doc.nombre}</span>
-
-                    <button
-                      className={styles.docButton}
-                      onClick={() =>
-                        window.open(
-                          `http://localhost:4000/docs/${file}`,
-                          "_blank",
-                        )
-                      }
-                    >
-                      Ver
-                    </button>
-                  </div>
-                );
-              })}
+                  <button
+                    className={styles.docButton}
+                    onClick={() =>
+                      window.open(`http://localhost:4000${doc.url}`, "_blank")
+                    }
+                  >
+                    Ver
+                  </button>
+                </div>
+              ))}
             </div>
 
             <div className={styles.docsActions}>
@@ -310,8 +298,8 @@ export default function SolicitudDetallePage() {
                 .reverse()
                 .map((item, index) => (
                   <div key={index} className={styles.activityItem}>
-                    <strong>{item.usuario}</strong> cambió el estado a{" "}
-                    <b>{item.estado}</b>
+                    <strong>{item.changedBy}</strong> cambió el estado a{" "}
+                    <b>{item.estadoNuevo}</b>
                   </div>
                 ))}
             </div>
@@ -348,7 +336,7 @@ export default function SolicitudDetallePage() {
             </div>
 
             <div>
-              <strong>Póliza:</strong> {solicitud.poliza}
+              <strong>Póliza:</strong> {solicitud.numeroPoliza}
             </div>
 
             <div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import SolicitudesList from "@/components/solicitudes/SolicitudesList/SolicitudesList";
 import SolicitudPreview from "@/components/solicitudes/SolicitudPreview/SolicitudPreview";
-import { getSolicitudes } from "@/api/solicitudes";
+import { getRequest } from "@/api/solicitudes";
 import styles from "@/styles/SolicitudesList.module.css";
 
 export default function Solicitudes() {
@@ -27,7 +27,7 @@ export default function Solicitudes() {
 
     const fetchData = async () => {
       try {
-        const data = await getSolicitudes(token, { estado, hoy, tipo, area });
+        const data = await getRequest(token, { estado, hoy, tipo, area });
         setSolicitudes(data);
       } catch {
         setErrorMessage("No se pudieron cargar las solicitudes.");

@@ -3,6 +3,9 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 const Solicitud = require("../src/models/solicitudModel");
+const ESTADOS = require("../src/core/constants/solicitudEstados");
+const ROLES = require("../src/core/constants/roles");
+const TIPOS = require("../src/core/constants/tiposHistorial");
 
 // IMPORTAR MOCKS
 const { policyholders } = require("../src/mocks/policyholders");
@@ -30,9 +33,17 @@ async function seedSolicitudes() {
       const poliza = String(policyholder.id);
 
       const policyholderNotes = notes.filter(
-        (note) => note.policyholderId === poliza,
+        (note) => String(note.policyholderId) === String(poliza),
       );
-
+      const documentos = [
+        {
+          nombre: "informe_medico.pdf",
+          tipo: "informe_medico",
+          subidoPor: "ASEGURADO",
+          fecha: new Date(),
+          url: "/docs/informe_medico.pdf",
+        },
+      ];
       console.log("POLIZA:", poliza, "NOTAS:", policyholderNotes.length);
       const solicitud = new Solicitud({
         numeroSolicitud: `SOL-${1000 + i}`,
@@ -59,9 +70,9 @@ async function seedSolicitudes() {
 
         centroMedico: faker.company.name(),
 
-        estadoInterno: "PENDIENTE_INICIO_GESTION",
-        currentDepartment: "PRESTACIONES",
-
+        estadoInterno: ESTADOS.PENDIENTE_INICIO_GESTION,
+        currentDepartment: ROLES.PRESTACIONES,
+        documentos: documentos,
         notas: policyholderNotes.map((note) => ({
           text: note.text,
           author: note.author,
@@ -70,10 +81,10 @@ async function seedSolicitudes() {
 
         historial: [
           {
-            estado: "PENDIENTE_INICIO_GESTION",
-            changedBy: "PRESTACIONES",
+            estado: ESTADOS.PENDIENTE_INICIO_GESTION,
+            changedBy: ROLES.PRESTACIONES,
             fecha: new Date(),
-            tipo: "CREACION",
+            tipo: TIPOS.CREACION,
             documentosSolicitados: [],
           },
         ],

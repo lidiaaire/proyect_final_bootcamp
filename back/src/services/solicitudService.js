@@ -1,95 +1,105 @@
 const Solicitud = require("../models/solicitudModel");
-const solicitudFlowRules = require("../core/solicitudFlowRules");
 
-const generateNumeroSolicitud = () => {
-  const timestamp = Date.now();
-  return `SOL-${timestamp}`;
-};
+const ESTADOS = require("../core/constants/solicitudEstados");
+const ROLES = require("../core/constants/roles");
+const TIPOS = require("../core/constants/tiposHistorial");
 
-const createSolicitud = async (data, user) => {
-  const numeroSolicitud = generateNumeroSolicitud();
+/* ==============================
+SOLICITAR DOCUMENTACION
+============================== */
 
-  const nuevaSolicitud = new Solicitud({
-    numeroSolicitud,
-    ...data,
-    estadoInterno: "PENDIENTE_INICIO_GESTION",
-    currentDepartment: "PRESTACIONES",
-    lastTechnicalDepartment: null,
-    historial: [
-      {
-        estado: "PENDIENTE_INICIO_GESTION",
-        changedBy: user.id,
-        fecha: new Date(),
-        tipo: "CREACION",
-      },
-    ],
-  });
-
-  await nuevaSolicitud.save();
-  return nuevaSolicitud;
-};
-
-const changeStatus = async (
-  solicitudId,
-  nuevoEstado,
-  user,
-  docsSolicitados = [],
-  comentario = "",
-) => {
-  const solicitud = await Solicitud.findById(solicitudId);
+async function requestDocumentation(id, documentosSolicitados = []) {
+  const solicitud = await Solicitud.findById(id);
 
   if (!solicitud) {
     throw new Error("Solicitud no encontrada");
   }
 
-  solicitud.estadoInterno = nuevoEstado;
+  const estadoAnterior = solicitud.estadoInterno;
 
-  if (nuevoEstado === "PENDIENTE_INICIO_GESTION") {
-    solicitud.currentDepartment = "PRESTACIONES";
-  }
+  solicitud.estadoInterno = ESTADOS.DOCUMENTACION_SOLICITADA;
+  solicitud.currentDepartment = ROLES.PRESTACIONES;
 
-  if (nuevoEstado === "PENDIENTE_DIRECCION_MEDICA") {
-    solicitud.currentDepartment = "DIRECCION_MEDICA";
-  }
-
-  if (nuevoEstado === "PENDIENTE_ASESORIA_JURIDICA") {
-    solicitud.currentDepartment = "ASESORIA_JURIDICA";
-  }
-
-  if (nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
-    solicitud.currentDepartment = null;
-  }
-
-  if (nuevoEstado === "PENDIENTE_REVISION_PRESTACIONES") {
-    solicitud.currentDepartment = "PRESTACIONES";
-  }
-
-  if (["AUTORIZADA", "RECHAZADA"].includes(nuevoEstado)) {
-    solicitud.currentDepartment = null;
-  }
-
-  console.log("comentario recibido:", comentario);
   solicitud.historial.push({
-    estado: nuevoEstado,
-    changedBy: user.role,
+    tipo: TIPOS.SOLICITUD_DOCUMENTACION,
+    estadoAnterior,
+    estadoNuevo: ESTADOS.DOCUMENTACION_SOLICITADA,
+    changedBy: ROLES.PRESTACIONES,
+    documentosSolicitados,
     fecha: new Date(),
-    tipo:
-      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
-        ? "SOLICITUD_DOCUMENTACION"
-        : "CAMBIO_ESTADO",
-    documentosSolicitados:
-      nuevoEstado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"
-        ? docsSolicitados
-        : [],
-    comentario: comentario,
+  });
+
+  solicitud.notas.push({
+    text: `Se solicita documentación: ${documentosSolicitados.join(", ")}`,
+    author: "Sistema",
+    date: new Date(),
   });
 
   await solicitud.save();
+
   return solicitud;
-};
+}
 
-const getSolicitudesByRole = async () => {
-  return await Solicitud.find().sort({ createdAt: -1 });
-};
+/* ==============================
+ENVIAR A DIRECCION MEDICA
+============================== */
 
-module.exports = { createSolicitud, changeStatus, getSolicitudesByRole };
+async function sendToDireccionMedica(id) {
+  const solicitud = await Solicitud.findById(id);
+
+  if (!solicitud) {
+    throw new Error("Solicitud no encontrada");
+  }
+
+  const estadoAnterior = solicitud.estadoInterno;
+
+  solicitud.estadoInterno = ESTADOS.EN_REVISION;
+  solicitud.currentDepartment = ROLES.DIRECCION_MEDICA;
+
+  solicitud.historial.push({
+    tipo: TIPOS.REVISION_MEDICA,
+    estadoAnterior,
+    estadoNuevo: ESTADOS.EN_REVISION,
+    changedBy: ROLES.PRESTACIONES,
+    fecha: new Date(),
+  });
+
+  await solicitud.save();
+
+  return solicitud;
+}
+
+/* ==============================
+ENVIAR A ASESORIA JURIDICA
+============================== */
+
+async function sendToAsesoriaJuridica(id) {
+  const solicitud = await Solicitud.findById(id);
+
+  if (!solicitud) {
+    throw new Error("Solicitud no encontrada");
+  }
+
+  const estadoAnterior = solicitud.estadoInterno;
+
+  solicitud.estadoInterno = ESTADOS.EN_REVISION;
+  solicitud.currentDepartment = ROLES.ASESORIA_JURIDICA;
+
+  solicitud.historial.push({
+    tipo: TIPOS.REVISION_JURIDICA,
+    estadoAnterior,
+    estadoNuevo: ESTADOS.EN_REVISION,
+    changedBy: ROLES.PRESTACIONES,
+    fecha: new Date(),
+  });
+
+  await solicitud.save();
+
+  return solicitud;
+}
+
+module.exports = {
+  requestDocumentation,
+  sendToDireccionMedica,
+  sendToAsesoriaJuridica,
+};

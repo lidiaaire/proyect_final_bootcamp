@@ -2,61 +2,21 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  verifyToken,
-  authorizeRoles,
-} = require("../middlewares/authMiddleware");
-
-const {
-  getRequests,
-  getRequestById,
-  authorizeRequest,
-  rejectRequest,
+  getSolicitudes,
+  getSolicitudById,
+  authorizeSolicitud,
+  rejectSolicitud,
   requestDocumentation,
-} = require("../controllers/requestController");
+} = require("../controllers/solicitudController");
 
-/* ===============================
-   LISTAR SOLICITUDES
-================================ */
+router.get("/", getSolicitudes);
 
-router.get("/", getRequests);
+router.get("/:id", getSolicitudById);
 
-/* ===============================
-   OBTENER SOLICITUD POR ID
-================================ */
+router.post("/:id/autorizar", authorizeSolicitud);
 
-router.get("/:id", getRequestById);
+router.post("/:id/rechazar", rejectSolicitud);
 
-/* ===============================
-   SOLICITAR DOCUMENTACIÓN
-================================ */
-
-router.post(
-  "/:id/solicitar-documentacion",
-  verifyToken,
-  authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
-  requestDocumentation,
-);
-
-/* ===============================
-   RECHAZAR SOLICITUD
-================================ */
-
-router.post(
-  "/:id/rechazar",
-  verifyToken,
-  authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
-  rejectRequest,
-);
-
-/* ===============================
-   AUTORIZAR SOLICITUD
-================================ */
-
-router.post(
-  "/:id/autorizar",
-  verifyToken,
-  authorizeRoles("PRESTACIONES", "DIRECCION_MEDICA", "ADMIN"),
-  authorizeRequest,
-);
+router.post("/:id/solicitar-documentacion", requestDocumentation);
 
 module.exports = router;

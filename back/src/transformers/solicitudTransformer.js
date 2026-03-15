@@ -1,11 +1,12 @@
-function mapRequest(solicitud) {
+function mapSolicitud(solicitud) {
   return {
     id: solicitud._id,
 
     numeroSolicitud: solicitud.numeroSolicitud,
 
     nombreCompleto: solicitud.nombreCompleto,
-    poliza: solicitud.numeroPoliza,
+    numeroPoliza: solicitud.numeroPoliza,
+
     dni: solicitud.dni,
 
     nombrePrueba: solicitud.nombrePrueba,
@@ -19,17 +20,17 @@ function mapRequest(solicitud) {
 
     historial: solicitud.historial || [],
 
-    notas: solicitud.notas || [], // ← AÑADIR ESTA LÍNEA
+    notas: solicitud.notas || [],
 
     createdAt: solicitud.createdAt,
   };
 }
 
-function mapRequests(solicitudes) {
-  return solicitudes.map(mapRequest);
+function mapSolicitudes(solicitudes) {
+  return solicitudes.map(mapSolicitud);
 }
 
 module.exports = {
-  mapRequest,
-  mapRequests,
+  mapSolicitud,
+  mapSolicitudes,
 };
