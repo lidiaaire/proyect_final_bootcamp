@@ -36,17 +36,14 @@ export default function SolicitudDetallePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUserRole(getRoleFromToken(token));
   }, []);
 
   const fetchSolicitud = async () => {
     try {
-      const solicitudId = router.query.id;
+      if (!id) return;
 
-      if (!solicitudId) return;
-
-      const data = await getRequest(solicitudId);
+      const data = await getRequest(id);
 
       console.log("DATA API:", data);
 
@@ -58,10 +55,8 @@ export default function SolicitudDetallePage() {
 
   useEffect(() => {
     if (!router.isReady) return;
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSolicitud();
-  }, [router.isReady]);
+  }, [router.isReady, id]);
 
   async function solicitarDocumentacion() {
     if (!comentarioDocs.trim()) {
@@ -172,7 +167,10 @@ export default function SolicitudDetallePage() {
                   <button
                     className={styles.docButton}
                     onClick={() =>
-                      window.open(`http://localhost:4000${doc.url}`, "_blank")
+                      window.open(
+                        `http://localhost:4000/docs/${doc.nombre}`,
+                        "_blank",
+                      )
                     }
                   >
                     Ver
@@ -216,6 +214,7 @@ export default function SolicitudDetallePage() {
         </div>
 
         <div className={styles.rightColumn}>
+          {/* NOTAS */}
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Notas internas</div>
 
@@ -234,6 +233,30 @@ export default function SolicitudDetallePage() {
                 ))}
             </div>
           </div>
+
+          {/* ACCIONES */}
+          {solicitud.estadoInterno !== "AUTORIZADA" &&
+            solicitud.estadoInterno !== "RECHAZADA" && (
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>Acciones</div>
+
+                <div className={styles.actions}>
+                  <button
+                    className={`${styles.button} ${styles.buttonPrimary}`}
+                    onClick={autorizarSolicitud}
+                  >
+                    Autorizar
+                  </button>
+
+                  <button
+                    className={`${styles.button} ${styles.buttonDanger}`}
+                    onClick={rechazarSolicitud}
+                  >
+                    Rechazar
+                  </button>
+                </div>
+              </div>
+            )}
         </div>
       </div>
     </>

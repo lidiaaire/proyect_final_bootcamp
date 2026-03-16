@@ -83,8 +83,8 @@
 .actions {
   margin-top: 15px;
   display: flex;
-  flex-direction: column;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .button {
