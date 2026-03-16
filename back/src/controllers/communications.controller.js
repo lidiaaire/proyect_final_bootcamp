@@ -1,41 +1,54 @@
-const messages = [
-  {
-    id: "msg1",
-    channel: "Avisos Oficiales",
-    user: "Dra. Marta Ruiz",
-    role: "Dirección Médica",
-    avatar: "MR",
-    text: "Nueva indicación: las resonancias requieren informe previo.",
-    time: "10:30",
-  },
-  {
-    id: "msg2",
-    channel: "Prestaciones",
-    user: "Carlos Méndez",
-    role: "Prestaciones",
-    avatar: "CM",
-    text: "Procedimiento actualizado en el sistema.",
-    time: "11:20",
-  },
-];
+const { MongoClient } = require("mongodb");
+require("dotenv").config();
 
-function getMessages(req, res) {
-  const { channel } = req.params;
+const uri = process.env.MONGO_URI;
 
-  const filtered = messages.filter((m) => m.channel === channel);
+async function getMessages(req, res) {
+  try {
+    const { channel } = req.params;
 
-  res.json(filtered);
+    const client = new MongoClient(uri);
+
+    await client.connect();
+
+    const db = client.db();
+
+    const messages = await db
+      .collection("communications")
+      .find({ channel })
+      .sort({ createdAt: 1 })
+      .toArray();
+
+    await client.close();
+
+    res.json(messages);
+  } catch (error) {
+    console.error("ERROR LOADING MESSAGES:", error);
+    res.status(500).json({ error: "Error loading messages" });
+  }
 }
 
-function sendMessage(req, res) {
-  const newMessage = {
-    id: Date.now().toString(),
-    ...req.body,
-  };
+async function sendMessage(req, res) {
+  try {
+    const client = new MongoClient(uri);
 
-  messages.push(newMessage);
+    await client.connect();
 
-  res.status(201).json(newMessage);
+    const db = client.db();
+
+    const newMessage = {
+      ...req.body,
+      createdAt: new Date(),
+    };
+
+    const result = await db.collection("communications").insertOne(newMessage);
+
+    await client.close();
+
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ error: "Error sending message" });
+  }
 }
 
 module.exports = {
