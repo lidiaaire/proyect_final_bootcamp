@@ -31,15 +31,29 @@ GET solicitud
 ============================== */
 
 export async function getRequest(id) {
-  const res = await fetch(`${API_URL}/${id}`);
+  const token = localStorage.getItem("token");
+
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_URL}/${id}`, {
+    headers,
+  });
 
   if (!res.ok) {
+    const text = await res.text();
+    console.error("API ERROR:", res.status, text);
     throw new Error("Error obteniendo solicitud");
   }
 
   const data = await res.json();
 
-  return normalizeSolicitud(data);
+  const solicitud = data.solicitud || data;
+
+  return normalizeSolicitud(solicitud);
 }
 
 /* ==============================
@@ -47,11 +61,19 @@ SOLICITAR DOCUMENTACION
 ============================== */
 
 export async function requestMoreDocs(id, documentosSolicitados) {
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/${id}/solicitar-documentacion`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({ documentosSolicitados }),
   });
 
@@ -66,9 +88,21 @@ export async function requestMoreDocs(id, documentosSolicitados) {
 ENVIAR A DIRECCION MEDICA
 ============================== */
 
-export async function sendToMedicalDirection(id) {
+export async function sendToMedicalDirection(id, comentario) {
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/${id}/enviar-direccion-medica`, {
     method: "POST",
+    headers,
+    body: JSON.stringify({ comentario }),
   });
 
   if (!res.ok) {
@@ -83,8 +117,19 @@ AUTORIZAR
 ============================== */
 
 export async function authorizeRequest(id) {
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/${id}/autorizar`, {
     method: "POST",
+    headers,
   });
 
   if (!res.ok) {
@@ -99,11 +144,19 @@ RECHAZAR
 ============================== */
 
 export async function rejectRequest(id, comentario) {
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}/${id}/rechazar`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({ comentario }),
   });
 

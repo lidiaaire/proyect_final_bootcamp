@@ -103,30 +103,48 @@ export default function Home() {
       ? solicitudes
       : solicitudes.filter((s) => s.estadoInterno === filtroEstado);
 
+  // ===============================
+  // ACTIVITY FEED (historial + creación)
+  // ===============================
+
   const actividadReciente = solicitudes
-    .flatMap((s) =>
-      (s.historial || [])
-        .filter((h) => h.changedBy)
-        .map((h) => {
-          let accion = "actualizó";
+    .flatMap((s) => {
+      const eventosHistorial = (s.historial || []).map((h) => {
+        let accion = "actualizó";
 
-          if (h.estado === ESTADOS.AUTORIZADA) accion = "autorizó";
-          if (h.estado === ESTADOS.RECHAZADA) accion = "rechazó";
-          if (h.estado === ESTADOS.PENDIENTE_DOCUMENTACION_DEL_ASEGURADO)
-            accion = "solicitó documentación para";
+        if (h.estado === ESTADOS.AUTORIZADA) accion = "autorizó";
+        if (h.estado === ESTADOS.RECHAZADA) accion = "rechazó";
+        if (h.estado === ESTADOS.PENDIENTE_DOCUMENTACION_DEL_ASEGURADO)
+          accion = "solicitó documentación para";
 
-          return {
-            solicitudId: s._id,
-            paciente: s.nombreCompleto,
-            prueba: s.nombrePrueba,
-            accion,
-            usuario: h.changedBy || h.usuario,
-            fecha: h.fecha,
-          };
-        }),
-    )
+        if (h.tipo === "DOCUMENTO_SUBIDO") {
+          accion = "subió documentación para";
+        }
+
+        return {
+          solicitudId: s._id,
+          paciente: s.nombreCompleto,
+          prueba: s.nombrePrueba,
+          accion,
+          usuario: h.changedBy,
+          fecha: h.fecha,
+        };
+      });
+
+      // Evento de creación de solicitud
+      const eventoCreacion = {
+        solicitudId: s._id,
+        paciente: s.nombreCompleto,
+        prueba: s.nombrePrueba,
+        accion: "creó solicitud para",
+        usuario: "SISTEMA",
+        fecha: s.createdAt,
+      };
+
+      return [eventoCreacion, ...eventosHistorial];
+    })
     .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-    .slice(0, 5);
+    .slice(0, 10);
 
   return (
     <div className={styles.dashboardGrid}>

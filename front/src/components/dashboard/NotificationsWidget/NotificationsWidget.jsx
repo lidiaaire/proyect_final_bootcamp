@@ -25,32 +25,26 @@ function timeAgo(date) {
 const departamentoLabel = {
   DIRECCION_MEDICA: "Dirección médica",
   ASESORIA_JURIDICA: "Asesoría jurídica",
+  PRESTACIONES: "Prestaciones",
+  ADMIN: "Administración",
+  SISTEMA: "Sistema",
 };
 
 export default function NotificationsWidget({ actividad = [] }) {
-  const notifications = actividad.slice(0, 3).map((item) => {
-    let accion = "actualizó";
-
-    if (item.estado === "AUTORIZADA") accion = "autorizó";
-    if (item.estado === "RECHAZADA") accion = "rechazó";
-
-    if (item.estado === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
-      accion = "solicitó documentación para";
-    }
-
+  const notifications = actividad.slice(0, 5).map((item) => {
     return {
       id: item.solicitudId,
       paciente: item.paciente,
       prueba: item.prueba,
-      departamento: departamentoLabel[item.usuario],
-      accion,
+      actor: departamentoLabel[item.usuario] || item.usuario || "Sistema",
+      accion: item.accion,
       time: timeAgo(item.fecha),
     };
   });
 
   return (
     <div className={styles.card}>
-      <h4 className={styles.title}>Notificaciones</h4>
+      <h4 className={styles.title}>Actividad reciente</h4>
 
       <div className={styles.timeline}>
         {notifications.map((n, i) => (
@@ -59,7 +53,7 @@ export default function NotificationsWidget({ actividad = [] }) {
 
             <div className={styles.content}>
               <p className={styles.text}>
-                <strong>{n.departamento}</strong> {n.accion}{" "}
+                <strong>{n.actor}</strong> {n.accion}{" "}
                 <span className={styles.prueba}>{n.prueba}</span> de{" "}
                 <span className={styles.paciente}>{n.paciente}</span>
               </p>

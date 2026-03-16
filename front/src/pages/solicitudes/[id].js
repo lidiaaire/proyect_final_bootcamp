@@ -36,25 +36,34 @@ export default function SolicitudDetallePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setUserRole(getRoleFromToken(token));
   }, []);
 
   const fetchSolicitud = async () => {
-    const data = await getRequest(id);
-    console.log("DATA API:", data);
-    setSolicitud(data.solicitud || data);
+    try {
+      const solicitudId = router.query.id;
+
+      if (!solicitudId) return;
+
+      const data = await getRequest(solicitudId);
+
+      console.log("DATA API:", data);
+
+      setSolicitud(data);
+    } catch (error) {
+      console.error("FETCH ERROR:", error);
+    }
   };
 
   useEffect(() => {
-    if (!id) return;
+    if (!router.isReady) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSolicitud();
-  }, [id]);
+  }, [router.isReady]);
 
-  const solicitarDocumentacion = async () => {
+  async function solicitarDocumentacion() {
     if (!comentarioDocs.trim()) {
       alert("Debes indicar el motivo de solicitud de documentación");
       return;
@@ -62,16 +71,15 @@ export default function SolicitudDetallePage() {
 
     try {
       await requestMoreDocs(id, [comentarioDocs]);
-
       setShowDocModal(false);
       setComentarioDocs("");
       await fetchSolicitud();
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
-  const enviarDireccionMedica = async () => {
+  async function enviarDireccionMedica() {
     if (!comentarioDireccion.trim()) {
       alert("Debes indicar un motivo para enviarlo a Dirección Médica");
       return;
@@ -79,16 +87,15 @@ export default function SolicitudDetallePage() {
 
     try {
       await sendToMedicalDirection(id, comentarioDireccion);
-
       setComentarioDireccion("");
       setShowDireccionModal(false);
       await fetchSolicitud();
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
-  const autorizarSolicitud = async () => {
+  async function autorizarSolicitud() {
     const confirmar = window.confirm(
       "¿Estás seguro de que quieres autorizar esta solicitud?",
     );
@@ -96,15 +103,14 @@ export default function SolicitudDetallePage() {
     if (!confirmar) return;
 
     await authorizeRequest(id);
-
     await fetchSolicitud();
 
     alert(
       "Solicitud autorizada correctamente. Se ha enviado la autorización al asegurado.",
     );
-  };
+  }
 
-  const rechazarSolicitud = async () => {
+  async function rechazarSolicitud() {
     const motivo = prompt("Indica el motivo del rechazo");
 
     if (!motivo || motivo.trim() === "") {
@@ -119,17 +125,10 @@ export default function SolicitudDetallePage() {
     if (!confirmar) return;
 
     await rejectRequest(id, motivo);
-
     await fetchSolicitud();
 
     alert("Solicitud rechazada. Se ha enviado la notificación al asegurado.");
-  };
-
-  const mensajesHistorial = {
-    PENDIENTE_DOCUMENTACION_DEL_ASEGURADO:
-      "solicitó documentación al asegurado:",
-    PENDIENTE_DIRECCION_MEDICA: "envió el caso a Dirección Médica:",
-  };
+  }
 
   const documentoAutorizacion =
     solicitud?.documentos?.find((doc) => doc.tipo === "AUTORIZACION") || null;
@@ -143,66 +142,6 @@ export default function SolicitudDetallePage() {
 
   return (
     <>
-      {showDocModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Solicitar documentación adicional</h3>
-
-            <textarea
-              placeholder="Indica el motivo o documentación requerida"
-              value={comentarioDocs}
-              onChange={(e) => setComentarioDocs(e.target.value)}
-            />
-
-            <div className={styles.modalActions}>
-              <button
-                className={styles.buttonSecondary}
-                onClick={() => setShowDocModal(false)}
-              >
-                Cancelar
-              </button>
-
-              <button
-                className={styles.buttonPrimary}
-                onClick={solicitarDocumentacion}
-              >
-                Solicitar documentación
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showDireccionModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Enviar a Dirección Médica</h3>
-
-            <textarea
-              placeholder="Indica el motivo de la consulta médica"
-              value={comentarioDireccion}
-              onChange={(e) => setComentarioDireccion(e.target.value)}
-            />
-
-            <div className={styles.modalActions}>
-              <button
-                className={styles.buttonSecondary}
-                onClick={() => setShowDireccionModal(false)}
-              >
-                Cancelar
-              </button>
-
-              <button
-                className={styles.buttonPrimary}
-                onClick={enviarDireccionMedica}
-              >
-                Enviar a Dirección Médica
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>{solicitud.nombreCompleto}</h1>
@@ -219,36 +158,6 @@ export default function SolicitudDetallePage() {
           </div>
         </div>
       </div>
-
-      {documentoAutorizacion && (
-        <div className={styles.autorizacionBox}>
-          <div className={styles.autorizacionInfo}>
-            📄 Documento de autorización disponible
-          </div>
-
-          <button
-            className={styles.buttonPrimary}
-            onClick={() =>
-              window.open(
-                `http://localhost:4000${documentoAutorizacion.url}`,
-                "_blank",
-              )
-            }
-          >
-            Descargar autorización
-          </button>
-        </div>
-      )}
-
-      {rechazo && (
-        <div className={styles.rechazoBox}>
-          <div className={styles.rechazoTitle}>❌ Solicitud rechazada</div>
-
-          <div className={styles.rechazoMotivo}>
-            Motivo: &quot;{rechazo.comentario}&quot;
-          </div>
-        </div>
-      )}
 
       <div className={styles.detailGrid}>
         <div className={styles.leftColumn}>
@@ -299,7 +208,7 @@ export default function SolicitudDetallePage() {
                 .map((item, index) => (
                   <div key={index} className={styles.activityItem}>
                     <strong>{item.changedBy}</strong> cambió el estado a{" "}
-                    <b>{item.estadoNuevo}</b>
+                    <b>{item.estado}</b>
                   </div>
                 ))}
             </div>
@@ -317,9 +226,7 @@ export default function SolicitudDetallePage() {
                 .map((nota, index) => (
                   <div key={index} className={styles.noteItem}>
                     <div className={styles.noteHeader}>{nota.author}</div>
-
                     <div className={styles.noteText}>{nota.text}</div>
-
                     <div className={styles.noteDate}>
                       {new Date(nota.date).toLocaleDateString()}
                     </div>
@@ -327,60 +234,6 @@ export default function SolicitudDetallePage() {
                 ))}
             </div>
           </div>
-
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Información del asegurado</div>
-
-            <div>
-              <strong>Nombre:</strong> {solicitud.nombreCompleto}
-            </div>
-
-            <div>
-              <strong>Póliza:</strong> {solicitud.numeroPoliza}
-            </div>
-
-            <div>
-              <strong>DNI:</strong> {solicitud.dni}
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Información médica</div>
-
-            <div>
-              <strong>Prueba:</strong> {solicitud.nombrePrueba}
-            </div>
-
-            <div>
-              <strong>Especialidad:</strong> {solicitud.especialidad}
-            </div>
-
-            <div>
-              <strong>Centro:</strong> {solicitud.centroMedico}
-            </div>
-          </div>
-
-          {!["AUTORIZADA", "RECHAZADA"].includes(solicitud.estadoInterno) && (
-            <div className={styles.section}>
-              <div className={styles.sectionTitle}>Acciones</div>
-
-              <div className={styles.actions}>
-                <button
-                  className={`${styles.button} ${styles.buttonPrimary}`}
-                  onClick={autorizarSolicitud}
-                >
-                  Autorizar
-                </button>
-
-                <button
-                  className={`${styles.button} ${styles.buttonDanger}`}
-                  onClick={rechazarSolicitud}
-                >
-                  Rechazar
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </>
