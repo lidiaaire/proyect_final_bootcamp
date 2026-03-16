@@ -8,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const { verifyToken } = require("./middlewares/authMiddleware");
 const solicitudRoutes = require("./routes/solicitudRoutes");
 const policyholderRoutes = require("./routes/policyholderRoutes");
+const communicationsRoutes = require("./routes/comunications.routes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Servir documentos PDF
 app.use("/docs", express.static(path.join(process.cwd(), "public/docs")));
+
 app.use(
   "/autorizaciones",
   express.static(path.join(process.cwd(), "public/autorizaciones")),
@@ -29,6 +31,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/solicitudes", solicitudRoutes);
 app.use("/policyholders", policyholderRoutes);
+app.use("/api", communicationsRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "API Autorizaciones funcionando" });

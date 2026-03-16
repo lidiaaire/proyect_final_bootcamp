@@ -1,297 +1,107 @@
-/* ============================= */
-/* ===== Layout Base ===== */
-/* ============================= */
-
-.layout {
+.container {
   display: flex;
-  min-height: 100vh;
-  background: #f8fafc;
+  height: 100vh;
+  background: #f6f8fb;
 }
-
-/* ============================= */
-/* ===== Sidebar ===== */
-/* ============================= */
 
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #0f172a 0%, #0b1324 100%);
-  color: #e5e7eb;
+  background: #ffffff;
+  border-right: 1px solid #e6e8eb;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 20px;
+  gap: 20px;
 }
 
-/* ===== Logo ===== */
-
-.logoBlock {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
+.logoArea {
+  margin-bottom: 10px;
 }
 
-.logoIcon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo {
+  font-size: 22px;
   font-weight: 700;
-  color: white;
+  color: #0f766e;
 }
 
-.logoText {
-  font-size: 20px;
-  font-weight: 700;
-  color: white;
+.subtitle {
+  font-size: 12px;
+  color: #6b7280;
 }
 
-/* ===== Divider ===== */
-
-.divider {
-  border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  margin: 20px 0;
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* ===== Sections ===== */
+.link {
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #374151;
+  font-size: 14px;
+}
 
-.section {
+.link:hover {
+  background: #f1f5f9;
+}
+
+.active {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #e6f4f1;
+  color: #0f766e;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sectionTitle {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 1px;
+}
+
+.channels {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.sectionTitle {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: #64748b;
-  margin-bottom: 8px;
-}
-
-/* ===== Nav Items ===== */
-
-.navItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  color: #cbd5e1;
-  text-decoration: none;
+.channel {
   font-size: 14px;
-  transition: all 0.2s ease;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: #374151;
 }
 
-.navItem:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
+.channel:hover {
+  background: #f1f5f9;
+  cursor: pointer;
 }
 
-.active {
-  background: rgba(59, 130, 246, 0.18);
-  color: white;
-  font-weight: 500;
-}
-
-/* ===== Badge contador ===== */
-
-.badge {
-  margin-left: auto;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  color: #e5e7eb;
-  font-weight: 500;
-}
-
-/* ===== Icons ===== */
-
-.icon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.9;
-}
-
-/* ============================= */
-/* ===== Sidebar Footer ===== */
-/* ============================= */
-
-.sidebarFooter {
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.userBox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #1e293b;
-  color: #fbbf24;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.userName {
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-}
-
-.userRole {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-/* ============================= */
-/* ===== Main Area ===== */
-/* ============================= */
-
-.main {
-  flex: 1;
+.shortcuts {
   display: flex;
   flex-direction: column;
-  background: #f8fafc;
-  padding: 32px;
-  width: 100%;
+  gap: 6px;
 }
 
-.content {
-  flex: 1;
-  padding: 16px 24px;
-  width: 100%;
-  max-width: 1350px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-/* ============================= */
-/* ===== Top Header ===== */
-/* ============================= */
-
-.topHeader {
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #e6eaf0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-}
-
-/* Toggle sidebar */
-
-.sidebarToggle {
-  border: none;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 6px 10px;
-  cursor: pointer;
-  margin-right: 12px;
-}
-
-.sidebarToggle:hover {
-  background: #e2e8f0;
-}
-
-/* ===== Search ===== */
-
-.searchBox input {
-  width: 320px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: #f1f5f9;
-  border: none;
-  outline: none;
-}
-
-/* ===== Header Right ===== */
-
-.topRight {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.iconCircle {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #f3f4f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.iconCircle:hover {
-  background: #e5e7eb;
-}
-
-.profileBox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.avatarSmall {
-  width: 32px;
-  height: 32px;
-  background: #3b82f6;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.profileName {
+.shortcut {
   font-size: 14px;
-  font-weight: 500;
-  color: #111827;
-}
-
-/* ============================= */
-/* ===== Mobile ===== */
-/* ============================= */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 10;
-}
-
-.mobileToggle {
-  display: none;
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  background: white;
-  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
   border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 18px;
-  cursor: pointer;
-  z-index: 20;
+  color: #374151;
 }
 
-@media (max-width: 1024px) {
-  .mobileToggle {
-    display: block;
-  }
+.shortcut:hover {
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
 }
