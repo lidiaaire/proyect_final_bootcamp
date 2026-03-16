@@ -23,7 +23,6 @@ function getRoleFromToken(token) {
 
 /* ==============================
 MAPEO VISUAL DE ESTADOS
-(NO modifica backend ni datos)
 ============================== */
 
 function getEstadoLabel(estado) {
@@ -92,14 +91,26 @@ export default function SolicitudDetallePage() {
     );
   }
 
+  /* ==============================
+  SOLICITAR DOCUMENTACIÓN
+  ============================== */
+
+  /* REEMPLAZAR SOLO ESTA FUNCIÓN EN TU PAGE */
+
   async function confirmarSolicitudDocumentacion() {
     if (docsSeleccionados.length === 0) {
       alert("Debes seleccionar al menos un documento");
       return;
     }
 
+    const justificacion = `Solicitud de documentación: ${docsSeleccionados.join(", ")}`;
+
     try {
-      await requestMoreDocs(id, docsSeleccionados);
+      await requestMoreDocs(id, {
+        justificacion,
+        documentosSolicitados: docsSeleccionados,
+      });
+
       setShowDocModal(false);
       setDocsSeleccionados([]);
       await fetchSolicitud();
@@ -107,6 +118,10 @@ export default function SolicitudDetallePage() {
       console.error(error);
     }
   }
+
+  /* ==============================
+  ENVIAR A DIRECCIÓN MÉDICA
+  ============================== */
 
   async function enviarDireccionMedica() {
     const motivo = prompt("Indica el motivo para enviar a Dirección Médica");
@@ -124,20 +139,35 @@ export default function SolicitudDetallePage() {
     }
   }
 
+  /* ==============================
+  AUTORIZAR
+  ============================== */
+
   async function autorizarSolicitud() {
+    const motivo = prompt("Indica la justificación de la autorización");
+
+    if (!motivo || motivo.trim() === "") {
+      alert("Debes indicar un motivo");
+      return;
+    }
+
     const confirmar = window.confirm(
       "¿Estás seguro de que quieres autorizar esta solicitud?",
     );
 
     if (!confirmar) return;
 
-    await authorizeRequest(id);
+    await authorizeRequest(id, motivo);
     await fetchSolicitud();
 
     alert(
       "Solicitud autorizada correctamente. Se ha enviado la autorización al asegurado.",
     );
   }
+
+  /* ==============================
+  RECHAZAR
+  ============================== */
 
   async function rechazarSolicitud() {
     const motivo = prompt("Indica el motivo del rechazo");
@@ -253,22 +283,30 @@ export default function SolicitudDetallePage() {
               {(solicitud.notas || [])
                 .slice()
                 .reverse()
-                .map((nota, index) => (
-                  <div key={index} className={styles.noteItem}>
-                    <div className={styles.noteHeader}>{nota.author}</div>
-                    <div className={styles.noteText}>
-                      {nota.text
-                        .split(": ")
-                        .map((part, i) =>
-                          i === 1 ? formatDocumento(part) : part,
-                        )
-                        .join(": ")}
+                .map((nota, index) => {
+                  const text = nota.text || nota.texto || "";
+                  const author = nota.author || nota.autor || "";
+                  const date = nota.date || nota.fecha;
+
+                  return (
+                    <div key={index} className={styles.noteItem}>
+                      <div className={styles.noteHeader}>{author}</div>
+
+                      <div className={styles.noteText}>
+                        {text
+                          .split(": ")
+                          .map((part, i) =>
+                            i === 1 ? formatDocumento(part) : part,
+                          )
+                          .join(": ")}
+                      </div>
+
+                      <div className={styles.noteDate}>
+                        {date ? new Date(date).toLocaleDateString() : ""}
+                      </div>
                     </div>
-                    <div className={styles.noteDate}>
-                      {new Date(nota.date).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
 

@@ -6,8 +6,7 @@ export function createHistorialEvent({
 }) {
   return {
     tipo,
-    estadoAnterior,
-    estadoNuevo,
+    estado: estadoNuevo, // el frontend espera este campo
     changedBy,
     fecha: new Date(),
   };

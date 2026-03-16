@@ -10,8 +10,9 @@ export async function getSolicitudById(id) {
   return await Solicitud.findById(id);
 }
 
-async function applyAction({ solicitudId, accion, rol }) {
+async function applyAction({ solicitudId, accion, rol, justificacion }) {
   const solicitud = await Solicitud.findById(solicitudId);
+
   if (!solicitud) {
     throw new Error("Solicitud no encontrada");
   }
@@ -38,47 +39,96 @@ async function applyAction({ solicitudId, accion, rol }) {
 
   solicitud.historial.push(evento);
 
+  /* ==============================
+  CREAR NOTA INTERNA
+  ============================== */
+
+  if (justificacion) {
+    solicitud.notas.push({
+      author: rol.toUpperCase(),
+      text: justificacion,
+      date: new Date(),
+    });
+  }
+
   await solicitud.save();
 
   return solicitud;
 }
 
-export async function requestDocumentation(id, rol = "prestaciones") {
+/* ==============================
+SOLICITAR DOCUMENTACION
+============================== */
+
+export async function requestDocumentation(
+  id,
+  rol = "prestaciones",
+  justificacion,
+) {
   return applyAction({
     solicitudId: id,
     accion: "SOLICITAR_DOCUMENTACION",
     rol,
+    justificacion,
   });
 }
 
-export async function sendToMedicalDirection(id, rol = "prestaciones") {
+/* ==============================
+ENVIAR A DIRECCION MEDICA
+============================== */
+
+export async function sendToMedicalDirection(
+  id,
+  rol = "prestaciones",
+  justificacion,
+) {
   return applyAction({
     solicitudId: id,
     accion: "ENVIAR_DIRECCION_MEDICA",
     rol,
+    justificacion,
   });
 }
 
-export async function sendToLegalAdvisory(id, rol = "prestaciones") {
+/* ==============================
+ENVIAR A ASESORIA JURIDICA
+============================== */
+
+export async function sendToLegalAdvisory(
+  id,
+  rol = "prestaciones",
+  justificacion,
+) {
   return applyAction({
     solicitudId: id,
     accion: "ENVIAR_ASESORIA_JURIDICA",
     rol,
+    justificacion,
   });
 }
 
-export async function authorizeRequest(id, rol) {
+/* ==============================
+AUTORIZAR
+============================== */
+
+export async function authorizeRequest(id, rol, justificacion) {
   return applyAction({
     solicitudId: id,
     accion: "AUTORIZAR",
     rol,
+    justificacion,
   });
 }
 
-export async function rejectRequest(id, rol) {
+/* ==============================
+RECHAZAR
+============================== */
+
+export async function rejectRequest(id, rol, justificacion) {
   return applyAction({
     solicitudId: id,
     accion: "RECHAZAR",
     rol,
+    justificacion,
   });
 }

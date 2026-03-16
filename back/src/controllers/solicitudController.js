@@ -54,10 +54,12 @@ POST /solicitudes/:id/solicitar-documentacion
 const requestDocumentation = async (req, res) => {
   try {
     const rol = req.user?.role || "prestaciones";
+    const { justificacion } = req.body;
 
     const solicitud = await solicitudService.requestDocumentation(
       req.params.id,
       rol,
+      justificacion,
     );
 
     res.json({
@@ -78,10 +80,12 @@ POST /solicitudes/:id/enviar-direccion-medica
 const sendToDireccionMedica = async (req, res) => {
   try {
     const rol = req.user?.role || "prestaciones";
+    const { justificacion } = req.body;
 
     const solicitud = await solicitudService.sendToMedicalDirection(
       req.params.id,
       rol,
+      justificacion,
     );
 
     res.json({
@@ -102,10 +106,12 @@ POST /solicitudes/:id/enviar-asesoria-juridica
 const sendToAsesoriaJuridica = async (req, res) => {
   try {
     const rol = req.user?.role || "prestaciones";
+    const { justificacion } = req.body;
 
     const solicitud = await solicitudService.sendToLegalAdvisory(
       req.params.id,
       rol,
+      justificacion,
     );
 
     res.json({
@@ -126,10 +132,12 @@ POST /solicitudes/:id/autorizar
 const authorizeSolicitud = async (req, res) => {
   try {
     const rol = "direccionmedica";
+    const { justificacion } = req.body;
 
     const solicitud = await solicitudService.authorizeRequest(
       req.params.id,
       rol,
+      justificacion,
     );
 
     res.json({
@@ -150,8 +158,13 @@ POST /solicitudes/:id/rechazar
 const rejectSolicitud = async (req, res) => {
   try {
     const rol = req.user?.role || "prestaciones";
+    const { justificacion } = req.body;
 
-    const solicitud = await solicitudService.rejectRequest(req.params.id, rol);
+    const solicitud = await solicitudService.rejectRequest(
+      req.params.id,
+      rol,
+      justificacion,
+    );
 
     res.json({
       message: "Solicitud rechazada correctamente",
