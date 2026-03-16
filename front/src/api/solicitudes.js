@@ -38,10 +38,14 @@ export async function getRequest(id) {
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-
   const res = await fetch(`${API_URL}/${id}`, {
     headers,
   });
+
+  if (res.status === 404) {
+    console.warn("Solicitud no encontrada");
+    return null;
+  }
 
   if (!res.ok) {
     const text = await res.text();

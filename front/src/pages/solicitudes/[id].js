@@ -21,6 +21,33 @@ function getRoleFromToken(token) {
   }
 }
 
+/* ==============================
+MAPEO VISUAL DE ESTADOS
+(NO modifica backend ni datos)
+============================== */
+
+function getEstadoLabel(estado) {
+  const map = {
+    PENDIENTE_INICIO_GESTION: "Pendiente de inicio de gestión",
+    DOCUMENTACION_SOLICITADA: "Documentación solicitada",
+    EN_REVISION: "En revisión",
+    AUTORIZADA: "Autorizada",
+    RECHAZADA: "Rechazada",
+  };
+
+  return map[estado] || estado;
+}
+
+function formatDocumento(doc) {
+  const map = {
+    historia_clinica: "Historia clínica",
+    informe_especialista: "Informe especialista",
+    resultado_pruebas: "Resultado de pruebas",
+  };
+
+  return map[doc] || doc;
+}
+
 export default function SolicitudDetallePage() {
   const router = useRouter();
   const { id } = router.query;
@@ -29,10 +56,7 @@ export default function SolicitudDetallePage() {
   const [userRole, setUserRole] = useState("");
 
   const [showDocModal, setShowDocModal] = useState(false);
-  const [comentarioDocs, setComentarioDocs] = useState("");
-
-  const [showDireccionModal, setShowDireccionModal] = useState(false);
-  const [comentarioDireccion, setComentarioDireccion] = useState("");
+  const [docsSeleccionados, setDocsSeleccionados] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -45,7 +69,11 @@ export default function SolicitudDetallePage() {
 
       const data = await getRequest(id);
 
-      console.log("DATA API:", data);
+      if (!data) {
+        alert("La solicitud ya no existe");
+        router.push("/solicitudes");
+        return;
+      }
 
       setSolicitud(data);
     } catch (error) {
@@ -58,16 +86,22 @@ export default function SolicitudDetallePage() {
     fetchSolicitud();
   }, [router.isReady, id]);
 
-  async function solicitarDocumentacion() {
-    if (!comentarioDocs.trim()) {
-      alert("Debes indicar el motivo de solicitud de documentación");
+  function toggleDocumento(doc) {
+    setDocsSeleccionados((prev) =>
+      prev.includes(doc) ? prev.filter((d) => d !== doc) : [...prev, doc],
+    );
+  }
+
+  async function confirmarSolicitudDocumentacion() {
+    if (docsSeleccionados.length === 0) {
+      alert("Debes seleccionar al menos un documento");
       return;
     }
 
     try {
-      await requestMoreDocs(id, [comentarioDocs]);
+      await requestMoreDocs(id, docsSeleccionados);
       setShowDocModal(false);
-      setComentarioDocs("");
+      setDocsSeleccionados([]);
       await fetchSolicitud();
     } catch (error) {
       console.error(error);
@@ -75,15 +109,15 @@ export default function SolicitudDetallePage() {
   }
 
   async function enviarDireccionMedica() {
-    if (!comentarioDireccion.trim()) {
-      alert("Debes indicar un motivo para enviarlo a Dirección Médica");
+    const motivo = prompt("Indica el motivo para enviar a Dirección Médica");
+
+    if (!motivo || motivo.trim() === "") {
+      alert("Debes indicar un motivo");
       return;
     }
 
     try {
-      await sendToMedicalDirection(id, comentarioDireccion);
-      setComentarioDireccion("");
-      setShowDireccionModal(false);
+      await sendToMedicalDirection(id, motivo);
       await fetchSolicitud();
     } catch (error) {
       console.error(error);
@@ -122,16 +156,8 @@ export default function SolicitudDetallePage() {
     await rejectRequest(id, motivo);
     await fetchSolicitud();
 
-    alert("Solicitud rechazada. Se ha enviado la notificación al asegurado.");
+    alert("Solicitud rechazada.");
   }
-
-  const documentoAutorizacion =
-    solicitud?.documentos?.find((doc) => doc.tipo === "AUTORIZACION") || null;
-
-  const rechazo = solicitud?.historial
-    ?.slice()
-    .reverse()
-    .find((item) => item.estado === "RECHAZADA");
 
   if (!solicitud) return <p>Cargando...</p>;
 
@@ -148,7 +174,7 @@ export default function SolicitudDetallePage() {
 
           <div className={styles.estadoBox}>
             <span className={styles.estadoBadge}>
-              {solicitud.estadoInterno}
+              {getEstadoLabel(solicitud.estadoInterno)}
             </span>
           </div>
         </div>
@@ -189,13 +215,14 @@ export default function SolicitudDetallePage() {
 
               <button
                 className={`${styles.button} ${styles.buttonPrimary}`}
-                onClick={() => setShowDireccionModal(true)}
+                onClick={enviarDireccionMedica}
               >
                 Enviar a Dirección Médica
               </button>
             </div>
           </div>
 
+          {/* ACTIVIDAD DEL CASO */}
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Actividad del caso</div>
 
@@ -203,18 +230,22 @@ export default function SolicitudDetallePage() {
               {solicitud.historial
                 ?.slice()
                 .reverse()
-                .map((item, index) => (
-                  <div key={index} className={styles.activityItem}>
-                    <strong>{item.changedBy}</strong> cambió el estado a{" "}
-                    <b>{item.estado}</b>
-                  </div>
-                ))}
+                .map((item, index) => {
+                  const estado =
+                    item.estadoNuevo || item.estado || "Estado no disponible";
+
+                  return (
+                    <div key={index} className={styles.activityItem}>
+                      <strong>{item.changedBy?.toUpperCase()}</strong> cambió el
+                      estado a <b>{getEstadoLabel(estado)}</b>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>
 
         <div className={styles.rightColumn}>
-          {/* NOTAS */}
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Notas internas</div>
 
@@ -225,7 +256,14 @@ export default function SolicitudDetallePage() {
                 .map((nota, index) => (
                   <div key={index} className={styles.noteItem}>
                     <div className={styles.noteHeader}>{nota.author}</div>
-                    <div className={styles.noteText}>{nota.text}</div>
+                    <div className={styles.noteText}>
+                      {nota.text
+                        .split(": ")
+                        .map((part, i) =>
+                          i === 1 ? formatDocumento(part) : part,
+                        )
+                        .join(": ")}
+                    </div>
                     <div className={styles.noteDate}>
                       {new Date(nota.date).toLocaleDateString()}
                     </div>
@@ -234,7 +272,6 @@ export default function SolicitudDetallePage() {
             </div>
           </div>
 
-          {/* ACCIONES */}
           {solicitud.estadoInterno !== "AUTORIZADA" &&
             solicitud.estadoInterno !== "RECHAZADA" && (
               <div className={styles.section}>
@@ -259,6 +296,46 @@ export default function SolicitudDetallePage() {
             )}
         </div>
       </div>
+
+      {showDocModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Solicitar documentación adicional</h3>
+
+            <label>
+              <input
+                type="checkbox"
+                onChange={() => toggleDocumento("historia_clinica")}
+              />
+              Historia clínica
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                onChange={() => toggleDocumento("informe_especialista")}
+              />
+              Informe especialista
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                onChange={() => toggleDocumento("resultado_pruebas")}
+              />
+              Resultado de pruebas
+            </label>
+
+            <div style={{ marginTop: 20 }}>
+              <button onClick={() => setShowDocModal(false)}>Cancelar</button>
+
+              <button onClick={confirmarSolicitudDocumentacion}>
+                Solicitar documentación
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -1,114 +1,84 @@
-const Solicitud = require("../models/solicitudModel");
+import Solicitud from "../models/solicitudModel.js";
+import { getNextTransition } from "../core/solicitudFlowRules.js";
+import { createHistorialEvent } from "../core/createHistorialEvent.js";
 
-const ESTADOS = require("../core/constants/solicitudEstados");
-const ROLES = require("../core/constants/roles");
-const TIPOS = require("../core/constants/tiposHistorial");
-
-async function getSolicitudes() {
+export async function getSolicitudes() {
   return await Solicitud.find().sort({ createdAt: -1 });
 }
 
-async function getSolicitudById(id) {
+export async function getSolicitudById(id) {
   return await Solicitud.findById(id);
 }
-/* ==============================
-SOLICITAR DOCUMENTACION
-============================== */
 
-async function requestDocumentation(id, documentosSolicitados = []) {
-  const solicitud = await Solicitud.findById(id);
-
+async function applyAction({ solicitudId, accion, rol }) {
+  const solicitud = await Solicitud.findById(solicitudId);
   if (!solicitud) {
     throw new Error("Solicitud no encontrada");
   }
 
   const estadoAnterior = solicitud.estadoInterno;
 
-  solicitud.estadoInterno = ESTADOS.DOCUMENTACION_SOLICITADA;
-  solicitud.currentDepartment = ROLES.PRESTACIONES;
+  const transition = getNextTransition(solicitud.estadoInterno, rol, accion);
 
-  solicitud.historial.push({
-    tipo: TIPOS.SOLICITUD_DOCUMENTACION,
-    estadoAnterior,
-    estadoNuevo: ESTADOS.DOCUMENTACION_SOLICITADA,
-    changedBy: ROLES.PRESTACIONES,
-    documentosSolicitados,
-    fecha: new Date(),
-  });
-
-  solicitud.notas.push({
-    text: `Se solicita documentación: ${documentosSolicitados.join(", ")}`,
-    author: "Sistema",
-    date: new Date(),
-  });
-
-  await solicitud.save();
-
-  return solicitud;
-}
-
-/* ==============================
-ENVIAR A DIRECCION MEDICA
-============================== */
-
-async function sendToDireccionMedica(id) {
-  const solicitud = await Solicitud.findById(id);
-
-  if (!solicitud) {
-    throw new Error("Solicitud no encontrada");
+  if (!transition) {
+    throw new Error("Transición no permitida para este rol o estado");
   }
 
-  const estadoAnterior = solicitud.estadoInterno;
+  solicitud.estadoInterno = transition.nextEstado;
+  solicitud.currentDepartment = transition.nextDepartment;
 
-  solicitud.estadoInterno = ESTADOS.DIRECCION_MEDICA;
-  solicitud.currentDepartment = ROLES.DIRECCION_MEDICA;
+  const estadoNuevo = transition.nextEstado;
 
-  solicitud.historial.push({
-    tipo: TIPOS.REVISION_MEDICA,
+  const evento = createHistorialEvent({
+    tipo: accion,
     estadoAnterior,
-    estadoNuevo: ESTADOS.EN_REVISION,
-    changedBy: ROLES.DIRECCION_MEDICA,
-    fecha: new Date(),
+    estadoNuevo,
+    changedBy: rol,
   });
+
+  solicitud.historial.push(evento);
 
   await solicitud.save();
 
   return solicitud;
 }
 
-/* ==============================
-ENVIAR A ASESORIA JURIDICA
-============================== */
-
-async function sendToAsesoriaJuridica(id) {
-  const solicitud = await Solicitud.findById(id);
-
-  if (!solicitud) {
-    throw new Error("Solicitud no encontrada");
-  }
-
-  const estadoAnterior = solicitud.estadoInterno;
-
-  solicitud.estadoInterno = ESTADOS.ASESORIA_JURIDICA;
-  solicitud.currentDepartment = ROLES.ASESORIA_JURIDICA;
-
-  solicitud.historial.push({
-    tipo: TIPOS.REVISION_JURIDICA,
-    estadoAnterior,
-    estadoNuevo: ESTADOS.ASESORIA_JURIDICA,
-    changedBy: ROLES.ASESORIA_JURIDICA,
-    fecha: new Date(),
+export async function requestDocumentation(id, rol = "prestaciones") {
+  return applyAction({
+    solicitudId: id,
+    accion: "SOLICITAR_DOCUMENTACION",
+    rol,
   });
-
-  await solicitud.save();
-
-  return solicitud;
 }
 
-module.exports = {
-  getSolicitudes,
-  getSolicitudById,
-  requestDocumentation,
-  sendToDireccionMedica,
-  sendToAsesoriaJuridica,
-};
+export async function sendToMedicalDirection(id, rol = "prestaciones") {
+  return applyAction({
+    solicitudId: id,
+    accion: "ENVIAR_DIRECCION_MEDICA",
+    rol,
+  });
+}
+
+export async function sendToLegalAdvisory(id, rol = "prestaciones") {
+  return applyAction({
+    solicitudId: id,
+    accion: "ENVIAR_ASESORIA_JURIDICA",
+    rol,
+  });
+}
+
+export async function authorizeRequest(id, rol) {
+  return applyAction({
+    solicitudId: id,
+    accion: "AUTORIZAR",
+    rol,
+  });
+}
+
+export async function rejectRequest(id, rol) {
+  return applyAction({
+    solicitudId: id,
+    accion: "RECHAZAR",
+    rol,
+  });
+}

@@ -1,42 +1,34 @@
-const flowRules = {
-  PENDIENTE_INICIO_GESTION: {
-    next: [
-      "PENDIENTE_DIRECCION_MEDICA",
-      "PENDIENTE_ASESORIA_JURIDICA",
-      "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-    ],
-    department: "PRESTACIONES",
-  },
+// solicitudFlowRules.js
+// Versión simplificada para testing del backend de Flowly.
+// Permite cualquier transición sin validar estado, rol o departamento.
 
-  PENDIENTE_DIRECCION_MEDICA: {
-    next: ["AUTORIZADA", "RECHAZADA", "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO"],
-    department: "DIRECCION_MEDICA",
-  },
+export function getNextTransition(estadoActual, rol, accion) {
+  const ACTION_MAP = {
+    SOLICITAR_DOCUMENTACION: {
+      nextEstado: "DOCUMENTACION_SOLICITADA",
+      nextDepartment: "prestaciones",
+    },
 
-  PENDIENTE_ASESORIA_JURIDICA: {
-    next: ["AUTORIZADA", "RECHAZADA"],
-    department: "ASESORIA_JURIDICA",
-  },
+    ENVIAR_DIRECCION_MEDICA: {
+      nextEstado: "EN_REVISION",
+      nextDepartment: "direccionmedica",
+    },
 
-  PENDIENTE_DOCUMENTACION_DEL_ASEGURADO: {
-    next: ["PENDIENTE_REVISION_PRESTACIONES"],
-    department: null,
-  },
+    ENVIAR_ASESORIA_JURIDICA: {
+      nextEstado: "EN_REVISION",
+      nextDepartment: "asesoriajuridica",
+    },
 
-  PENDIENTE_REVISION_PRESTACIONES: {
-    next: ["PENDIENTE_DIRECCION_MEDICA", "PENDIENTE_ASESORIA_JURIDICA"],
-    department: "PRESTACIONES",
-  },
+    AUTORIZAR: {
+      nextEstado: "AUTORIZADA",
+      nextDepartment: rol || "admin",
+    },
 
-  AUTORIZADA: {
-    next: [],
-    department: null,
-  },
+    RECHAZAR: {
+      nextEstado: "RECHAZADA",
+      nextDepartment: rol || "admin",
+    },
+  };
 
-  RECHAZADA: {
-    next: [],
-    department: null,
-  },
-};
-
-module.exports = flowRules;
+  return ACTION_MAP[accion] || null;
+}

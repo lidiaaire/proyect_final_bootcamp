@@ -1,3 +1,5 @@
+console.log("CONTROLADOR DE SOLICITUDES CARGADO");
+
 const solicitudService = require("../services/solicitudService");
 
 const {
@@ -46,63 +48,21 @@ const getSolicitudById = async (req, res) => {
 };
 
 /* ==============================
-POST /solicitudes/:id/autorizar
-============================== */
-
-const authorizeSolicitud = async (req, res) => {
-  try {
-    const { solicitud, pdf } = await solicitudService.authorizeSolicitud(
-      req.params.id,
-    );
-
-    res.json({
-      message: "Solicitud autorizada correctamente",
-      solicitud,
-      pdf,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-/* ==============================
-POST /solicitudes/:id/rechazar
-============================== */
-
-const rejectSolicitud = async (req, res) => {
-  try {
-    const solicitud = await solicitudService.rejectSolicitud(
-      req.params.id,
-      req.body.comentario,
-    );
-
-    res.json({
-      message: "Solicitud rechazada correctamente",
-      solicitud,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-/* ==============================
 POST /solicitudes/:id/solicitar-documentacion
 ============================== */
 
 const requestDocumentation = async (req, res) => {
   try {
+    const rol = req.user?.role || "prestaciones";
+
     const solicitud = await solicitudService.requestDocumentation(
       req.params.id,
-      req.body.documentosSolicitados,
+      rol,
     );
 
     res.json({
       message: "Documentación solicitada correctamente",
-      solicitud,
+      solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
     res.status(500).json({
@@ -117,13 +77,16 @@ POST /solicitudes/:id/enviar-direccion-medica
 
 const sendToDireccionMedica = async (req, res) => {
   try {
-    const solicitud = await solicitudService.sendToDireccionMedica(
+    const rol = req.user?.role || "prestaciones";
+
+    const solicitud = await solicitudService.sendToMedicalDirection(
       req.params.id,
+      rol,
     );
 
     res.json({
       message: "Solicitud enviada a dirección médica",
-      solicitud,
+      solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
     res.status(500).json({
@@ -138,13 +101,61 @@ POST /solicitudes/:id/enviar-asesoria-juridica
 
 const sendToAsesoriaJuridica = async (req, res) => {
   try {
-    const solicitud = await solicitudService.sendToAsesoriaJuridica(
+    const rol = req.user?.role || "prestaciones";
+
+    const solicitud = await solicitudService.sendToLegalAdvisory(
       req.params.id,
+      rol,
     );
 
     res.json({
       message: "Solicitud enviada a asesoría jurídica",
-      solicitud,
+      solicitud: mapSolicitud(solicitud),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+/* ==============================
+POST /solicitudes/:id/autorizar
+============================== */
+
+const authorizeSolicitud = async (req, res) => {
+  try {
+    const rol = "direccionmedica";
+
+    const solicitud = await solicitudService.authorizeRequest(
+      req.params.id,
+      rol,
+    );
+
+    res.json({
+      message: "Solicitud autorizada correctamente",
+      solicitud: mapSolicitud(solicitud),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+/* ==============================
+POST /solicitudes/:id/rechazar
+============================== */
+
+const rejectSolicitud = async (req, res) => {
+  try {
+    const rol = req.user?.role || "prestaciones";
+
+    const solicitud = await solicitudService.rejectRequest(req.params.id, rol);
+
+    res.json({
+      message: "Solicitud rechazada correctamente",
+      solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
     res.status(500).json({
@@ -156,9 +167,9 @@ const sendToAsesoriaJuridica = async (req, res) => {
 module.exports = {
   getSolicitudes,
   getSolicitudById,
-  authorizeSolicitud,
-  rejectSolicitud,
   requestDocumentation,
   sendToDireccionMedica,
   sendToAsesoriaJuridica,
+  authorizeSolicitud,
+  rejectSolicitud,
 };
