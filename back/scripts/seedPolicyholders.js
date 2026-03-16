@@ -2,16 +2,25 @@ require("dotenv").config();
 
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
-const Policyholder = require("../src/models/policyholderModel");
+const Policyholder = require("../src/models/policyholderModel").default;
 
 const MONGO_URI = process.env.MONGO_URI;
 
 /*
-  CONTRATO RESPETADO (NO CAMBIAR):
+  CONTRATO DEL MODELO POLICYHOLDER
+
   Policyholder {
     id: String (numero de póliza)
     name: String
     dni: String
+
+    telefono: String
+    email: String
+    direccion: String
+
+    policyType: String
+    policyStartDate: Date
+
     internalNotes: [
       { text, author, date }
     ]
@@ -58,6 +67,20 @@ function generateInternalNotes() {
   return notes;
 }
 
+function getPolicyType() {
+  const types = ["POLIZA PRIVADA", "POLIZA COLECTIVO", "POLIZA FUNCIONARIO"];
+  return types[Math.floor(Math.random() * types.length)];
+}
+
+function getRandomPolicyStartDate() {
+  const yearsAgo = Math.floor(Math.random() * 15) + 1;
+
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - yearsAgo);
+
+  return date;
+}
+
 async function seedPolicyholders() {
   try {
     await mongoose.connect(MONGO_URI);
@@ -67,14 +90,26 @@ async function seedPolicyholders() {
     console.log("Policyholders eliminados");
 
     const totalPolicyholders = 120;
-
     const policyholders = [];
 
     for (let i = 0; i < totalPolicyholders; i++) {
       const policyholder = {
         id: generatePolicyNumber(i),
+
         name: faker.person.fullName(),
+
         dni: generateSpanishDNI(),
+
+        telefono: faker.phone.number(),
+
+        email: faker.internet.email(),
+
+        direccion: faker.location.streetAddress(),
+
+        policyType: getPolicyType(),
+
+        policyStartDate: getRandomPolicyStartDate(),
+
         internalNotes: generateInternalNotes(),
       };
 

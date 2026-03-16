@@ -49,8 +49,7 @@ async function seedSolicitudes() {
         numeroSolicitud: `SOL-${1000 + i}`,
 
         nombreCompleto: policyholder.name,
-
-        numeroPoliza: poliza,
+        numeroPoliza: `POL-${faker.number.int({ min: 1000, max: 1119 })}`,
 
         dni: policyholder.dni,
 

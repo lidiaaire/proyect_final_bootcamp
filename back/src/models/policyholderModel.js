@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const policyholderSchema = new mongoose.Schema({
   id: {
@@ -7,9 +7,36 @@ const policyholderSchema = new mongoose.Schema({
     unique: true,
   },
 
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
 
-  dni: String,
+  dni: {
+    type: String,
+    required: true,
+  },
+
+  telefono: {
+    type: String,
+  },
+
+  email: {
+    type: String,
+  },
+
+  direccion: {
+    type: String,
+  },
+
+  policyType: {
+    type: String,
+    enum: ["POLIZA PRIVADA", "POLIZA COLECTIVO", "POLIZA FUNCIONARIO"],
+  },
+
+  policyStartDate: {
+    type: Date,
+  },
 
   internalNotes: [
     {
@@ -20,4 +47,6 @@ const policyholderSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("Policyholder", policyholderSchema);
+const Policyholder = mongoose.model("Policyholder", policyholderSchema);
+
+export default Policyholder;

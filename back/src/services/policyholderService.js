@@ -1,5 +1,4 @@
-const Policyholder = require("../models/policyholderModel");
-
+const Policyholder = require("../models/policyholderModel").default;
 async function getAllPolicyholders() {
   return Policyholder.find();
 }

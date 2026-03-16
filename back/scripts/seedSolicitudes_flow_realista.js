@@ -179,7 +179,7 @@ async function seedSolicitudes() {
       const solicitud = {
         numeroSolicitud: "SOL-" + faker.number.int({ min: 1000, max: 9999 }),
         nombreCompleto: faker.person.fullName(),
-        numeroPoliza: faker.number.int({ min: 100000, max: 999999 }).toString(),
+        numeroPoliza: `POL-${faker.number.int({ min: 1000, max: 1119 })}`,
         dni: faker.string.alphanumeric(8).toUpperCase(),
         nombrePrueba: prueba.nombre,
         especialidad: prueba.especialidad,

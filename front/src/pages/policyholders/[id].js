@@ -30,8 +30,11 @@ export default function PolicyholderProfile() {
         const requestsData = await resRequests.json();
 
         const requestsArray =
-          requestsData.data || requestsData.solicitudes || requestsData || [];
-        console.log("REQUESTS API:", requestsArray);
+          requestsData.solicitudes ||
+          requestsData.data ||
+          requestsData.results ||
+          requestsData ||
+          [];
 
         const filteredRequests = requestsArray.filter(
           (req) => String(req.numeroPoliza) === String(policyholderData.id),
@@ -115,13 +118,13 @@ export default function PolicyholderProfile() {
           <h3>Datos del asegurado</h3>
 
           <p>
-            <strong>Teléfono:</strong> {policyholder.phone}
+            <strong>Teléfono:</strong> {policyholder.telefono}
           </p>
           <p>
             <strong>Email:</strong> {policyholder.email}
           </p>
           <p>
-            <strong>Dirección:</strong> {policyholder.address}
+            <strong>Dirección:</strong> {policyholder.direccion}
           </p>
         </div>
 

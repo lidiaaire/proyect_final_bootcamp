@@ -12,9 +12,14 @@ export default function PolicyholdersPage() {
       try {
         const res = await fetch("http://localhost:4000/policyholders");
         const data = await res.json();
-        setPolicyholders(data);
+
+        const array =
+          data.policyholders || data.data || data.results || data || [];
+
+        setPolicyholders(Array.isArray(array) ? array : []);
       } catch (error) {
         console.error("Error cargando asegurados:", error);
+        setPolicyholders([]);
       } finally {
         setLoading(false);
       }
