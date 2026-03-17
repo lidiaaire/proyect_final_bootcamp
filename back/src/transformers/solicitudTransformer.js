@@ -10,12 +10,34 @@ function mapSolicitud(solicitud) {
     centroMedico: solicitud.centroMedico,
 
     estadoInterno: solicitud.estadoInterno,
-
     currentDepartment: solicitud.currentDepartment,
-    documentos: solicitud.documentos,
-    historial: solicitud.historial,
-    notas: solicitud.notas,
     createdAt: solicitud.createdAt,
+
+    // ✅ DOCUMENTOS NORMALIZADOS (CLAVE DEL BUG)
+    documentos: (solicitud.documentos || []).map((doc) => ({
+      nombre: doc.nombre || doc.nombreArchivo || doc.filename,
+
+      subidoPor:
+        doc.subidoPor ||
+        doc.usuario ||
+        doc.uploadedBy ||
+        doc.user?.name ||
+        doc.createdBy ||
+        "Usuario",
+
+      fecha: doc.createdAt || null,
+
+      url: doc.url || doc.path || null,
+    })),
+
+    // ✅ NOTAS NORMALIZADAS
+    notas: (solicitud.notas || []).map((nota) => ({
+      text: nota.text,
+      author: nota.author,
+      date: nota.date,
+    })),
+
+    historial: solicitud.historial || [],
   };
 }
 

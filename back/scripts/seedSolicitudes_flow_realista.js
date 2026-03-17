@@ -4,7 +4,7 @@ const { faker } = require("@faker-js/faker");
 const Solicitud = require("../src/models/solicitudModel");
 
 const MONGO_URI = process.env.MONGO_URI;
-
+console.log("MONGO URI SEED:", MONGO_URI);
 /*
 ESTADOS QUE NECESITAMOS GENERAR
 

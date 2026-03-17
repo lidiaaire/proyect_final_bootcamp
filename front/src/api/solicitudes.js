@@ -115,6 +115,32 @@ export async function sendToMedicalDirection(id, justificacion) {
 }
 
 /* ==============================
+ENVIAR ASESORIA JURIDICA
+============================== */
+export const sendToLegal = async (id, motivo) => {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `http://localhost:4000/api/solicitudes/${id}/enviar-asesoria-juridica`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        justificacion: motivo,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Error enviando a asesoría jurídica");
+  }
+
+  return response.json();
+};
+/* ==============================
 AUTORIZAR
 ============================== */
 

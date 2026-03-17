@@ -1,55 +1,88 @@
-import Solicitud from "../models/solicitudModel.js";
-import { getNextTransition } from "../core/solicitudFlowRules.js";
-import { createHistorialEvent } from "../core/createHistorialEvent.js";
+const Solicitud = require("../models/solicitudModel");
+const { updateRequestStatus } = require("./request.service");
+const { generarAutorizacionPDF } = require("./generarAutorizacionPDF");
+const {
+  generarEmailSolicitudDocumentacion,
+  enviarEmailSimulado,
+} = require("./emailSimulationService");
 
-export async function getSolicitudes() {
+/* ==============================
+GET ALL
+============================== */
+async function getSolicitudes() {
   return await Solicitud.find().sort({ createdAt: -1 });
 }
 
-export async function getSolicitudById(id) {
+/* ==============================
+GET BY ID
+============================== */
+async function getSolicitudById(id) {
   return await Solicitud.findById(id);
 }
 
-async function applyAction({ solicitudId, accion, rol, justificacion }) {
-  const solicitud = await Solicitud.findById(solicitudId);
+/* ==============================
+SOLICITAR DOCUMENTACION
+============================== */
+async function requestDocumentation(id, user, justificacion) {
+  try {
+    const updated = await updateRequestStatus({
+      requestId: id,
+      newStatus: "DOCUMENTACION_SOLICITADA",
+      user,
+      comment: justificacion,
+    });
 
-  if (!solicitud) {
-    throw new Error("Solicitud no encontrada");
-  }
+    console.log("UPDATED:", updated);
 
-  const estadoAnterior = solicitud.estadoInterno;
+    const solicitud = await Solicitud.findById(id);
 
-  const transition = getNextTransition(solicitud.estadoInterno, rol, accion);
+    console.log("REHIDRATADA:", solicitud);
 
-  if (!transition) {
-    throw new Error("Transición no permitida para este rol o estado");
-  }
+    if (!solicitud) {
+      throw new Error("Solicitud no encontrada");
+    }
 
-  solicitud.estadoInterno = transition.nextEstado;
-  solicitud.currentDepartment = transition.nextDepartment;
+    if (!solicitud.notas) {
+      solicitud.notas = [];
+    }
 
-  const estadoNuevo = transition.nextEstado;
-
-  const evento = createHistorialEvent({
-    tipo: accion,
-    estadoAnterior,
-    estadoNuevo,
-    changedBy: rol,
-  });
-
-  solicitud.historial.push(evento);
-
-  /* ==============================
-  CREAR NOTA INTERNA
-  ============================== */
-
-  if (justificacion) {
     solicitud.notas.push({
-      author: rol.toUpperCase(),
-      text: justificacion,
+      text: `Se solicita documentación adicional: ${justificacion}`,
+      author: "PRESTACIONES",
       date: new Date(),
     });
+
+    console.log("ANTES SAVE");
+
+    await solicitud.save();
+
+    console.log("DESPUES SAVE");
+
+    return solicitud;
+  } catch (error) {
+    console.error("ERROR REAL BACK:", error); // 👈 CLAVE
+    throw error;
   }
+}
+
+/* ==============================
+ENVIAR A DIRECCION MEDICA
+============================== */
+async function sendToMedicalDirection(id, user, justificacion) {
+  const solicitud = await updateRequestStatus({
+    requestId: id,
+    newStatus: "EN_REVISION",
+    newDepartment: "direccionmedica",
+    user,
+    comment: justificacion,
+  });
+
+  // 🔥 AÑADIR NOTA
+  solicitud.notas.push({
+    text: `Caso enviado a Dirección Médica: ${justificacion}`,
+    author: "PRESTACIONES",
+    date: new Date(),
+  });
 
   await solicitud.save();
 
@@ -57,78 +90,121 @@ async function applyAction({ solicitudId, accion, rol, justificacion }) {
 }
 
 /* ==============================
-SOLICITAR DOCUMENTACION
-============================== */
-
-export async function requestDocumentation(
-  id,
-  rol = "prestaciones",
-  justificacion,
-) {
-  return applyAction({
-    solicitudId: id,
-    accion: "SOLICITAR_DOCUMENTACION",
-    rol,
-    justificacion,
-  });
-}
-
-/* ==============================
-ENVIAR A DIRECCION MEDICA
-============================== */
-
-export async function sendToMedicalDirection(
-  id,
-  rol = "prestaciones",
-  justificacion,
-) {
-  return applyAction({
-    solicitudId: id,
-    accion: "ENVIAR_DIRECCION_MEDICA",
-    rol,
-    justificacion,
-  });
-}
-
-/* ==============================
 ENVIAR A ASESORIA JURIDICA
 ============================== */
-
-export async function sendToLegalAdvisory(
-  id,
-  rol = "prestaciones",
-  justificacion,
-) {
-  return applyAction({
-    solicitudId: id,
-    accion: "ENVIAR_ASESORIA_JURIDICA",
-    rol,
-    justificacion,
+async function sendToLegalAdvisory(id, user, justificacion) {
+  const solicitud = await updateRequestStatus({
+    requestId: id,
+    newStatus: "EN_REVISION",
+    newDepartment: "asesoriajuridica",
+    user,
+    comment: justificacion,
   });
+
+  // 🔥 AÑADIR NOTA
+  solicitud.notas.push({
+    text: `Caso enviado a Asesoría Jurídica: ${justificacion}`,
+    author: "PRESTACIONES",
+    date: new Date(),
+  });
+
+  await solicitud.save();
+
+  return solicitud;
 }
 
 /* ==============================
 AUTORIZAR
 ============================== */
-
-export async function authorizeRequest(id, rol, justificacion) {
-  return applyAction({
-    solicitudId: id,
-    accion: "AUTORIZAR",
-    rol,
-    justificacion,
+async function authorizeRequest(id, user, justificacion) {
+  const solicitud = await updateRequestStatus({
+    requestId: id,
+    newStatus: "AUTORIZADA",
+    user,
+    comment: justificacion,
   });
+
+  // 🔥 AÑADIR NOTA
+  solicitud.notas.push({
+    text: `Solicitud autorizada: ${justificacion}`,
+    author: "PRESTACIONES",
+    date: new Date(),
+  });
+
+  await solicitud.save();
+
+  // 🔹 GENERAR PDF
+  const pdf = generarAutorizacionPDF(solicitud);
+
+  // 🔹 GENERAR EMAIL
+  const email = {
+    to: solicitud.nombreCompleto,
+    subject: "Solicitud autorizada",
+    body: `
+Estimado/a ${solicitud.nombreCompleto},
+
+Su solicitud ${solicitud.numeroSolicitud} ha sido AUTORIZADA.
+
+Puede descargar su autorización aquí:
+${pdf.url}
+
+Atentamente,
+Flowly
+`,
+  };
+
+  enviarEmailSimulado(email);
+
+  return solicitud;
 }
 
 /* ==============================
 RECHAZAR
 ============================== */
-
-export async function rejectRequest(id, rol, justificacion) {
-  return applyAction({
-    solicitudId: id,
-    accion: "RECHAZAR",
-    rol,
-    justificacion,
+async function rejectRequest(id, user, justificacion) {
+  const solicitud = await updateRequestStatus({
+    requestId: id,
+    newStatus: "RECHAZADA",
+    user,
+    comment: justificacion,
   });
+
+  // 🔥 AÑADIR NOTA
+  solicitud.notas.push({
+    text: `Solicitud rechazada: ${justificacion}`,
+    author: "PRESTACIONES",
+    date: new Date(),
+  });
+
+  await solicitud.save();
+
+  const email = {
+    to: solicitud.nombreCompleto,
+    subject: "Solicitud rechazada",
+    body: `
+Estimado/a ${solicitud.nombreCompleto},
+
+Su solicitud ${solicitud.numeroSolicitud} ha sido RECHAZADA.
+
+Motivo:
+${justificacion}
+
+Atentamente,
+Flowly
+`,
+  };
+
+  enviarEmailSimulado(email);
+
+  return solicitud;
 }
+
+module.exports = {
+  getSolicitudes,
+  getSolicitudById,
+  requestDocumentation,
+  sendToMedicalDirection,
+  sendToLegalAdvisory,
+  authorizeRequest,
+  rejectRequest,
+};

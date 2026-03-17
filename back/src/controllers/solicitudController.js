@@ -10,7 +10,6 @@ const {
 /* ==============================
 GET /solicitudes
 ============================== */
-
 const getSolicitudes = async (req, res) => {
   try {
     const solicitudes = await solicitudService.getSolicitudes();
@@ -28,7 +27,6 @@ const getSolicitudes = async (req, res) => {
 /* ==============================
 GET /solicitudes/:id
 ============================== */
-
 const getSolicitudById = async (req, res) => {
   try {
     const solicitud = await solicitudService.getSolicitudById(req.params.id);
@@ -50,15 +48,13 @@ const getSolicitudById = async (req, res) => {
 /* ==============================
 POST /solicitudes/:id/solicitar-documentacion
 ============================== */
-
 const requestDocumentation = async (req, res) => {
   try {
-    const rol = req.user?.role || "prestaciones";
-    const { justificacion } = req.body;
+    const { justificacion } = req.body || {};
 
     const solicitud = await solicitudService.requestDocumentation(
       req.params.id,
-      rol,
+      req.user,
       justificacion,
     );
 
@@ -76,20 +72,18 @@ const requestDocumentation = async (req, res) => {
 /* ==============================
 POST /solicitudes/:id/enviar-direccion-medica
 ============================== */
-
 const sendToDireccionMedica = async (req, res) => {
   try {
-    const rol = req.user?.role || "prestaciones";
-    const { justificacion } = req.body;
+    const { justificacion } = req.body || {};
 
     const solicitud = await solicitudService.sendToMedicalDirection(
       req.params.id,
-      rol,
+      req.user,
       justificacion,
     );
 
     res.json({
-      message: "Solicitud enviada a dirección médica",
+      message: "Solicitud enviada a Dirección Médica",
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
@@ -102,20 +96,18 @@ const sendToDireccionMedica = async (req, res) => {
 /* ==============================
 POST /solicitudes/:id/enviar-asesoria-juridica
 ============================== */
-
 const sendToAsesoriaJuridica = async (req, res) => {
   try {
-    const rol = req.user?.role || "prestaciones";
-    const { justificacion } = req.body;
+    const { justificacion } = req.body || {};
 
     const solicitud = await solicitudService.sendToLegalAdvisory(
       req.params.id,
-      rol,
+      req.user,
       justificacion,
     );
 
     res.json({
-      message: "Solicitud enviada a asesoría jurídica",
+      message: "Solicitud enviada a Asesoría Jurídica",
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
@@ -128,15 +120,13 @@ const sendToAsesoriaJuridica = async (req, res) => {
 /* ==============================
 POST /solicitudes/:id/autorizar
 ============================== */
-
 const authorizeSolicitud = async (req, res) => {
   try {
-    const rol = "direccionmedica";
-    const { justificacion } = req.body;
+    const { justificacion } = req.body || {};
 
     const solicitud = await solicitudService.authorizeRequest(
       req.params.id,
-      rol,
+      req.user,
       justificacion,
     );
 
@@ -154,15 +144,13 @@ const authorizeSolicitud = async (req, res) => {
 /* ==============================
 POST /solicitudes/:id/rechazar
 ============================== */
-
 const rejectSolicitud = async (req, res) => {
   try {
-    const rol = req.user?.role || "prestaciones";
-    const { justificacion } = req.body;
+    const { justificacion } = req.body || {};
 
     const solicitud = await solicitudService.rejectRequest(
       req.params.id,
-      rol,
+      req.user,
       justificacion,
     );
 

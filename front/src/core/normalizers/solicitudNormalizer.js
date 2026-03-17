@@ -1,31 +1,52 @@
-export function normalizeSolicitud(apiSolicitud) {
+export function normalizeSolicitud(solicitud) {
   return {
-    id: apiSolicitud.id || apiSolicitud._id,
+    id: solicitud._id || solicitud.id,
 
-    numeroSolicitud: apiSolicitud.numeroSolicitud,
+    numeroSolicitud: solicitud.numeroSolicitud,
+    nombreCompleto: solicitud.nombreCompleto,
+    numeroPoliza: solicitud.numeroPoliza,
+    dni: solicitud.dni,
 
-    nombreCompleto: apiSolicitud.nombreCompleto,
+    estadoInterno: solicitud.estadoInterno,
+    currentDepartment: solicitud.currentDepartment,
 
-    numeroPoliza: apiSolicitud.numeroPoliza,
+    /* =========================
+       DOCUMENTOS
+    ========================= */
+    documentos: (solicitud.documentos || []).map((doc) => ({
+      nombre: doc.nombre || doc.nombreArchivo || doc.filename,
 
-    dni: apiSolicitud.dni,
+      subidoPor:
+        doc.subidoPor ||
+        doc.usuario ||
+        doc.uploadedBy ||
+        doc.user?.name ||
+        doc.createdBy ||
+        "Usuario",
 
-    nombrePrueba: apiSolicitud.nombrePrueba,
+      fecha: doc.fecha || doc.createdAt || null,
 
-    especialidad: apiSolicitud.especialidad,
+      url: doc.url || doc.path || null,
+    })),
 
-    centroMedico: apiSolicitud.centroMedico,
+    /* =========================
+       NOTAS
+    ========================= */
+    notas: (solicitud.notas || []).map((nota) => ({
+      text: nota.text || nota.descripcion || "",
+      author: nota.author || nota.autor || "Sistema",
+      date: nota.date || nota.createdAt || null,
+    })),
 
-    estadoInterno: apiSolicitud.estadoInterno,
+    /* =========================
+       HISTORIAL (TIMELINE)
+    ========================= */
+    historial: (solicitud.historial || []).map((item) => ({
+      estado: item.estadoNuevo || item.estado || item.status || "SIN_ESTADO",
 
-    currentDepartment: apiSolicitud.currentDepartment,
+      changedBy: item.changedBy || item.usuario || item.user || "Sistema",
 
-    documentos: apiSolicitud.documentos || [],
-
-    historial: apiSolicitud.historial || [],
-
-    notas: apiSolicitud.notas || [],
-
-    createdAt: apiSolicitud.createdAt,
+      fecha: item.fecha || item.createdAt || null,
+    })),
   };
 }

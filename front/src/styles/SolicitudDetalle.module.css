@@ -49,7 +49,7 @@
 .rightColumn {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 /* ============================= */
@@ -57,7 +57,7 @@
 /* ============================= */
 
 .section {
-  padding: 20px;
+  padding: 16px;
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
@@ -88,12 +88,12 @@
 }
 
 .button {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   transition: 0.2s ease;
 }
 
@@ -175,11 +175,30 @@
 /* NOTES */
 /* ============================= */
 
+.noteInputBox {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  width: 100%; /* 👈 importante */
+}
+
 .noteInput {
+  flex: 1; /* 👈 ocupa todo el espacio disponible */
   width: 100%;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #cbd5f5;
+  font-size: 14px;
+}
+
+.noteInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.noteInputBox button {
+  height: 38px;
 }
 
 .notesFeed {
@@ -248,9 +267,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9fafb;
-  padding: 10px 12px;
-  border-radius: 8px;
+  background: #f8fafc; /* más suave */
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #eef2f7;
+  transition: all 0.2s ease;
+}
+
+.docItem:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
 }
 
 .docInfo {
@@ -288,18 +314,43 @@
 
 .docsActions {
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 14px;
+}
+.buttonPrimary {
+  background: #2563eb;
+  color: white;
+}
+
+.buttonPrimary:hover {
+  background: #1d4ed8;
 }
 
 .buttonSecondary {
-  background: #f3f4f6;
-  border: 1px solid #ddd;
-  color: #333;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 20px; /* 👈 clave */
 }
 
 .buttonSecondary:hover {
-  background: #e5e7eb;
+  background: #e2e8f0;
+}
+
+.buttonPrimary {
+  background-color: #16a34a;
+}
+
+.buttonDanger {
+  background-color: #dc2626;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 /* ============================= */
@@ -349,13 +400,19 @@
 }
 
 .activityItem {
-  display: block;
+  display: flex;
+  align-items: flex-start;
   gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  font-size: 13px;
 }
 
 .activityDot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #2563eb;
   margin-top: 6px;
@@ -434,28 +491,33 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .noteItem {
-  background: #f7f8fa;
+  background: #f8fafc;
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 12px;
+  border: 1px solid #eef2f7;
 }
 
 .noteHeader {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
+  color: #2563eb; /* 👈 color rol */
 }
 
 .noteText {
   font-size: 14px;
   margin-top: 4px;
+  color: #1e293b;
 }
 
 .noteDate {
-  font-size: 12px;
-  color: #888;
-  margin-top: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 6px;
 }
 
 .autorizacionBox {
