@@ -1,3 +1,5 @@
+// Este script genera 120 policyholders con datos realistas y variados para la colección "policyholders".
+
 require("dotenv").config();
 
 const mongoose = require("mongoose");
@@ -117,8 +119,6 @@ async function seedPolicyholders() {
     }
 
     await Policyholder.insertMany(policyholders);
-
-    console.log("Policyholders generados:", policyholders.length);
 
     await mongoose.disconnect();
     console.log("Mongo desconectado");

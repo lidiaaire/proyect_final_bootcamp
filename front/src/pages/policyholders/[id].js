@@ -24,23 +24,33 @@ export default function PolicyholderProfile() {
         );
         const policyholderData = await resPolicyholder.json();
 
+        const token = localStorage.getItem("token");
+
         const resRequests = await fetch(
           "http://localhost:4000/api/solicitudes",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
         const requestsData = await resRequests.json();
 
-        const requestsArray =
+        const raw =
           requestsData.solicitudes ||
           requestsData.data ||
           requestsData.results ||
-          requestsData ||
-          [];
+          requestsData;
 
-        const filteredRequests = requestsArray.filter(
-          (req) => String(req.numeroPoliza) === String(policyholderData.id),
-        );
+        const requestsArray = Array.isArray(raw) ? raw : [];
+
+        const filteredRequests = requestsArray.filter((req) => {
+          console.log("Comparando:", req.numeroPoliza, policyholderData.id);
+          return String(req.numeroPoliza) === String(policyholderData.id);
+        });
 
         setPolicyholder(policyholderData);
+
         setRequests(filteredRequests);
 
         setNotes(policyholderData.internalNotes || []);

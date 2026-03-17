@@ -1,3 +1,6 @@
+// Este archivo contiene una base de datos simulada de notas para cada asegurado. Cada nota incluye información sobre el texto de la nota, el autor, la fecha y el ID del asegurado al que pertenece. Esta base de datos se utiliza para simular la funcionalidad de gestión de notas en la aplicación, lo que permite a los usuarios agregar, editar y eliminar notas asociadas a cada asegurado. Esta base de datos simulada es útil para el desarrollo y las pruebas de la funcionalidad de gestión de notas antes de implementar una solución real, como una base de datos o un servicio de almacenamiento.
+// La estructura de cada nota en la base de datos incluye los siguientes campos: id (identificador único de la nota), policyholderId (ID del asegurado al que pertenece la nota), text (contenido de la nota), author (autor de la nota) y date (fecha en que se creó la nota). Esta estructura permite organizar y mostrar las notas de manera efectiva en la interfaz de usuario de la aplicación, asociándolas correctamente con cada asegurado.
+
 export const notes = [
   {
     id: 1,

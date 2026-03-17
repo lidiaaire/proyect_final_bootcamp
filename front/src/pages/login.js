@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../styles/Login.module.css";
-import Logo from "@/assets/logo-horizontal.svg";
 
 export default function Login() {
   const [email, setEmail] = useState("");

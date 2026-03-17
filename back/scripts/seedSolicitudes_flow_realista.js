@@ -1,23 +1,11 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
+
 const Solicitud = require("../src/models/solicitudModel");
+const Policyholder = require("../src/models/policyholderModel").default;
 
 const MONGO_URI = process.env.MONGO_URI;
-console.log("MONGO URI SEED:", MONGO_URI);
-/*
-ESTADOS QUE NECESITAMOS GENERAR
-
-- PENDIENTE_INICIO_GESTION
-- PENDIENTE_DOCUMENTACION_DEL_ASEGURADO
-- PENDIENTE_DIRECCION_MEDICA
-- PENDIENTE_ASESORIA_JURIDICA
-- AUTORIZADA
-- RECHAZADA
-
-La idea es que muchas solicitudes se queden "a mitad del flujo"
-para poder probar el sistema.
-*/
 
 const pruebas = [
   { nombre: "Ecografía", especialidad: "Radiología" },
@@ -50,9 +38,7 @@ function generarHistorialHastaEstado(createdAt, estadoObjetivo) {
     },
   ];
 
-  if (estadoObjetivo === "PENDIENTE_INICIO_GESTION") {
-    return historial;
-  }
+  if (estadoObjetivo === "PENDIENTE_INICIO_GESTION") return historial;
 
   historial.push({
     estado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
@@ -61,9 +47,8 @@ function generarHistorialHastaEstado(createdAt, estadoObjetivo) {
     tipo: "DOCUMENTACION_SOLICITADA",
   });
 
-  if (estadoObjetivo === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO") {
+  if (estadoObjetivo === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")
     return historial;
-  }
 
   historial.push({
     estado: "DOCUMENTACION_RECIBIDA",
@@ -79,9 +64,7 @@ function generarHistorialHastaEstado(createdAt, estadoObjetivo) {
     tipo: "ENVIO_DIRECCION_MEDICA",
   });
 
-  if (estadoObjetivo === "PENDIENTE_DIRECCION_MEDICA") {
-    return historial;
-  }
+  if (estadoObjetivo === "PENDIENTE_DIRECCION_MEDICA") return historial;
 
   if (estadoObjetivo === "PENDIENTE_ASESORIA_JURIDICA") {
     historial.push({
@@ -90,7 +73,6 @@ function generarHistorialHastaEstado(createdAt, estadoObjetivo) {
       fecha: t4,
       tipo: "REVISION_JURIDICA",
     });
-
     return historial;
   }
 
@@ -114,15 +96,9 @@ function generarDocumentos() {
 
   const total = Math.floor(Math.random() * 3) + 1;
 
-  const documentos = [];
-
-  for (let i = 0; i < total; i++) {
-    documentos.push({
-      nombre: posiblesDocs[Math.floor(Math.random() * posiblesDocs.length)],
-    });
-  }
-
-  return documentos;
+  return Array.from({ length: total }, () => ({
+    nombre: posiblesDocs[Math.floor(Math.random() * posiblesDocs.length)],
+  }));
 }
 
 function generarNotas() {
@@ -135,17 +111,11 @@ function generarNotas() {
 
   const total = faker.number.int({ min: 1, max: 2 });
 
-  const notas = [];
-
-  for (let i = 0; i < total; i++) {
-    notas.push({
-      text: faker.helpers.arrayElement(ejemplos),
-      author: faker.helpers.arrayElement(["PRESTACIONES", "ADMIN"]),
-      date: faker.date.recent({ days: 10 }),
-    });
-  }
-
-  return notas;
+  return Array.from({ length: total }, () => ({
+    text: faker.helpers.arrayElement(ejemplos),
+    author: faker.helpers.arrayElement(["PRESTACIONES", "ADMIN"]),
+    date: faker.date.recent({ days: 10 }),
+  }));
 }
 
 async function seedSolicitudes() {
@@ -156,7 +126,16 @@ async function seedSolicitudes() {
     await Solicitud.deleteMany({});
     console.log("Solicitudes eliminadas");
 
-    const estadosDistribucion = [
+    // 🔴 CLAVE: traer policyholders reales
+    const policyholders = await Policyholder.find();
+
+    if (!policyholders.length) {
+      throw new Error(
+        "No hay policyholders en la BD. Ejecuta primero el seed de policyholders.",
+      );
+    }
+
+    const estados = [
       "PENDIENTE_INICIO_GESTION",
       "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
       "PENDIENTE_DIRECCION_MEDICA",
@@ -171,16 +150,19 @@ async function seedSolicitudes() {
     for (let i = 0; i < total; i++) {
       const prueba = faker.helpers.arrayElement(pruebas);
       const createdAt = faker.date.past({ years: 1 });
+      const estadoFinal = faker.helpers.arrayElement(estados);
 
-      const estadoFinal = faker.helpers.arrayElement(estadosDistribucion);
-
-      const historial = generarHistorialHastaEstado(createdAt, estadoFinal);
+      // 🔴 CLAVE: seleccionar asegurado real
+      const randomPolicyholder =
+        policyholders[Math.floor(Math.random() * policyholders.length)];
 
       const solicitud = {
         numeroSolicitud: "SOL-" + faker.number.int({ min: 1000, max: 9999 }),
-        nombreCompleto: faker.person.fullName(),
-        numeroPoliza: `POL-${faker.number.int({ min: 1000, max: 1119 })}`,
-        dni: faker.string.alphanumeric(8).toUpperCase(),
+
+        nombreCompleto: randomPolicyholder.name,
+        numeroPoliza: randomPolicyholder.id,
+        dni: randomPolicyholder.dni,
+
         nombrePrueba: prueba.nombre,
         especialidad: prueba.especialidad,
         centroMedico: faker.helpers.arrayElement(centros),
@@ -195,7 +177,7 @@ async function seedSolicitudes() {
               : "PRESTACIONES",
 
         documentos: generarDocumentos(),
-        historial: historial,
+        historial: generarHistorialHastaEstado(createdAt, estadoFinal),
         notas: generarNotas(),
         createdAt: createdAt,
       };
@@ -208,6 +190,7 @@ async function seedSolicitudes() {
     console.log("Solicitudes generadas:", solicitudes.length);
 
     await mongoose.disconnect();
+    console.log("Mongo desconectado");
   } catch (error) {
     console.error("Error generando solicitudes:", error);
     process.exit(1);

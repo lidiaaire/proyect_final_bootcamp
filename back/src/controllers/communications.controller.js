@@ -1,3 +1,6 @@
+// Este archivo contiene los controladores para las rutas de comunicaciones (obtener mensajes y enviar mensajes).
+// Aquí se manejan las solicitudes entrantes, se validan los datos y se interactúa con la base de datos para obtener o guardar los mensajes de comunicación entre los diferentes roles (prestaciones, dirección médica, asesoría jurídica, etc.).
+
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 

@@ -1,4 +1,5 @@
-console.log("CONTROLADOR DE SOLICITUDES CARGADO");
+// Este archivo contiene los controladores para las rutas de solicitudes (obtener todas las solicitudes, obtener una solicitud por ID, solicitar documentación, enviar a dirección médica, enviar a asesoría jurídica, autorizar y rechazar solicitudes).
+// Aquí se manejan las solicitudes entrantes, se validan los datos y se llaman a los servicios correspondientes para realizar la lógica de negocio relacionada con las solicitudes.
 
 const solicitudService = require("../services/solicitudService");
 
@@ -20,6 +21,27 @@ const getSolicitudes = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error obteniendo solicitudes",
+    });
+  }
+};
+
+/* ==============================
+GET /solicitudes/policyholder/:numeroPoliza
+============================== */
+
+const getSolicitudesByPolicyholder = async (req, res) => {
+  try {
+    const { numeroPoliza } = req.params;
+
+    const solicitudes =
+      await solicitudService.getSolicitudesByPolicyholder(numeroPoliza);
+
+    res.json({
+      solicitudes: mapSolicitudes(solicitudes),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error obteniendo solicitudes por póliza",
     });
   }
 };
@@ -175,4 +197,5 @@ module.exports = {
   sendToAsesoriaJuridica,
   authorizeSolicitud,
   rejectSolicitud,
+  getSolicitudesByPolicyholder,
 };

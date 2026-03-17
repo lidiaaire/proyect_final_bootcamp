@@ -1,3 +1,7 @@
+// Este archivo contiene los controladores para las rutas de autenticación (login y registro).
+// Aquí se manejan las solicitudes entrantes, se validan los datos y se llaman a los servicios correspondientes para realizar la lógica de negocio.
+// Se utiliza bcrypt para el hashing de contraseñas y se importan los modelos necesarios para interactuar con la base de datos.
+
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const { login } = require("../services/authService");

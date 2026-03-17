@@ -1,3 +1,5 @@
+// Este script genera mensajes de comunicación más realistas y variados para la colección "communications".
+
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 

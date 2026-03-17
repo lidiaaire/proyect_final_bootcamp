@@ -1,3 +1,6 @@
+// Este archivo es el punto de entrada principal de la aplicación backend. Configura el servidor Express, conecta a la base de datos MongoDB, define los middlewares necesarios y establece las rutas para manejar las solicitudes de autenticación, gestión de solicitudes, gestión de asegurados y comunicaciones. Además, sirve archivos estáticos para documentos PDF y proporciona una ruta protegida para verificar la autenticación de los usuarios. Al ejecutar este archivo, se inicia el servidor en el puerto especificado, permitiendo que la aplicación backend esté disponible para manejar las solicitudes entrantes y proporcionar los servicios necesarios para la aplicación frontend.
+// Importamos los módulos necesarios para configurar el servidor, manejar las rutas y conectar a la base de datos.
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();

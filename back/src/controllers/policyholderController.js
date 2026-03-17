@@ -1,7 +1,14 @@
+// Este archivo contiene los controladores para las rutas de policyholders (obtener todos los policyholders y obtener un policyholder por ID).
+// Aquí se manejan las solicitudes entrantes, se validan los datos y se llaman a los servicios correspondientes para realizar la lógica de negocio relacionada con los policyholders.
+
 const {
   getAllPolicyholders,
   getPolicyholderById: _getPolicyholderById,
 } = require("../services/policyholderService");
+
+/* ==============================
+GET /policyholders
+============================== */
 
 async function getPolicyholders(req, res) {
   try {
@@ -11,6 +18,10 @@ async function getPolicyholders(req, res) {
     res.status(500).json({ error: "Error fetching policyholders" });
   }
 }
+
+/* ==============================
+GET /policyholders/:id
+============================== */
 
 async function getPolicyholderById(req, res) {
   try {
