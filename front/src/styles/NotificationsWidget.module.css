@@ -2,30 +2,32 @@
   background: white;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  padding: 20px;
+  padding: 16px;
 }
+
 .title {
   font-size: 16px;
   font-weight: 600;
   color: #111827;
   margin-bottom: 18px;
 }
+
 /* TIMELINE */
 
 .timeline {
   display: flex;
   flex-direction: column;
+  gap: 0px;
 }
 
 .event {
   display: grid;
   grid-template-columns: 16px 1fr;
   column-gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   text-decoration: none;
   color: inherit;
   position: relative;
-  align-items: start;
 }
 
 /* línea vertical */
@@ -34,8 +36,8 @@
   content: "";
   position: absolute;
   left: 7px;
-  top: 14px;
-  bottom: -20px;
+  top: 16px;
+  bottom: -22px;
   width: 2px;
   background: #e5e7eb;
 }
@@ -44,43 +46,76 @@
   display: none;
 }
 
-/* punto */
+/* DOT */
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #a78bfa;
-
+  background: #9ca3af;
   margin-top: 4px;
 }
 
-/* contenido */
+/* CONTENT */
 
 .content {
   display: flex;
   flex-direction: column;
 }
 
-.text {
-  font-size: 14px;
-  line-height: 1.35;
-  margin: 0; /* clave para que se alinee */
+/* ROLE (tipo badge gris suave) */
+
+.role {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  background: #dadfe3;
+  padding: 4px 10px;
+  border-radius: 999px;
+  width: fit-content;
+  margin-bottom: 4px;
 }
+
+/* TEXTO PRINCIPAL */
+
+.text {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ACCIÓN (verbo) */
+
+.action {
+  font-weight: 600;
+  color: #111827;
+  font-weight: 600;
+}
+.action::first-letter {
+  text-transform: uppercase;
+}
+/* PRUEBA (secundario) */
 
 .prueba {
   color: #6b7280;
 }
 
+/* PACIENTE (importante pero no agresivo) */
+
 .paciente {
   color: #111827;
+  font-weight: 500;
 }
 
+/* TIME */
+
 .time {
-  font-size: 12px;
+  font-size: 11px;
   color: #9ca3af;
   margin-top: 6px;
 }
+
+/* FOOTER */
 
 .footer {
   margin-top: 16px;

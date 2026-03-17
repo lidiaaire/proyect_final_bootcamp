@@ -29,15 +29,14 @@
   width: 100%;
   min-width: 0;
 }
-
 .dashboardSide {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .dashboardSide > * {
-  flex: 1;
+  flex: unset;
 }
 
 /* SALUDO */

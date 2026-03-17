@@ -11,6 +11,8 @@ const roleIcons = {
 
 export default function TeamWidget() {
   const [chatUser, setChatUser] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
 
   const team = [
     {
@@ -32,6 +34,19 @@ export default function TeamWidget() {
       email: "alicia.torres@flowly.com",
     },
   ];
+
+  const handleSend = () => {
+    if (!message.trim()) return;
+
+    const newMessage = {
+      text: message,
+      sender: "yo",
+      date: new Date(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setMessage("");
+  };
 
   return (
     <>
@@ -55,18 +70,16 @@ export default function TeamWidget() {
                 </div>
 
                 <div className={styles.actions}>
-                  {/* CHAT */}
                   <MessageCircle
                     size={16}
                     style={{ cursor: "pointer" }}
-                    onClick={() => setChatUser(person)}
+                    onClick={() => {
+                      setChatUser(person);
+                      setMessages([]); // reset conversación
+                    }}
                   />
 
-                  {/* EMAIL */}
-                  <a
-                    href={`mailto:${person.email}`}
-                    style={{ color: "#6b7280" }}
-                  >
+                  <a href={`mailto:${person.email}`}>
                     <Mail size={16} />
                   </a>
 
@@ -79,10 +92,10 @@ export default function TeamWidget() {
       </div>
 
       {/* CHAT MODAL */}
-
       {chatUser && (
         <div className={styles.chatOverlay}>
           <div className={styles.chatBox}>
+            {/* HEADER */}
             <div className={styles.chatHeader}>
               Chat con {chatUser.name}
               <button
@@ -93,16 +106,37 @@ export default function TeamWidget() {
               </button>
             </div>
 
+            {/* MENSAJES */}
             <div className={styles.chatMessages}>
-              <p className={styles.placeholder}>
-                Conversación iniciada con {chatUser.name}
-              </p>
+              {messages.length === 0 && (
+                <p className={styles.placeholder}>
+                  Conversación iniciada con {chatUser.name}
+                </p>
+              )}
+
+              {messages.map((msg, i) => (
+                <div key={i} className={styles.myMessage}>
+                  {msg.text}
+                </div>
+              ))}
             </div>
 
-            <input
-              className={styles.chatInput}
-              placeholder="Escribe un mensaje..."
-            />
+            {/* INPUT + BOTÓN */}
+            <div className={styles.chatInputContainer}>
+              <input
+                className={styles.chatInput}
+                placeholder="Escribe un mensaje..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSend();
+                }}
+              />
+
+              <button className={styles.sendButton} onClick={handleSend}>
+                Enviar
+              </button>
+            </div>
           </div>
         </div>
       )}
