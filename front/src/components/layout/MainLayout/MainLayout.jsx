@@ -20,6 +20,12 @@ export default function MainLayout({ children }) {
     "General",
   ];
 
+  // ✅ LOGOUT AQUÍ (global)
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
   return (
     <div className={styles.container}>
       <aside className={styles.sidebar}>
@@ -63,7 +69,31 @@ export default function MainLayout({ children }) {
         </div>
       </aside>
 
-      <main className={styles.mainContent}>{children}</main>
+      <div className={styles.mainContent}>
+        {/* 🔴 TOPBAR GLOBAL */}
+        <header className={styles.topbar}>
+          <div className={styles.search}>
+            <input type="text" placeholder="Buscar..." />
+          </div>
+
+          <div className={styles.topbarRight}>
+            <span className={styles.icon}>🔔</span>
+            <span className={styles.icon}>⚙️</span>
+
+            <div className={styles.user}>
+              <div className={styles.avatar}>P</div>
+              <span>María López</span>
+
+              {/* ✅ LOGOUT AQUÍ */}
+              <button onClick={handleLogout} className={styles.logoutButton}>
+                Salir
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main className={styles.pageContent}>{children}</main>
+      </div>
     </div>
   );
 }

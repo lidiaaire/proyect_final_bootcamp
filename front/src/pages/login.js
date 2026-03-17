@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import styles from "../styles/Login.module.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const response = await fetch("http://localhost:4000/api/auth/login", {
@@ -25,38 +28,48 @@ export default function Login() {
       }
 
       localStorage.setItem("token", data.token);
-
       router.push("/");
     } catch (error) {
-      console.error(error);
+      setError(error.message);
     }
   };
 
   return (
-    <main>
-      <h1>Login</h1>
+    <main className={styles.container}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Flowly</h1>
+        <p className={styles.subtitle}>Acceso a la plataforma</p>
 
-      <form onSubmit={handleLogin}>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        <form onSubmit={handleLogin} className={styles.form}>
+          <div className={styles.field}>
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Introduce tu email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+          <div className={styles.field}>
+            <label>Contraseña</label>
+            <input
+              type="password"
+              placeholder="Introduce tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit">Entrar</button>
-      </form>
+          {error && <p className={styles.error}>{error}</p>}
+
+          <button type="submit" className={styles.button}>
+            Entrar
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

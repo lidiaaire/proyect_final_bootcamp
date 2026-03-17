@@ -4,6 +4,7 @@
   background: #f6f8fb;
 }
 
+/* SIDEBAR (igual) */
 .sidebar {
   width: 260px;
   background: #ffffff;
@@ -100,7 +101,84 @@
   cursor: pointer;
 }
 
+/* 🔴 CAMBIO CLAVE */
 .mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* importante */
+}
+
+.logoutButton {
+  margin-left: 12px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ef4444;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: #dc2626;
+}
+/* 🔴 TOPBAR GLOBAL */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e6e8eb;
+}
+
+/* BUSCADOR */
+.search input {
+  width: 260px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 14px;
+}
+
+/* DERECHA */
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* USER */
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* 🔴 CONTENIDO REAL DE LAS PÁGINAS */
+.pageContent {
   flex: 1;
   padding: 30px;
   overflow-y: auto;
