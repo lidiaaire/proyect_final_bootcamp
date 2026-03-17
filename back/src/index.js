@@ -21,6 +21,10 @@ app.use(express.json());
 
 // Servir documentos PDF
 app.use("/docs", express.static(path.join(process.cwd(), "public/docs")));
+app.use(
+  "/autorizaciones",
+  express.static(path.join(process.cwd(), "public/autorizaciones")),
+);
 
 app.use(
   "/autorizaciones",

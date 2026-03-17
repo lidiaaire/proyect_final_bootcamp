@@ -135,6 +135,8 @@ const authorizeSolicitud = async (req, res) => {
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
+    console.error("ERROR AUTORIZAR:", error);
+
     res.status(500).json({
       message: error.message,
     });

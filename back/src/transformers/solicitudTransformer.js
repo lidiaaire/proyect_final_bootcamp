@@ -1,4 +1,7 @@
+console.log("TRANSFORMER EJECUTANDO");
+
 function mapSolicitud(solicitud) {
+  console.log("PDF EN TRANSFORMER:", solicitud.autorizacionPdf);
   return {
     id: solicitud._id,
     numeroSolicitud: solicitud.numeroSolicitud,
@@ -38,6 +41,8 @@ function mapSolicitud(solicitud) {
     })),
 
     historial: solicitud.historial || [],
+
+    autorizacionPdf: solicitud.autorizacionPdf,
   };
 }
 

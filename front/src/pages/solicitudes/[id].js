@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/SolicitudDetalle.module.css";
+import PDFViewer from "@/components/ui/PDFViewer/PDFViewer";
 
 import {
   getRequest,
@@ -29,7 +30,12 @@ export default function SolicitudDetallePage() {
 
   const [solicitud, setSolicitud] = useState(null);
   const [nuevaNota, setNuevaNota] = useState("");
-
+  useEffect(() => {
+    if (solicitud) {
+      console.log("SOLICITUD COMPLETA:", solicitud);
+      console.log("PDF URL:", solicitud.autorizacionPdf);
+    }
+  }, [solicitud]);
   const fetchSolicitud = async () => {
     if (!id) return;
     const data = await getRequest(id);
@@ -69,11 +75,14 @@ export default function SolicitudDetallePage() {
   };
 
   const handleAutorizar = async () => {
-    const motivo = prompt("Motivo autorización");
-    if (!motivo) return;
+    try {
+      const response = await authorizeRequest(id);
 
-    await authorizeRequest(id, motivo);
-    await fetchSolicitud();
+      // 🔴 CLAVE: actualizar estado con la respuesta
+      setSolicitud(response.solicitud);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleRechazar = async () => {
@@ -276,6 +285,7 @@ export default function SolicitudDetallePage() {
           </div>
 
           {/* ACCIONES */}
+
           {!["AUTORIZADA", "RECHAZADA"].includes(solicitud.estadoInterno) && (
             <div className={styles.section}>
               <h3>Acciones</h3>
@@ -295,6 +305,28 @@ export default function SolicitudDetallePage() {
               </button>
             </div>
           )}
+
+          {solicitud.estadoInterno === "AUTORIZADA" &&
+            solicitud.autorizacionPdf && (
+              <div className={styles.docItem}>
+                <div className={styles.docInfo}>
+                  <span className={styles.docName}>
+                    autorizacion_{solicitud.numeroSolicitud}.pdf
+                  </span>
+                  <span className={styles.docMeta}>
+                    Documento generado automáticamente
+                  </span>
+                </div>
+
+                <a
+                  href={`http://localhost:4000${solicitud.autorizacionPdf}`}
+                  target="_blank"
+                  className={styles.docButton}
+                >
+                  Ver
+                </a>
+              </div>
+            )}
         </div>
       </div>
     </>

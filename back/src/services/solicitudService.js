@@ -117,26 +117,29 @@ async function sendToLegalAdvisory(id, user, justificacion) {
 AUTORIZAR
 ============================== */
 async function authorizeRequest(id, user, justificacion) {
-  const solicitud = await updateRequestStatus({
+  await updateRequestStatus({
     requestId: id,
     newStatus: "AUTORIZADA",
     user,
     comment: justificacion,
   });
 
-  // 🔥 AÑADIR NOTA
+  const solicitud = await Solicitud.findById(id);
+
   solicitud.notas.push({
     text: `Solicitud autorizada: ${justificacion}`,
     author: "PRESTACIONES",
     date: new Date(),
   });
 
+  // 🔹 GENERAR PDF
+  const pdf = await generarAutorizacionPDF(solicitud);
+
+  solicitud.autorizacionPdf = pdf.url;
+
+  // 🔴 UN SOLO SAVE
   await solicitud.save();
 
-  // 🔹 GENERAR PDF
-  const pdf = generarAutorizacionPDF(solicitud);
-
-  // 🔹 GENERAR EMAIL
   const email = {
     to: solicitud.nombreCompleto,
     subject: "Solicitud autorizada",
@@ -146,7 +149,7 @@ Estimado/a ${solicitud.nombreCompleto},
 Su solicitud ${solicitud.numeroSolicitud} ha sido AUTORIZADA.
 
 Puede descargar su autorización aquí:
-${pdf.url}
+http://localhost:4000${pdf.url}
 
 Atentamente,
 Flowly
@@ -155,7 +158,7 @@ Flowly
 
   enviarEmailSimulado(email);
 
-  return solicitud;
+  return await Solicitud.findById(id);
 }
 
 /* ==============================

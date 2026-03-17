@@ -42,6 +42,9 @@ const solicitudSchema = new mongoose.Schema(
         date: Date,
       },
     ],
+    autorizacionPdf: {
+      type: String,
+    },
   },
   { timestamps: true },
 );
