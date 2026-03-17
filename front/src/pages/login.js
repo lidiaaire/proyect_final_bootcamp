@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../styles/Login.module.css";
+import Logo from "@/assets/logo-horizontal.svg";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -36,40 +37,67 @@ export default function Login() {
 
   return (
     <main className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Flowly</h1>
-        <p className={styles.subtitle}>Acceso a la plataforma</p>
+      {/* LEFT PANEL */}
+      <div className={styles.leftPanel}>
+        <div className={styles.overlay}>
+          <h1>Gestiona autorizaciones médicas de forma ágil</h1>
+          <p>Colabora entre departamentos en tiempo real</p>
+        </div>
+      </div>
 
-        <form onSubmit={handleLogin} className={styles.form}>
-          <div className={styles.field}>
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="Introduce tu email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+      {/* RIGHT PANEL */}
+      <div className={styles.rightPanel}>
+        <div className={styles.card}>
+          {/* HEADER NUEVO */}
+          <div className={styles.header}>
+            <h1 className={styles.logoText}>Flowly</h1>
           </div>
 
-          <div className={styles.field}>
-            <label>Contraseña</label>
-            <input
-              type="password"
-              placeholder="Introduce tu contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <p className={styles.subtitle}>
+            Optimiza la gestión de autorizaciones médicas
+          </p>
 
-          {error && <p className={styles.error}>{error}</p>}
+          <form onSubmit={handleLogin} className={styles.form}>
+            <div className={styles.field}>
+              <label>Email</label>
+              <div className={styles.inputWrapper}>
+                <span className={styles.icon}>📧</span>
+                <input
+                  type="email"
+                  placeholder="Introduce tu email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-          <button type="submit" className={styles.button}>
-            Entrar
-          </button>
-        </form>
+            <div className={styles.field}>
+              <label>Contraseña</label>
+              <div className={styles.inputWrapper}>
+                <span className={styles.icon}>🔒</span>
+                <input
+                  type="password"
+                  placeholder="Introduce tu contraseña"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {error && <p className={styles.error}>{error}</p>}
+
+            <button type="submit" className={styles.button}>
+              Entrar
+            </button>
+
+            <p className={styles.forgotPassword}>¿Olvidaste tu contraseña?</p>
+          </form>
+        </div>
       </div>
     </main>
   );
 }
+
+Login.noLayout = true;

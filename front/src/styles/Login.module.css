@@ -1,34 +1,117 @@
+/* =========================
+   CONTENEDOR
+========================= */
 .container {
-  height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+  height: 100vh;
+  width: 100%;
 }
 
+/* =========================
+   LEFT PANEL
+========================= */
+.leftPanel {
+  flex: 1;
+  background-image: url("/images/login-medical.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 40, 80, 0.2) 0%,
+    rgba(20, 40, 80, 0.9) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 60px;
+  color: white;
+}
+
+.overlay h1 {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  max-width: 420px;
+  letter-spacing: -0.5px;
+}
+
+.overlay p {
+  font-size: 16px;
+  opacity: 0.85;
+  max-width: 380px;
+}
+
+/* =========================
+   RIGHT PANEL
+========================= */
+.rightPanel {
+  flex: 1;
+  background: linear-gradient(180deg, #f7f9fb, #eef2f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* =========================
+   CARD
+========================= */
 .card {
   background: white;
-  padding: 40px;
-  border-radius: 16px;
+  padding: 52px 48px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 420px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(2px);
+  /* ajuste visual fino */
+  transform: translateY(20px);
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logoText {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #2f6fb2;
+  margin: 0;
 }
 
 .title {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 600;
-  margin-bottom: 8px;
-  text-align: center;
+  margin: 0;
+  color: #111827;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #666;
-  margin-bottom: 24px;
+  color: #6b7280;
+  margin-bottom: 28px;
   text-align: center;
 }
 
+/* =========================
+   FORM
+========================= */
 .form {
   display: flex;
   flex-direction: column;
@@ -41,36 +124,72 @@
   gap: 6px;
 }
 
-.field input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
+/* =========================
+   INPUTS
+========================= */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0 12px;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
 }
 
-.field input:focus {
-  outline: none;
-  border-color: #4a90e2;
-}
-
-.button {
-  margin-top: 10px;
-  padding: 12px;
+.inputWrapper input {
   border: none;
-  border-radius: 8px;
+  outline: none;
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  background: transparent;
+}
+
+.inputWrapper:focus-within {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+}
+
+.icon {
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+/* =========================
+   BOTÓN
+========================= */
+.button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 500;
-  background-color: #4a90e2;
+  font-weight: 600;
+  background: linear-gradient(135deg, #4a90e2, #2f6fb2);
   color: white;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .button:hover {
-  background-color: #357ab8;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* =========================
+   OTROS
+========================= */
 .error {
   color: red;
   font-size: 13px;
   text-align: center;
+}
+
+.forgotPassword {
+  margin-top: 12px;
+  font-size: 13px;
+  text-align: center;
+  color: #4a90e2;
+  cursor: pointer;
 }
