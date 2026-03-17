@@ -44,15 +44,24 @@ export default function PolicyholderProfile() {
 
         const requestsArray = Array.isArray(raw) ? raw : [];
 
+        console.log("Policyholder ID:", policyholderData.id);
+        console.log("Total requests:", requestsArray.length);
+
         const filteredRequests = requestsArray.filter((req) => {
-          console.log("Comparando:", req.numeroPoliza, policyholderData.id);
-          return String(req.numeroPoliza) === String(policyholderData.id);
+          const match =
+            String(req.numeroPoliza) === String(policyholderData.id);
+
+          if (match) {
+            console.log("MATCH:", req.numeroPoliza);
+          }
+
+          return match;
         });
 
+        console.log("Filtered:", filteredRequests.length);
+
         setPolicyholder(policyholderData);
-
         setRequests(filteredRequests);
-
         setNotes(policyholderData.internalNotes || []);
       } catch (error) {
         console.error("Error cargando perfil:", error);
@@ -143,11 +152,19 @@ export default function PolicyholderProfile() {
 
           <div className={styles.notesList}>
             {notes.map((note, index) => (
-              <div key={index} className={styles.noteItem}>
-                <div className={styles.noteDate}>
-                  {note.date} — {note.author}
+              <div key={index} className={styles.noteCard}>
+                <div className={styles.noteHeader}>
+                  <span className={styles.noteAuthor}>
+                    {note.author || "SISTEMA"}
+                  </span>
+                  <span className={styles.noteDate}>
+                    {note.date ? new Date(note.date).toLocaleDateString() : ""}
+                  </span>
                 </div>
-                <div>{note.text}</div>
+
+                <div className={styles.noteText}>
+                  {note.text || "Sin contenido"}
+                </div>
               </div>
             ))}
           </div>

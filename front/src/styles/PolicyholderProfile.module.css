@@ -84,31 +84,79 @@
   margin-bottom: 15px;
 }
 
+/* ===================== */
+/* NOTAS - NUEVO TIMELINE */
+/* ===================== */
+.notesTimeline {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.noteRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.timeline {
+  margin-top: 8px;
+  min-width: 10px; /* evita que empuje layout */
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+}
 .notesList {
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 15px;
-  max-height: 180px;
-  overflow: auto;
 }
 
-.noteItem {
-  padding: 10px;
-  border-left: 3px solid #3b82f6;
-  background: #f8fafc;
-  border-radius: 4px;
+.noteCard {
+  background: white;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.noteCard:hover {
+  background: #f9fafb;
+}
+
+.noteHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.noteAuthor {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
 }
 
 .noteDate {
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 3px;
+  font-size: 11px;
+  color: #9ca3af;
 }
 
+.noteText {
+  font-size: 14px;
+  color: #111827;
+}
+
+/* Input */
 .noteInput {
   display: flex;
   gap: 8px;
+  margin-top: 10px;
 }
 
 .noteInput input {
@@ -127,39 +175,9 @@
   cursor: pointer;
 }
 
-.notesList {
-  position: relative;
-  padding-left: 20px;
-}
-
-.notesList::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #e5e7eb;
-}
-
-.noteItem {
-  position: relative;
-  background: #f9fafb;
-  padding: 12px 14px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.noteItem::before {
-  content: "";
-  position: absolute;
-  left: -18px;
-  top: 14px;
-  width: 10px;
-  height: 10px;
-  background: #2563eb;
-  border-radius: 50%;
-}
+/* ===================== */
+/* TABLA SOLICITUDES */
+/* ===================== */
 
 .tableCard {
   background: white;
@@ -212,6 +230,7 @@
   background: #fef3c7;
   color: #92400e;
 }
+
 .viewButton {
   border: 1px solid #d1d5db;
   background: white;
