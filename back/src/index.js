@@ -29,19 +29,14 @@ app.use(
   express.static(path.join(process.cwd(), "public/autorizaciones")),
 );
 
-app.use(
-  "/autorizaciones",
-  express.static(path.join(process.cwd(), "public/autorizaciones")),
-);
-
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/solicitudes", solicitudRoutes);
-app.use("/policyholders", policyholderRoutes);
+app.use("/api/policyholders", policyholderRoutes);
 app.use("/api", communicationsRoutes);
 
 app.get("/", (req, res) => {
-  res.json({ message: "API Autorizaciones funcionando" });
+  res.json({ message: "API Flowly funcionando" });
 });
 
 app.get("/api/protected", verifyToken, (req, res) => {

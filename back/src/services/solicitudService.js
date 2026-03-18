@@ -131,13 +131,15 @@ async function authorizeRequest(id, user, justificacion) {
     requestId: id,
     newStatus: "AUTORIZADA",
     user,
-    comment: justificacion,
+    comment: justificacion || "Autorización sin observaciones",
   });
 
   const solicitud = await Solicitud.findById(id);
 
   solicitud.notas.push({
-    text: `Solicitud autorizada: ${justificacion}`,
+    text: justificacion
+      ? `Solicitud autorizada: ${justificacion}`
+      : "Solicitud autorizada correctamente",
     author: "PRESTACIONES",
     date: new Date(),
   });

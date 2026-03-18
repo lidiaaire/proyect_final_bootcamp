@@ -12,7 +12,7 @@ const {
   requestDocumentation,
   sendToDireccionMedica,
   sendToAsesoriaJuridica,
-  getSolicitudesByPolicyholder, // ✅ NUEVO
+  getSolicitudesByPolicyholder,
 } = require("../controllers/solicitudController");
 
 // 🔐 Middleware de autenticación
@@ -21,7 +21,8 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 /* ==============================
 GET /api/solicitudes
 ============================== */
-router.get("/", verifyToken, getSolicitudes);
+// 🔓 SIN TOKEN
+router.get("/", getSolicitudes);
 
 /* ==============================
 GET /api/solicitudes/policyholder/:numeroPoliza

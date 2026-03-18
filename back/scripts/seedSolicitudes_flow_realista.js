@@ -1,4 +1,3 @@
-console.log("SEED NUEVO EJECUTANDO");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
@@ -153,7 +152,6 @@ async function seedSolicitudes() {
       const createdAt = faker.date.past({ years: 1 });
       const estadoFinal = faker.helpers.arrayElement(estados);
 
-      // 🔴 CLAVE: seleccionar asegurado real
       const randomPolicyholder =
         policyholders[Math.floor(Math.random() * policyholders.length)];
 
@@ -187,7 +185,6 @@ async function seedSolicitudes() {
 
     for (const solicitud of solicitudes) {
       const doc = await Solicitud.create(solicitud);
-      console.log("createdAt:", doc.createdAt);
     }
 
     await mongoose.disconnect();

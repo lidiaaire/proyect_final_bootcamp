@@ -1,11 +1,12 @@
-// Seed de comunicaciones tipo comunicados corporativos (Flowly)
+// Seed de comunicaciones tipo comunicados corporativos (Flowly - CORREGIDO)
 
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 const uri = process.env.MONGO_URI || "mongodb://localhost:27017";
+const DB_NAME = "flowly";
 
-// 🔹 CANALES
+// 🔹 CANALES (deben coincidir con controller)
 const channels = [
   "Avisos Oficiales",
   "Prestaciones",
@@ -14,7 +15,7 @@ const channels = [
   "General",
 ];
 
-// 🔹 AUTORES (más realista)
+// 🔹 AUTORES
 const users = [
   { name: "Dirección", role: "Corporativo" },
   { name: "Laura Gómez", role: "Prestaciones" },
@@ -28,98 +29,90 @@ const users = [
   { name: "Lucía Torres", role: "Asesoría Jurídica" },
 ];
 
-// 🔹 COMUNICADOS POR CANAL (estructura real)
+// 🔹 CONTENIDO BASE
 const channelCommunications = {
   "Avisos Oficiales": [
     {
       titulo: "Nueva normativa en pruebas de alta complejidad",
       contenido:
-        "A partir del próximo mes será obligatorio adjuntar informe clínico detallado en todas las solicitudes de pruebas de alta complejidad. Esta medida busca mejorar la validación médica previa.",
+        "Será obligatorio adjuntar informe clínico detallado en pruebas de alta complejidad.",
       tipo: "normativa",
     },
     {
-      titulo: "Nuevo acuerdo con Hospital San Juan",
+      titulo: "Nuevo acuerdo hospitalario",
       contenido:
-        "Se ha firmado un acuerdo estratégico con el Hospital San Juan para reducir los tiempos de autorización en pruebas diagnósticas.",
+        "Acuerdo con Hospital San Juan para reducir tiempos de autorización.",
       tipo: "acuerdo",
     },
   ],
 
   Prestaciones: [
     {
-      titulo: "Cambio en la validación documental",
-      contenido:
-        "Todos los expedientes deberán incluir copia certificada del documento original antes de avanzar a revisión médica.",
+      titulo: "Cambio en validación documental",
+      contenido: "Se requiere copia certificada antes de revisión médica.",
       tipo: "actualizacion",
     },
     {
-      titulo: "Nuevo campo obligatorio en solicitudes",
-      contenido:
-        "Se incorpora el campo 'Centro Médico' como obligatorio en todas las nuevas solicitudes.",
+      titulo: "Campo obligatorio en solicitudes",
+      contenido: "Centro Médico pasa a ser obligatorio.",
       tipo: "implementacion",
     },
   ],
 
   "Dirección Médica": [
     {
-      titulo: "Actualización de protocolos quirúrgicos",
-      contenido:
-        "Se han actualizado los protocolos de autorización para intervenciones quirúrgicas, priorizando casos oncológicos.",
+      titulo: "Actualización protocolos",
+      contenido: "Nuevos criterios para intervenciones quirúrgicas.",
       tipo: "protocolo",
     },
     {
-      titulo: "Nuevo criterio en pruebas TAC",
-      contenido:
-        "Todas las solicitudes de TAC deberán incluir informe previo del especialista para su validación.",
+      titulo: "Nuevo criterio TAC",
+      contenido: "Requiere informe previo del especialista.",
       tipo: "criterio",
     },
   ],
 
   "Asesoría Jurídica": [
     {
-      titulo: "Nueva normativa en rechazos",
-      contenido:
-        "Todos los rechazos deberán incluir justificación legal documentada para evitar posibles reclamaciones.",
+      titulo: "Normativa en rechazos",
+      contenido: "Debe incluir justificación legal documentada.",
       tipo: "legal",
     },
     {
-      titulo: "Cobertura internacional actualizada",
-      contenido:
-        "Se actualizan las condiciones de cobertura para pruebas realizadas fuera del territorio nacional.",
+      titulo: "Cobertura internacional",
+      contenido: "Actualización de condiciones fuera del país.",
       tipo: "legal",
     },
   ],
 
   General: [
     {
-      titulo: "Recordatorio de uso de la plataforma",
-      contenido:
-        "Se recuerda a todos los usuarios la importancia de mantener los expedientes actualizados y revisar diariamente las solicitudes asignadas.",
+      titulo: "Uso de la plataforma",
+      contenido: "Mantener expedientes actualizados diariamente.",
       tipo: "informativo",
     },
     {
-      titulo: "Mejora en tiempos de gestión",
-      contenido:
-        "Se han reducido los tiempos medios de autorización en un 15% durante el último mes.",
+      titulo: "Mejora de tiempos",
+      contenido: "Reducción del 15% en autorizaciones.",
       tipo: "informativo",
     },
   ],
 };
 
-// 🔹 UTILIDAD
+// 🔹 UTIL
 function randomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// 🔹 GENERADOR DE COMUNICADOS
+// 🔹 GENERADOR
 function generateCommunications() {
   const communications = [];
 
   channels.forEach((channel) => {
-    const baseCommunications = channelCommunications[channel];
+    const base = channelCommunications[channel];
 
     for (let i = 0; i < 20; i++) {
-      const comm = randomItem(baseCommunications);
+      const comm = randomItem(base);
 
       const possibleAuthors = users.filter((u) =>
         channel.includes(u.role.split(" ")[0]),
@@ -131,7 +124,7 @@ function generateCommunications() {
           : randomItem(users);
 
       communications.push({
-        canal: channel,
+        canal: channel, // 🔒 DEBE coincidir con controller
         titulo: comm.titulo,
         contenido: comm.contenido,
         tipo: comm.tipo,
@@ -139,13 +132,14 @@ function generateCommunications() {
         departamento: author.role,
         createdAt: new Date(
           Date.now() - Math.floor(Math.random() * 1000000000),
-        ), // 🔥 fechas distintas
+        ),
       });
     }
   });
 
   return communications;
 }
+
 // 🔹 SEED
 async function seed() {
   const client = new MongoClient(uri);
@@ -153,20 +147,20 @@ async function seed() {
   try {
     await client.connect();
 
-    const db = client.db("autorizaciones_db");
+    const db = client.db(DB_NAME);
     const collection = db.collection("communications");
 
-    console.log("Limpiando colección communications...");
+    console.log("🧹 Limpiando colección communications...");
     await collection.deleteMany({});
 
     const communications = generateCommunications();
 
-    await collection.insertMany(communications);
+    const result = await collection.insertMany(communications);
 
-    console.log("Seed de comunicados completado.");
-    console.log("Comunicados creados:", communications.length);
+    console.log("✅ Seed completado");
+    console.log("📦 Documentos insertados:", result.insertedCount);
   } catch (err) {
-    console.error("Error ejecutando seed:", err);
+    console.error("❌ Error en seed:", err);
   } finally {
     await client.close();
   }

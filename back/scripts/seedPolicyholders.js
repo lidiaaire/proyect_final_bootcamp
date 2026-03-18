@@ -2,196 +2,79 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
 
-const Solicitud = require("../src/models/solicitudModel");
 const Policyholder = require("../src/models/policyholderModel").default;
 
-const MONGO_URI = process.env.MONGO_URI;
-
-const pruebas = [
-  { nombre: "Ecografía", especialidad: "Radiología" },
-  { nombre: "TAC", especialidad: "Radiología" },
-  { nombre: "Resonancia", especialidad: "Radiología" },
-  { nombre: "Prueba de esfuerzo", especialidad: "Cardiología" },
-  { nombre: "Colonoscopia", especialidad: "Digestivo" },
+const POLICY_TYPES = [
+  "POLIZA PRIVADA",
+  "POLIZA COLECTIVO",
+  "POLIZA FUNCIONARIO",
 ];
 
-const centros = [
-  "Hospital Central",
-  "Clínica Santa María",
-  "Centro Médico Andalucía",
-  "Hospital Costa del Sol",
-  "Clínica Radiológica Sur",
-];
-
-function generarHistorialHastaEstado(createdAt, estadoObjetivo) {
-  const t1 = faker.date.between({ from: createdAt, to: new Date() });
-  const t2 = faker.date.between({ from: t1, to: new Date() });
-  const t3 = faker.date.between({ from: t2, to: new Date() });
-  const t4 = faker.date.between({ from: t3, to: new Date() });
-
-  const historial = [
-    {
-      estado: "PENDIENTE_INICIO_GESTION",
-      changedBy: "PRESTACIONES",
-      fecha: createdAt,
-      tipo: "CREACION",
-    },
-  ];
-
-  if (estadoObjetivo === "PENDIENTE_INICIO_GESTION") return historial;
-
-  historial.push({
-    estado: "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-    changedBy: "PRESTACIONES",
-    fecha: t1,
-    tipo: "DOCUMENTACION_SOLICITADA",
-  });
-
-  if (estadoObjetivo === "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO")
-    return historial;
-
-  historial.push({
-    estado: "DOCUMENTACION_RECIBIDA",
-    changedBy: "ASEGURADO",
-    fecha: t2,
-    tipo: "DOCUMENTO_SUBIDO",
-  });
-
-  historial.push({
-    estado: "PENDIENTE_DIRECCION_MEDICA",
-    changedBy: "PRESTACIONES",
-    fecha: t3,
-    tipo: "ENVIO_DIRECCION_MEDICA",
-  });
-
-  if (estadoObjetivo === "PENDIENTE_DIRECCION_MEDICA") return historial;
-
-  if (estadoObjetivo === "PENDIENTE_ASESORIA_JURIDICA") {
-    historial.push({
-      estado: "PENDIENTE_ASESORIA_JURIDICA",
-      changedBy: "DIRECCION_MEDICA",
-      fecha: t4,
-      tipo: "REVISION_JURIDICA",
-    });
-    return historial;
-  }
-
-  historial.push({
-    estado: estadoObjetivo,
-    changedBy: "DIRECCION_MEDICA",
-    fecha: t4,
-    tipo: "RESOLUCION",
-  });
-
-  return historial;
-}
-
-function generarDocumentos() {
-  const posiblesDocs = [
-    "consentimiento_genetico.pdf",
-    "historia_clinica.pdf",
-    "informe_medico.pdf",
-    "prescripcion_medica.pdf",
-  ];
-
-  const total = faker.number.int({ min: 1, max: 3 });
-
-  return Array.from({ length: total }, () => ({
-    nombre: faker.helpers.arrayElement(posiblesDocs),
-  }));
-}
-
-function generarNotas() {
-  const ejemplos = [
-    "Pendiente de validación médica antes de autorizar la prueba.",
-    "Paciente contactado para aportar documentación adicional.",
-    "Revisión administrativa realizada correctamente.",
-    "Se requiere informe clínico complementario.",
-  ];
-
-  const total = faker.number.int({ min: 1, max: 2 });
-
-  return Array.from({ length: total }, () => ({
-    text: faker.helpers.arrayElement(ejemplos),
-    author: faker.helpers.arrayElement(["PRESTACIONES", "ADMIN"]),
-    date: faker.date.recent({ days: 10 }),
-  }));
-}
-
-async function seedSolicitudes() {
+async function seedPolicyholders() {
   try {
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("Mongo conectado");
 
-    await Solicitud.deleteMany({});
-    console.log("Solicitudes eliminadas");
+    await Policyholder.deleteMany({});
+    console.log("Policyholders eliminados");
 
-    const policyholders = await Policyholder.find();
+    const policyholders = [];
 
-    if (!policyholders.length) {
-      throw new Error(
-        "No hay policyholders en la BD. Ejecuta primero seedPolicyholders.",
-      );
+    for (let i = 0; i < 100; i++) {
+      // 🔹 Generar entre 2 y 3 notas
+      const notesCount = faker.number.int({ min: 2, max: 3 });
+
+      const notes = Array.from({ length: notesCount }, () => ({
+        text: faker.helpers.arrayElement([
+          "Paciente con historial de pruebas recurrentes",
+          "Revisión médica recomendada cada 6 meses",
+          "Caso previamente autorizado sin incidencias",
+          "Seguimiento activo por parte de prestaciones",
+          "Paciente con patología crónica en seguimiento",
+          "Se recomienda valoración por especialista",
+          "Historial clínico con múltiples autorizaciones previas",
+          "Caso derivado a dirección médica para revisión",
+          "Pendiente de actualización de informes médicos",
+          "Paciente con buena adherencia al tratamiento",
+          "Sin incidencias destacables en revisiones anteriores",
+          "Requiere control periódico según protocolo",
+          "Caso con documentación completa y validada",
+          "Seguimiento recomendado por evolución clínica favorable",
+        ]),
+        date: faker.date.recent({ days: 30 }),
+        author: faker.helpers.arrayElement([
+          "PRESTACIONES",
+          "ADMIN",
+          "DIRECCION_MEDICA",
+        ]),
+      }));
+
+      policyholders.push({
+        id: faker.string.numeric(6),
+        name: faker.person.fullName(),
+        dni: faker.string.alphanumeric(9),
+
+        telefono: faker.phone.number(),
+        email: faker.internet.email(),
+        direccion: faker.location.streetAddress(),
+
+        policyType: faker.helpers.arrayElement(POLICY_TYPES),
+        policyStartDate: faker.date.past({ years: 10 }),
+
+        internalNotes: notes,
+      });
     }
 
-    const estados = [
-      "PENDIENTE_INICIO_GESTION",
-      "PENDIENTE_DOCUMENTACION_DEL_ASEGURADO",
-      "PENDIENTE_DIRECCION_MEDICA",
-      "PENDIENTE_ASESORIA_JURIDICA",
-      "AUTORIZADA",
-      "RECHAZADA",
-    ];
+    await Policyholder.insertMany(policyholders);
 
-    const solicitudes = [];
-
-    // 🔴 CLAVE: asegurar que TODOS tienen solicitudes
-    for (const policyholder of policyholders) {
-      const numSolicitudes = faker.number.int({ min: 1, max: 4 });
-
-      for (let i = 0; i < numSolicitudes; i++) {
-        const prueba = faker.helpers.arrayElement(pruebas);
-        const createdAt = faker.date.past({ years: 1 });
-        const estadoFinal = faker.helpers.arrayElement(estados);
-
-        solicitudes.push({
-          numeroSolicitud: "SOL-" + faker.number.int({ min: 1000, max: 9999 }),
-
-          nombreCompleto: policyholder.name,
-          numeroPoliza: policyholder.id,
-          dni: policyholder.dni,
-
-          nombrePrueba: prueba.nombre,
-          especialidad: prueba.especialidad,
-          centroMedico: faker.helpers.arrayElement(centros),
-
-          estadoInterno: estadoFinal,
-
-          currentDepartment:
-            estadoFinal === "PENDIENTE_DIRECCION_MEDICA"
-              ? "DIRECCION_MEDICA"
-              : estadoFinal === "PENDIENTE_ASESORIA_JURIDICA"
-                ? "ASESORIA_JURIDICA"
-                : "PRESTACIONES",
-
-          documentos: generarDocumentos(),
-          historial: generarHistorialHastaEstado(createdAt, estadoFinal),
-          notas: generarNotas(),
-          createdAt: createdAt,
-        });
-      }
-    }
-
-    await Solicitud.insertMany(solicitudes);
-
-    console.log("Solicitudes generadas:", solicitudes.length);
+    console.log("Policyholders creados:", policyholders.length);
 
     await mongoose.disconnect();
     console.log("Mongo desconectado");
   } catch (error) {
-    console.error("Error generando solicitudes:", error);
+    console.error("Error generando policyholders:", error);
     process.exit(1);
   }
 }
 
-seedSolicitudes();
+seedPolicyholders();

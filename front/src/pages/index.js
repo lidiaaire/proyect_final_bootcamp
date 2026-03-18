@@ -56,16 +56,9 @@ export default function Home() {
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
     const fetchData = async () => {
       try {
-        const data = await getSolicitudes(token);
+        const data = await getSolicitudes();
         setSolicitudes(data);
       } catch {
         setErrorMessage("No se pudieron cargar las solicitudes.");
@@ -75,7 +68,7 @@ export default function Home() {
     };
 
     fetchData();
-  }, [router]);
+  }, []);
 
   if (isLoading) return <p>Cargando...</p>;
   if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;

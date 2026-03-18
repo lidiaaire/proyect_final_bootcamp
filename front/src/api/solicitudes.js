@@ -6,14 +6,12 @@ const API_URL = "http://localhost:4000/api/solicitudes";
 GET solicitudes
 ============================== */
 
-export async function getSolicitudes(token) {
-  const res = await fetch(API_URL, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getSolicitudes() {
+  const res = await fetch(API_URL);
 
   if (!res.ok) {
+    const text = await res.text();
+    console.error("API ERROR:", res.status, text);
     throw new Error("Error obteniendo solicitudes");
   }
 
@@ -25,7 +23,6 @@ export async function getSolicitudes(token) {
 
   return solicitudesNormalizadas;
 }
-
 /* ==============================
 GET solicitud
 ============================== */

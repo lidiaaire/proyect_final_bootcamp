@@ -3,7 +3,6 @@
 // Importamos el modelo de datos de las solicitudes para interactuar con la base de datos.
 
 function mapSolicitud(solicitud) {
-  console.log("PDF EN TRANSFORMER:", solicitud.autorizacionPdf);
   return {
     id: solicitud._id,
     numeroSolicitud: solicitud.numeroSolicitud,

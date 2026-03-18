@@ -141,7 +141,7 @@ export default function SolicitudPreview({ solicitud }) {
               <span>📄 {doc.nombre}</span>
 
               <button
-                onClick={() => setDocumentoSeleccionado(doc.url)}
+                onClick={() => setDocumentoSeleccionado(doc.nombre)}
                 className={styles.docButton}
               >
                 Ver
@@ -159,7 +159,9 @@ export default function SolicitudPreview({ solicitud }) {
 
       {documentoSeleccionado && (
         <div className={styles.viewer}>
-          <PDFViewer url={`http://localhost:4000${documentoSeleccionado}`} />
+          <PDFViewer
+            url={`http://localhost:4000/docs/${documentoSeleccionado}`}
+          />
         </div>
       )}
 

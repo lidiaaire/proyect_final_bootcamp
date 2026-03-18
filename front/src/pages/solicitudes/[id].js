@@ -30,26 +30,82 @@ export default function SolicitudDetallePage() {
 
   const [solicitud, setSolicitud] = useState(null);
   const [nuevaNota, setNuevaNota] = useState("");
+  const [documentoSeleccionado, setDocumentoSeleccionado] = useState(null);
+
+  // =========================
+  // TIMELINE CONFIG (ANTES DE USEEFFECT)
+  // =========================
+
+  const timelineSteps = [
+    "PENDIENTE_INICIO_GESTION",
+    "DOCUMENTACION_SOLICITADA",
+    "EN_REVISION",
+    "AUTORIZADA",
+    "RECHAZADA",
+  ];
+
+  const ESTADO_TIMELINE_MAP = {
+    PENDIENTE_DOCUMENTACION_DEL_ASEGURADO: "DOCUMENTACION_SOLICITADA",
+    PENDIENTE_ASESORIA_JURIDICA: "EN_REVISION",
+  };
+
+  const estadoNormalizado = solicitud
+    ? ESTADO_TIMELINE_MAP[solicitud.estadoInterno] || solicitud.estadoInterno
+    : null;
+
+  const currentStepIndex =
+    estadoNormalizado !== null ? timelineSteps.indexOf(estadoNormalizado) : -1;
+
+  // =========================
+  // EFFECTS (TODOS ARRIBA)
+  // =========================
+
   useEffect(() => {
     if (solicitud) {
-      console.log("SOLICITUD COMPLETA:", solicitud);
-      console.log("PDF URL:", solicitud.autorizacionPdf);
+      console.log("NOTAS SOLICITUD:", solicitud.notas);
     }
   }, [solicitud]);
+
+  useEffect(() => {
+    if (documentoSeleccionado) {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [documentoSeleccionado]);
+
+  useEffect(() => {
+    if (router.isReady && id) {
+      fetchSolicitud();
+    }
+  }, [router.isReady, id]);
+
+  // 🔹 DEBUG (seguro, no rompe hooks)
+  useEffect(() => {
+    if (solicitud && estadoNormalizado) {
+      if (!timelineSteps.includes(estadoNormalizado)) {
+        console.warn(
+          "⚠️ Estado no contemplado en timeline:",
+          solicitud.estadoInterno,
+        );
+      }
+    }
+  }, [solicitud, estadoNormalizado]);
+
+  // =========================
+  // DATA
+  // =========================
+
   const fetchSolicitud = async () => {
     if (!id) return;
     const data = await getRequest(id);
     setSolicitud(data);
   };
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (router.isReady) fetchSolicitud();
-  }, [router.isReady, id]);
-
-  /* =========================
-     ACCIONES
-  ========================= */
+  // =========================
+  // ACCIONES
+  // =========================
 
   const handleSolicitarDoc = async () => {
     const motivo = prompt("¿Qué documentación necesitas?");
@@ -78,8 +134,6 @@ export default function SolicitudDetallePage() {
   const handleAutorizar = async () => {
     try {
       const response = await authorizeRequest(id);
-
-      // 🔴 CLAVE: actualizar estado con la respuesta
       setSolicitud(response.solicitud);
     } catch (error) {
       console.error(error);
@@ -94,27 +148,7 @@ export default function SolicitudDetallePage() {
     await fetchSolicitud();
   };
 
-  if (!solicitud) return <p>Cargando...</p>;
-
-  /* =========================
-     TIMELINE VISUAL
-  ========================= */
-
-  const timelineSteps = [
-    "PENDIENTE_INICIO_GESTION",
-    "DOCUMENTACION_SOLICITADA",
-    "EN_REVISION",
-    "AUTORIZADA",
-    "RECHAZADA",
-  ];
-
-  const currentStepIndex = timelineSteps.indexOf(
-    solicitud.estadoInterno === "PENDIENTE_ASESORIA_JURIDICA"
-      ? "EN_REVISION"
-      : solicitud.estadoInterno,
-  );
-
-  async function handleGuardarNota() {
+  const handleGuardarNota = async () => {
     if (!nuevaNota.trim()) return;
 
     try {
@@ -131,13 +165,19 @@ export default function SolicitudDetallePage() {
         }),
       });
 
-      setNuevaNota(""); // limpiar input
-      await fetchSolicitud(); // refrescar datos
+      setNuevaNota("");
+      await fetchSolicitud();
     } catch (error) {
       console.error("Error guardando nota", error);
     }
-  }
-  console.log("NOTAS FRONT FINAL:", solicitud.notas);
+  };
+
+  // =========================
+  // RENDER
+  // =========================
+
+  if (!solicitud) return <p>Cargando...</p>;
+
   return (
     <>
       {/* HEADER */}
@@ -155,13 +195,20 @@ export default function SolicitudDetallePage() {
         </div>
       </div>
 
-      {/* TIMELINE VISUAL */}
+      {/* TIMELINE */}
       <div className={styles.timeline}>
         {timelineSteps.map((step, i) => (
           <div key={step} className={styles.timelineStep}>
             <div
               className={`${styles.timelineCircle} ${
-                i <= currentStepIndex ? styles.timelineActive : ""
+                solicitud.estadoInterno === "AUTORIZADA" ||
+                solicitud.estadoInterno === "RECHAZADA"
+                  ? timelineSteps[i] === estadoNormalizado
+                    ? styles.timelineActive
+                    : ""
+                  : i <= currentStepIndex
+                    ? styles.timelineActive
+                    : ""
               }`}
             />
             <span>{getEstadoLabel(step)}</span>
@@ -173,7 +220,6 @@ export default function SolicitudDetallePage() {
       <div className={styles.detailGrid}>
         {/* IZQUIERDA */}
         <div className={styles.leftColumn}>
-          {/* DOCUMENTOS */}
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h3>Documentación aportada</h3>
@@ -194,38 +240,39 @@ export default function SolicitudDetallePage() {
                     </span>
                   </div>
 
-                  <button className={styles.docButton}>Ver documento</button>
+                  <button
+                    className={styles.docButton}
+                    onClick={() =>
+                      setDocumentoSeleccionado(
+                        documentoSeleccionado === doc.nombre
+                          ? null
+                          : doc.nombre,
+                      )
+                    }
+                  >
+                    {documentoSeleccionado === doc.nombre
+                      ? "Cerrar documento"
+                      : "Ver documento"}
+                  </button>
                 </div>
               ))}
             </div>
 
-            <div className={styles.docsActions}>
-              <button
-                className={`${styles.button} ${styles.buttonSecondary}`}
-                onClick={handleSolicitarDoc}
-              >
-                Solicitar documentación
-              </button>
-
-              <button
-                className={`${styles.button} ${styles.buttonSecondary}`}
-                onClick={handleDireccionMedica}
-              >
-                Dirección Médica
-              </button>
-
-              <button
-                className={`${styles.button} ${styles.buttonSecondary}`}
-                onClick={handleAsesoria}
-              >
-                Asesoría Jurídica
-              </button>
-            </div>
+            {documentoSeleccionado && (
+              <div className={styles.section} style={{ marginTop: "16px" }}>
+                <PDFViewer
+                  url={`http://localhost:4000/docs/${documentoSeleccionado}`}
+                />
+              </div>
+            )}
           </div>
-
           {/* ACTIVIDAD */}
           <div className={styles.section}>
             <h3>Actividad del caso</h3>
+
+            {solicitud.historial?.length === 0 && (
+              <p className={styles.placeholder}>Sin actividad registrada</p>
+            )}
 
             {solicitud.historial
               ?.slice()
@@ -235,7 +282,7 @@ export default function SolicitudDetallePage() {
                 const usuario = item.changedBy || item.usuario;
 
                 return (
-                  <div className={styles.activityItem}>
+                  <div key={index} className={styles.activityItem}>
                     <div className={styles.activityDot}></div>
 
                     <div className={styles.activityContent}>
@@ -252,7 +299,6 @@ export default function SolicitudDetallePage() {
 
         {/* DERECHA */}
         <div className={styles.rightColumn}>
-          {/* NOTAS */}
           <div className={styles.section}>
             <h3>Notas internas</h3>
 
@@ -263,9 +309,7 @@ export default function SolicitudDetallePage() {
                 .map((nota, index) => (
                   <div key={index} className={styles.noteItem}>
                     <div className={styles.noteHeader}>{nota.author}</div>
-
                     <div className={styles.noteText}>{nota.text}</div>
-
                     <div className={styles.noteDate}>
                       {nota.date
                         ? new Date(nota.date).toLocaleDateString()
@@ -290,9 +334,6 @@ export default function SolicitudDetallePage() {
               </button>
             </div>
           </div>
-
-          {/* ACCIONES */}
-
           {!["AUTORIZADA", "RECHAZADA"].includes(solicitud.estadoInterno) && (
             <div className={styles.section}>
               <h3>Acciones</h3>

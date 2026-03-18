@@ -10,7 +10,7 @@ export default function PolicyholdersPage() {
   useEffect(() => {
     async function loadPolicyholders() {
       try {
-        const res = await fetch("http://localhost:4000/policyholders");
+        const res = await fetch("http://localhost:4000/api/policyholders");
         const data = await res.json();
 
         const array =

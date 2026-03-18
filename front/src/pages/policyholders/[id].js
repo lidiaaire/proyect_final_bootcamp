@@ -20,20 +20,16 @@ export default function PolicyholderProfile() {
     async function loadData() {
       try {
         const resPolicyholder = await fetch(
-          `http://localhost:4000/policyholders/${id}`,
+          `http://localhost:4000/api/policyholders/${id}`,
         );
         const policyholderData = await resPolicyholder.json();
 
         const token = localStorage.getItem("token");
 
         const resRequests = await fetch(
-          "http://localhost:4000/api/solicitudes",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
+          `http://localhost:4000/api/solicitudes/policyholder/${policyholderData.id}`,
         );
+
         const requestsData = await resRequests.json();
 
         const raw =
@@ -44,24 +40,9 @@ export default function PolicyholderProfile() {
 
         const requestsArray = Array.isArray(raw) ? raw : [];
 
-        console.log("Policyholder ID:", policyholderData.id);
-        console.log("Total requests:", requestsArray.length);
-
-        const filteredRequests = requestsArray.filter((req) => {
-          const match =
-            String(req.numeroPoliza) === String(policyholderData.id);
-
-          if (match) {
-            console.log("MATCH:", req.numeroPoliza);
-          }
-
-          return match;
-        });
-
-        console.log("Filtered:", filteredRequests.length);
+        setRequests(requestsArray);
 
         setPolicyholder(policyholderData);
-        setRequests(filteredRequests);
         setNotes(policyholderData.internalNotes || []);
       } catch (error) {
         console.error("Error cargando perfil:", error);
