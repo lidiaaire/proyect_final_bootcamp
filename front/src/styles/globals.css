@@ -1,25 +1,29 @@
-:root {
-  --bg-main: #f8fafc; /* más claro */
-  --bg-sidebar: #ffffff;
-  --bg-card: #ffffff;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
-  --hover-bg: #f3f4f6;
-  --active-bg: #eef2ff;
-  --brand-primary: #2563eb;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
+body {
+  background-color: #f5f7f6;
+  font-family: system-ui, sans-serif;
 }
 
-body {
-  background: linear-gradient(180deg, #f4f7fb 0%, #eef3f9 100%);
-  margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+/* patrón base de todas las cards */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* títulos */
+h1,
+h2,
+h3 {
+  color: #2f3e3a;
+}
+
+/* botones */
+button {
+  background-color: #7fa393;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
 }

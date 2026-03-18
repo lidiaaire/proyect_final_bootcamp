@@ -1,4 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+// Esta página representa el dashboard principal de la aplicación, donde se muestra un resumen de las solicitudes activas, los KPIs más relevantes, las últimas solicitudes y una sección de actividad reciente. Utiliza el hook useEffect para cargar los datos de las solicitudes desde la API al montar el componente, y el hook useState para manejar el estado de las solicitudes, la carga y los errores. La página también incluye un sistema de filtrado que permite a los usuarios filtrar las solicitudes por su estado (por ejemplo, "PENDIENTE", "EN PROCESO", "COMPLETADA"), lo que facilita a los usuarios encontrar rápidamente las solicitudes que están buscando. Asegúrate de que los campos utilizados en esta página coincidan con los campos definidos en el backend para garantizar una correcta visualización de la información de las solicitudes.
+// La página utiliza estilos definidos en Home.module.css para darle una apariencia atractiva y organizada al dashboard. La información se muestra en un formato claro y fácil de leer, con secciones separadas para el resumen de KPIs, las últimas solicitudes y la actividad reciente. Además, se incluyen componentes como KpiResumen para mostrar los KPIs de manera visual, StatusBadge para mostrar el estado de cada solicitud con un diseño distintivo, y widgets para notificaciones y equipo. Asegúrate de que los estilos estén correctamente aplicados para mejorar la experiencia del usuario al visualizar el dashboard y facilitar la identificación rápida de la información más relevante sobre las solicitudes activas.
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";

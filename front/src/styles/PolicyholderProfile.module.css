@@ -102,7 +102,7 @@
 
 .timeline {
   margin-top: 8px;
-  min-width: 10px; /* evita que empuje layout */
+  min-width: 10px;
 }
 
 .dot {

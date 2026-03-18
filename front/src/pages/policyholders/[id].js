@@ -1,3 +1,6 @@
+// Esta página representa el perfil de un asegurado específico, mostrando su información personal, notas internas y el historial de solicitudes asociadas a su póliza. Utiliza el hook useRouter de Next.js para obtener el ID del asegurado desde la URL y luego carga los datos correspondientes desde la API. La página también permite agregar nuevas notas internas para el asegurado y muestra un botón para crear una nueva solicitud relacionada con su póliza. Asegúrate de que los campos utilizados en esta página coincidan con los campos definidos en el backend para garantizar una correcta visualización de la información del asegurado y sus solicitudes.
+// La página utiliza estilos definidos en PolicyholderProfile.module.css para darle una apariencia atractiva y organizada al perfil del asegurado. La información del asegurado se muestra en un formato claro y fácil de leer, con secciones separadas para los datos personales, las notas internas y el historial de solicitudes. Asegúrate de que los estilos estén correctamente aplicados para mejorar la experiencia del usuario al visualizar el perfil del asegurado y facilitar la gestión de sus solicitudes.
+
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";

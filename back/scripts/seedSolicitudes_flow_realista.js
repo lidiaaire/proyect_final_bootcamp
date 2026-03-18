@@ -1,3 +1,6 @@
+// Este script genera solicitudes de prueba para cada policyholder existente en la base de datos.
+// Asegúrate de ejecutar primero seedPolicyholders.js para tener datos de policyholders.
+
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");

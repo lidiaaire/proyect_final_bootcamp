@@ -9,7 +9,7 @@ export function createHistorialEvent({
 }) {
   return {
     tipo,
-    estado: estadoNuevo, // el frontend espera este campo
+    estado: estadoNuevo,
     changedBy,
     fecha: new Date(),
   };

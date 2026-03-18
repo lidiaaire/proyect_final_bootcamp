@@ -1,3 +1,6 @@
+// Este módulo define funciones para interactuar con la API de solicitudes. Incluye funciones para obtener todas las solicitudes, obtener una solicitud específica por ID, solicitar documentación adicional, enviar una solicitud a dirección médica, enviar una solicitud a asesoría jurídica, autorizar una solicitud y rechazar una solicitud. Asegúrate de que la URL de la API esté configurada correctamente antes de usar estas funciones.
+// Estas funciones utilizan la función apiFetch para realizar las solicitudes a la API, lo que garantiza que el token de autenticación se incluya automáticamente en cada solicitud. Además, estas funciones manejan los casos de error y devuelven los datos en formato JSON para que puedan ser utilizados por el código que llama a estas funciones.
+
 import { normalizeSolicitud } from "@/core/normalizers/solicitudNormalizer";
 
 const API_URL = "http://localhost:4000/api/solicitudes";

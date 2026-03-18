@@ -179,11 +179,11 @@
   display: flex;
   gap: 10px;
   margin-top: 12px;
-  width: 100%; /* 👈 importante */
+  width: 100%;
 }
 
 .noteInput {
-  flex: 1; /* 👈 ocupa todo el espacio disponible */
+  flex: 1;
   width: 100%;
   padding: 10px;
   border-radius: 8px;
@@ -267,7 +267,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8fafc; /* más suave */
+  background: #f8fafc;
   padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid #eef2f7;
@@ -332,7 +332,7 @@
   color: #334155;
   font-size: 13px;
   padding: 6px 10px;
-  border-radius: 20px; /* 👈 clave */
+  border-radius: 20px;
 }
 
 .buttonSecondary:hover {
@@ -505,7 +505,7 @@
 .noteHeader {
   font-size: 12px;
   font-weight: 600;
-  color: #2563eb; /* 👈 color rol */
+  color: #2563eb;
 }
 
 .noteText {
