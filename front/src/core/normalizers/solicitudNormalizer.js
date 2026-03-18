@@ -6,9 +6,12 @@ export function normalizeSolicitud(solicitud) {
     nombreCompleto: solicitud.nombreCompleto,
     numeroPoliza: solicitud.numeroPoliza,
     dni: solicitud.dni,
-
+    nombrePrueba: solicitud.nombrePrueba,
+    especialidad: solicitud.especialidad,
+    centroMedico: solicitud.centroMedico,
     estadoInterno: solicitud.estadoInterno,
     currentDepartment: solicitud.currentDepartment,
+    createdAt: solicitud.createdAt || solicitud.fecha || null,
 
     /* =========================
        DOCUMENTOS

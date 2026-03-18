@@ -1,3 +1,4 @@
+console.log("SEED NUEVO EJECUTANDO");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
@@ -179,15 +180,15 @@ async function seedSolicitudes() {
         documentos: generarDocumentos(),
         historial: generarHistorialHastaEstado(createdAt, estadoFinal),
         notas: generarNotas(),
-        createdAt: createdAt,
       };
 
       solicitudes.push(solicitud);
     }
 
-    await Solicitud.insertMany(solicitudes);
-
-    console.log("Solicitudes generadas:", solicitudes.length);
+    for (const solicitud of solicitudes) {
+      const doc = await Solicitud.create(solicitud);
+      console.log("createdAt:", doc.createdAt);
+    }
 
     await mongoose.disconnect();
     console.log("Mongo desconectado");

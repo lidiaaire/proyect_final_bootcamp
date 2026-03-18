@@ -25,8 +25,8 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(20, 40, 80, 0.2) 0%,
-    rgba(20, 40, 80, 0.9) 100%
+    rgba(63, 81, 76, 0.2) 0%,
+    rgba(47, 62, 58, 0.9) 100%
   );
   display: flex;
   flex-direction: column;
@@ -55,7 +55,7 @@
 ========================= */
 .rightPanel {
   flex: 1;
-  background: linear-gradient(180deg, #f7f9fb, #eef2f7);
+  background: #f5f7f6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,9 +71,7 @@
   border-radius: 20px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(2px);
-  /* ajuste visual fino */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   transform: translateY(20px);
 }
 
@@ -91,7 +89,7 @@
   font-size: 34px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: #2f6fb2;
+  color: #2f3e3a;
   margin: 0;
 }
 
@@ -147,8 +145,8 @@
 }
 
 .inputWrapper:focus-within {
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+  border-color: #7fa393;
+  box-shadow: 0 0 0 2px rgba(127, 163, 147, 0.15);
 }
 
 .icon {
@@ -167,16 +165,16 @@
   border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
-  background: linear-gradient(135deg, #4a90e2, #2f6fb2);
+  background: #7fa393;
   color: white;
   transition: all 0.2s ease;
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background: #6c8f7d;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
-
 /* =========================
    OTROS
 ========================= */

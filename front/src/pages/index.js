@@ -208,7 +208,16 @@ export default function Home() {
                     <StatusBadge status={s.estadoInterno} />
                   </td>
 
-                  <td>{new Date(s.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    {s.createdAt
+                      ? (() => {
+                          console.log("createdAt FRONT:", s.createdAt);
+                          return new Date(s.createdAt).toLocaleDateString(
+                            "es-ES",
+                          );
+                        })()
+                      : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
