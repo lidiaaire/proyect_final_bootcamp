@@ -3,6 +3,7 @@
   border-radius: 16px;
   padding: 16px;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .card h4 {
@@ -35,7 +36,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #6366f1;
+  background: #7fa393;
   color: white;
   display: flex;
   align-items: center;
@@ -95,9 +96,9 @@
 .chatBox {
   width: 360px;
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .chatHeader {
@@ -137,7 +138,7 @@
 }
 
 .chatInput:focus {
-  border-color: #6366f1;
+  border-color: #7fa393;
 }
 
 .chatInputContainer {
@@ -147,7 +148,7 @@
 }
 
 .sendButton {
-  background: #6366f1;
+  background: #7fa393;
   color: white;
   border: none;
   border-radius: 10px;
@@ -158,11 +159,11 @@
 }
 
 .sendButton:hover {
-  background: #4f46e5;
+  background: #6c8f7d;
 }
 
 .myMessage {
-  background: #6366f1;
+  background: #7fa393;
   color: white;
   padding: 8px 12px;
   border-radius: 16px 16px 4px 16px;

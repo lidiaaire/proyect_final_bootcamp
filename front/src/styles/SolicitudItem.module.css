@@ -44,8 +44,8 @@
 }
 
 .departmentBadge {
-  background-color: #eef2ff;
-  color: #4338ca;
+  background-color: #eef5f2;
+  color: #5f7f73;
   padding: 3px 8px;
   font-size: 11px;
   border-radius: 10px;
@@ -74,7 +74,7 @@
 }
 
 .nameLink:hover {
-  color: #2563eb;
+  color: #5f7f73;
   text-decoration: none;
 }
 

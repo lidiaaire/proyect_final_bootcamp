@@ -18,6 +18,7 @@ function mapSolicitud(solicitud) {
     currentDepartment: solicitud.currentDepartment,
     createdAt: solicitud.createdAt,
 
+    // ✅ DOCUMENTOS NORMALIZADOS (CLAVE DEL BUG)
     documentos: (solicitud.documentos || []).map((doc) => ({
       nombre: doc.nombre || doc.nombreArchivo || doc.filename,
 
@@ -34,6 +35,7 @@ function mapSolicitud(solicitud) {
       url: doc.url || doc.path || null,
     })),
 
+    // ✅ NOTAS NORMALIZADAS
     notas: (solicitud.notas || []).map((nota) => ({
       text: nota.text,
       author: nota.author,

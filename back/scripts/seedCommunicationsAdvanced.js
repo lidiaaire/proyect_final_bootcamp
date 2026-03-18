@@ -1,5 +1,4 @@
-// Este script genera comunicados de prueba para cada canal definido, con autores realistas y contenido relevante para cada departamento. Asegúrate de tener la colección "communications" vacía antes de ejecutar este seed para evitar duplicados.
-// Para ejecutar: node back/scripts/seedCommunicationsAdvanced.js
+// Seed de comunicaciones tipo comunicados corporativos (Flowly)
 
 const { MongoClient } = require("mongodb");
 require("dotenv").config();

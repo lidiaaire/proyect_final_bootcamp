@@ -12,7 +12,7 @@ const {
   requestDocumentation,
   sendToDireccionMedica,
   sendToAsesoriaJuridica,
-  getSolicitudesByPolicyholder, //
+  getSolicitudesByPolicyholder, // ✅ NUEVO
 } = require("../controllers/solicitudController");
 
 // 🔐 Middleware de autenticación

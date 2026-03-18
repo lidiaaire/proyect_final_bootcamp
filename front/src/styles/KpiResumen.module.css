@@ -7,7 +7,7 @@
 
 .card {
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 18px;
   border: 1px solid #e5e7eb;
 
@@ -15,10 +15,12 @@
   flex-direction: column;
   justify-content: space-between;
 
-  min-height: 90px;
+  min-height: 100px;
 
   transition: all 0.2s ease;
   cursor: pointer;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
@@ -27,9 +29,9 @@
 }
 
 .number {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
-  color: #111827;
+  color: #2f3e3a;
 }
 
 .kpiInfo {
@@ -45,31 +47,18 @@
 
 .btn {
   border: none;
-  padding: 6px 10px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 12px;
   cursor: pointer;
   width: fit-content;
+
+  background-color: #7fa393;
+  color: white;
+
+  transition: background 0.2s ease;
 }
 
-/* colores botones */
-
-.btnInicio {
-  background: #14b8a6;
-  color: white;
-}
-
-.btnDoc {
-  background: #7c3aed;
-  color: white;
-}
-
-.btnMedica {
-  background: #3b82f6;
-  color: white;
-}
-
-.btnJuridica {
-  background: #ec4899;
-  color: white;
+.btn:hover {
+  background-color: #6c8f7d;
 }

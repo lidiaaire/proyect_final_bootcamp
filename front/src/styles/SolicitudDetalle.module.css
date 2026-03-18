@@ -26,9 +26,8 @@
 }
 
 .estadoBadge {
-  display: inline-block;
-  background: #f6e3a1;
-  color: #7a5d00;
+  background: #fef3c7;
+  color: #92400e;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
@@ -98,12 +97,11 @@
 }
 
 .buttonPrimary {
-  background-color: #16a34a;
+  background: #7fa393;
   color: white;
 }
-
 .buttonPrimary:hover {
-  background-color: #15803d;
+  background: #6c8f7d;
 }
 
 .buttonDanger {
@@ -179,11 +177,11 @@
   display: flex;
   gap: 10px;
   margin-top: 12px;
-  width: 100%;
+  width: 100%; /* 👈 importante */
 }
 
 .noteInput {
-  flex: 1;
+  flex: 1; /* 👈 ocupa todo el espacio disponible */
   width: 100%;
   padding: 10px;
   border-radius: 8px;
@@ -193,8 +191,8 @@
 
 .noteInput:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: #7fa393;
+  box-shadow: 0 0 0 2px rgba(127, 163, 147, 0.15);
 }
 
 .noteInputBox button {
@@ -252,7 +250,7 @@
 
 .docCount {
   font-size: 13px;
-  background: #eef2ff;
+  background: #eef5f2;
   padding: 4px 10px;
   border-radius: 12px;
 }
@@ -267,7 +265,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8fafc;
+  background: #f8fafc; /* más suave */
   padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid #eef2f7;
@@ -275,8 +273,8 @@
 }
 
 .docItem:hover {
-  background: #eef2ff;
-  border-color: #c7d2fe;
+  background: #eef5f2;
+  border-color: #d6e4dd;
 }
 
 .docInfo {
@@ -295,16 +293,17 @@
 }
 
 .docButton {
-  background: #eef2ff;
-  border: none;
+  background: #eef5f2;
+  border: 1px solid #d6e4dd;
+  color: #5f7f73;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
 }
 
 .docButton:hover {
-  background: #dbeafe;
+  background: #e0ece6;
 }
 
 .emptyDocs {
@@ -317,30 +316,18 @@
   gap: 8px;
   margin-top: 14px;
 }
-.buttonPrimary {
-  background: #2563eb;
-  color: white;
-}
-
-.buttonPrimary:hover {
-  background: #1d4ed8;
-}
 
 .buttonSecondary {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #334155;
+  background: #eef5f2;
+  border: 1px solid #d6e4dd;
+  color: #5f7f73;
   font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 8px;
 }
 
 .buttonSecondary:hover {
-  background: #e2e8f0;
-}
-
-.buttonPrimary {
-  background-color: #16a34a;
+  background: #e0ece6;
 }
 
 .buttonDanger {
@@ -369,23 +356,23 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #777;
+  color: #6b7280;
 }
 
 .timelineCircle {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #d1d5db;
 }
 
 .timelineActive {
-  background: #2563eb;
+  background: #7fa393;
 }
 
 .timelineActive + span {
-  color: #2563eb;
-  font-weight: 500;
+  color: #2f3e3a;
+  font-weight: 600;
 }
 
 /* ============================= */
@@ -394,50 +381,88 @@
 
 .activityFeed {
   display: flex;
+  position: relative;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   margin-top: 10px;
+}
+
+.activityFeed::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e5e7eb;
 }
 
 .activityItem {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  gap: 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #edf2ef;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+.activityItem:hover {
   background: #f8fafc;
-  border: 1px solid #eef2f7;
-  font-size: 13px;
 }
 
 .activityDot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2563eb;
+  background: #7fa393;
   margin-top: 6px;
+  flex-shrink: 0;
 }
 
 .activityContent {
-  background: #f9fafb;
-  padding: 10px 12px;
-  border-radius: 8px;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .activityHeader {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .activityDate {
-  color: #888;
+  color: #9ca3af;
+  font-size: 11px;
 }
 
 .activityText {
   font-size: 14px;
-  margin-top: 4px;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.activityText strong {
+  color: #2f3e3a;
+  font-weight: 600;
+}
+
+.activityText b {
+  color: #5f7f73;
+}
+
+.activityItem.success .activityDot {
+  background: #7fa393;
+}
+
+.activityItem.warning .activityDot {
+  background: #f59e0b;
+}
+
+.activityItem.error .activityDot {
+  background: #ef4444;
 }
 
 /* ============================= */
@@ -497,7 +522,7 @@
 
 .noteItem {
   background: #f8fafc;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 12px;
   border: 1px solid #eef2f7;
 }
@@ -505,7 +530,7 @@
 .noteHeader {
   font-size: 12px;
   font-weight: 600;
-  color: #2563eb;
+  color: #5f7f73;
 }
 
 .noteText {

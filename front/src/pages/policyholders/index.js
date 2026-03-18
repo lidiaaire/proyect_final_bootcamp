@@ -1,6 +1,3 @@
-// Esta página representa la vista principal de la sección de asegurados, donde se muestra una lista de todos los asegurados registrados en el sistema. Utiliza el hook useEffect para cargar los datos de los asegurados desde la API al montar el componente, y el hook useState para manejar el estado de los asegurados, la búsqueda y la carga. La página también incluye un campo de búsqueda que permite filtrar los asegurados por nombre, DNI o número de póliza, lo que facilita a los usuarios encontrar rápidamente el asegurado que están buscando. Asegúrate de que los campos utilizados en esta página coincidan con los campos definidos en el backend para garantizar una correcta visualización de la información de los asegurados.
-// La página utiliza estilos definidos en Policyholders.module.css para darle una apariencia atractiva y organizada a la lista de asegurados. La información de cada asegurado se muestra en una tabla con columnas para el nombre, DNI, número de póliza y un enlace para ver el perfil del asegurado. Asegúrate de que los estilos estén correctamente aplicados para mejorar la experiencia del usuario al navegar por la sección de asegurados y facilitar la identificación rápida de cada asegurado en la lista.
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/Policyholders.module.css";

@@ -46,7 +46,7 @@
 }
 
 .docButton {
-  background: #eef2ff;
+  background: #eef5f2;
   border: none;
   padding: 4px 10px;
   border-radius: 6px;
@@ -85,7 +85,7 @@
 }
 
 .buttonOpen {
-  background: #2563eb;
+  background: #7fa393;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -93,7 +93,7 @@
 }
 
 .buttonOpen:hover {
-  background: #1d4ed8;
+  background: #6c8f7d;
 }
 
 .estadoBadge {

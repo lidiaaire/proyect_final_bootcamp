@@ -1,5 +1,3 @@
-// Este controlador maneja las comunicaciones internas de la empresa, como avisos oficiales, prestaciones, dirección médica, asesoría jurídica y comunicaciones generales. Permite obtener mensajes por canal y enviar nuevos mensajes a través de la API REST.
-
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
@@ -33,8 +31,8 @@ async function getMessages(req, res) {
 
     const communications = await db
       .collection("communications")
-      .find({ canal: canalReal })
-      .sort({ createdAt: -1 })
+      .find({ canal: canalReal }) // 🔥 CAMBIO CLAVE
+      .sort({ createdAt: -1 }) // 🔥 más reciente primero
       .toArray();
 
     res.json(communications);

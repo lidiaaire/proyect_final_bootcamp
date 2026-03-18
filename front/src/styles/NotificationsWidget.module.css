@@ -63,13 +63,13 @@
   flex-direction: column;
 }
 
-/* ROLE */
+/* ROLE (tipo badge gris suave) */
 
 .role {
   font-size: 12px;
   font-weight: 500;
-  color: #374151;
-  background: #dadfe3;
+  color: white;
+  background: #7fa393;
   padding: 4px 10px;
   border-radius: 999px;
   width: fit-content;
@@ -84,7 +84,7 @@
   margin: 0;
 }
 
-/* ACCIÓN  */
+/* ACCIÓN (verbo) */
 
 .action {
   font-weight: 600;
@@ -94,13 +94,13 @@
 .action::first-letter {
   text-transform: uppercase;
 }
-/* PRUEBA  */
+/* PRUEBA (secundario) */
 
 .prueba {
   color: #6b7280;
 }
 
-/* PACIENTE*/
+/* PACIENTE (importante pero no agresivo) */
 
 .paciente {
   color: #111827;

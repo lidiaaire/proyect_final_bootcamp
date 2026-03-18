@@ -1,9 +1,7 @@
-// Esta página representa el detalle de una solicitud específica, mostrando toda la información relevante sobre la solicitud, incluyendo los documentos aportados, el historial de cambios de estado, las notas internas y las acciones disponibles para gestionar la solicitud. Utiliza el hook useRouter de Next.js para obtener el ID de la solicitud desde la URL y luego carga los datos correspondientes desde la API. La página también incluye un timeline visual que muestra el progreso de la solicitud a través de sus diferentes estados, lo que facilita a los usuarios entender rápidamente en qué etapa se encuentra la solicitud. Asegúrate de que los campos utilizados en esta página coincidan con los campos definidos en el backend para garantizar una correcta visualización de la información de la solicitud y sus documentos asociados.
-// La página utiliza estilos definidos en SolicitudDetalle.module.css para darle una apariencia atractiva y organizada al detalle de la solicitud. La información se muestra en un formato claro y fácil de leer, con secciones separadas para los documentos, el historial de actividad y las notas internas. Además, se incluyen botones para realizar acciones como solicitar documentación adicional, enviar a dirección médica, enviar a asesoría jurídica, autorizar o rechazar la solicitud, dependiendo del estado actual de la solicitud. Asegúrate de que los estilos estén correctamente aplicados para mejorar la experiencia del usuario al visualizar el detalle de la solicitud y facilitar la gestión de la misma.
-
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styles from "../../styles/SolicitudDetalle.module.css";
+import PDFViewer from "@/components/ui/PDFViewer/PDFViewer";
 
 import {
   getRequest,
@@ -237,9 +235,15 @@ export default function SolicitudDetallePage() {
                 const usuario = item.changedBy || item.usuario;
 
                 return (
-                  <div key={index} className={styles.activityItem}>
-                    <strong>{usuario}</strong> cambió el estado a{" "}
-                    <b>{getEstadoLabel(estado)}</b>
+                  <div className={styles.activityItem}>
+                    <div className={styles.activityDot}></div>
+
+                    <div className={styles.activityContent}>
+                      <div className={styles.activityText}>
+                        <strong>{usuario}</strong> cambió el estado a{" "}
+                        <b>{getEstadoLabel(estado)}</b>
+                      </div>
+                    </div>
                   </div>
                 );
               })}

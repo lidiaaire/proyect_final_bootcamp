@@ -21,7 +21,7 @@
 }
 
 .primaryButton {
-  background: #2563eb;
+  background: #7fa393;
   color: white;
   border: none;
   padding: 10px 18px;
@@ -31,14 +31,14 @@
 }
 
 .primaryButton:hover {
-  background: #1d4ed8;
+  background: #6c8f7d;
 }
 
 .avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #7fa393;
   color: white;
   display: flex;
   align-items: center;
@@ -47,6 +47,24 @@
   font-size: 20px;
 }
 
+.link {
+  color: #5f7f73;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.search:focus {
+  outline: none;
+  border-color: #7fa393;
+  box-shadow: 0 0 0 2px rgba(127, 163, 147, 0.15);
+}
+
+.tableContainer {
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
 .meta {
   color: #6b7280;
   font-size: 14px;
@@ -54,7 +72,7 @@
 
 .newButton {
   margin-left: auto;
-  background: #2563eb;
+  background: #7fa393;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -63,7 +81,7 @@
 }
 
 .newButton:hover {
-  background: #1d4ed8;
+  background: #6c8f7d;
 }
 
 .topGrid {
@@ -75,9 +93,9 @@
 
 .card {
   background: white;
-  border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .card h3 {
@@ -102,13 +120,13 @@
 
 .timeline {
   margin-top: 8px;
-  min-width: 10px;
+  min-width: 10px; /* evita que empuje layout */
 }
 
 .dot {
   width: 6px;
   height: 6px;
-  background-color: #3b82f6;
+  background-color: #7fa393;
   border-radius: 50%;
 }
 .notesList {
@@ -139,7 +157,7 @@
 .noteAuthor {
   font-size: 11px;
   font-weight: 700;
-  color: #2563eb;
+  color: #7fa393;
 }
 
 .noteDate {
@@ -167,12 +185,16 @@
 }
 
 .noteInput button {
-  background: #2563eb;
+  background: #7fa393;
   color: white;
   border: none;
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.noteInput button:hover {
+  background: #6c8f7d;
 }
 
 /* ===================== */
@@ -182,8 +204,8 @@
 .tableCard {
   background: white;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .table {
@@ -237,8 +259,10 @@
   padding: 5px 10px;
   border-radius: 6px;
   cursor: pointer;
+  border: 1px solid #d6e4dd;
+  color: #5f7f73;
 }
 
 .viewButton:hover {
-  background: #f3f4f6;
+  background: #eef5f2;
 }

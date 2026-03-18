@@ -87,6 +87,7 @@ async function sendToMedicalDirection(id, user, justificacion) {
     comment: justificacion,
   });
 
+  // 🔥 AÑADIR NOTA
   solicitud.notas.push({
     text: `Caso enviado a Dirección Médica: ${justificacion}`,
     author: "PRESTACIONES",
@@ -110,6 +111,7 @@ async function sendToLegalAdvisory(id, user, justificacion) {
     comment: justificacion,
   });
 
+  // 🔥 AÑADIR NOTA
   solicitud.notas.push({
     text: `Caso enviado a Asesoría Jurídica: ${justificacion}`,
     author: "PRESTACIONES",
@@ -140,10 +142,12 @@ async function authorizeRequest(id, user, justificacion) {
     date: new Date(),
   });
 
+  // 🔹 GENERAR PDF
   const pdf = await generarAutorizacionPDF(solicitud);
 
   solicitud.autorizacionPdf = pdf.url;
 
+  // 🔴 UN SOLO SAVE
   await solicitud.save();
 
   const email = {
@@ -178,6 +182,7 @@ async function rejectRequest(id, user, justificacion) {
     comment: justificacion,
   });
 
+  // 🔥 AÑADIR NOTA
   solicitud.notas.push({
     text: `Solicitud rechazada: ${justificacion}`,
     author: "PRESTACIONES",

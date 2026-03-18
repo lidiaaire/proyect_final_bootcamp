@@ -1,5 +1,3 @@
-// Este script crea un usuario con el rol "DIRECCION_MEDICA" para pruebas. Asegúrate de ejecutar este script solo una vez para evitar duplicados.
-
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();

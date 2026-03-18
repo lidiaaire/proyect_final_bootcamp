@@ -1,14 +1,17 @@
 .container {
   display: flex;
   height: 100vh;
-  background: #f6f8fb;
+  background: #f5f7f6;
 }
 
-/* SIDEBAR (igual) */
+/* SIDEBAR */
 .sidebar {
   width: 260px;
   background: #ffffff;
   border-right: 1px solid #e6e8eb;
+
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.03);
+
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
@@ -16,18 +19,21 @@
 }
 
 .logoArea {
-  margin-bottom: 10px;
+  background: #8fae9d;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: #0f766e;
+  color: white;
 }
 
 .subtitle {
   font-size: 12px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .menu {
@@ -55,6 +61,8 @@
   color: #0f766e;
   text-decoration: none;
   font-weight: 500;
+
+  box-shadow: inset 0 0 0 1px #cfe7df;
 }
 
 .sectionTitle {
@@ -101,6 +109,7 @@
   cursor: pointer;
 }
 
+/* 🔴 CAMBIO CLAVE */
 .mainContent {
   flex: 1;
   display: flex;
@@ -131,6 +140,7 @@
   padding: 16px 24px;
   background: #ffffff;
   border-bottom: 1px solid #e6e8eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 /* BUSCADOR */
@@ -168,7 +178,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #4f46e5;
+  background-color: #7fa393;
   color: white;
   display: flex;
   align-items: center;

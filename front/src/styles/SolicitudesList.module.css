@@ -103,7 +103,8 @@
   align-items: center;
   padding: 20px 28px;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-top: 1px solid #f1f5f9;
   border-bottom: 1px solid #f1f5f9;
   background: #ffffff;
@@ -126,8 +127,8 @@
 .searchInput:focus,
 .filterSelect:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  border-color: #7fa393;
+  box-shadow: 0 0 0 2px rgba(127, 163, 147, 0.15);
 }
 
 /* ============================= */

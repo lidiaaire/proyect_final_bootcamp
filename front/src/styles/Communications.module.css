@@ -115,7 +115,7 @@
   border-radius: 14px;
   padding: 22px;
   border: 1px solid #e5e7eb;
-  margin-bottom: 16px;
+  margin-bottom: 16px; /* 🔥 separación */
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
@@ -151,7 +151,7 @@
 }
 
 .title {
-  font-size: 20px;
+  font-size: 20px; /* 🔥 más grande */
   font-weight: 700;
   color: #111827;
   margin-bottom: 4px;
@@ -236,26 +236,29 @@
   justify-content: center;
 }
 
-/* 🔹 NUEVO GRID  */
+/* 🔹 NUEVO GRID (mejor que selectorGrid) */
 .channelsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(380px, 1fr)
+  ); /* 🔥 más ancho */
   gap: 24px;
-  max-width: 1200px;
+  max-width: 1200px; /* 🔥 centra y limita */
 }
 
 /* 🔹 CARD NUEVA */
 .channelCard {
   display: flex;
-  gap: 20px;
+  gap: 20px; /* 🔥 más aire */
   align-items: center;
 
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 18px;
 
-  padding: 26px;
-  min-height: 110px;
+  padding: 26px; /* 🔥 más grande */
+  min-height: 110px; /* 🔥 altura mínima */
 
   cursor: pointer;
   transition: all 0.2s ease;
@@ -300,5 +303,5 @@
 .selectorContainer {
   padding: 30px;
   max-width: 1300px;
-  margin: 0 auto;
+  margin: 0 auto; /* 🔥 centra */
 }
