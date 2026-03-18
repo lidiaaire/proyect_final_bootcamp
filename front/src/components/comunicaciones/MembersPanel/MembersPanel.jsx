@@ -1,5 +1,4 @@
-import styles from "../../../styles/Comunicaciones.module.css";
-
+import styles from "../../../styles/Communications.module.css";
 export default function MembersPanel({ members }) {
   return (
     <div className={styles.membersPanel}>

@@ -1,11 +1,11 @@
-// Este script genera mensajes de comunicación más realistas y variados para la colección "communications".
+// Seed de comunicaciones tipo comunicados corporativos (Flowly)
 
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 const uri = process.env.MONGO_URI || "mongodb://localhost:27017";
-const dbName = process.env.DB_NAME || "flowly";
 
+// 🔹 CANALES
 const channels = [
   "Avisos Oficiales",
   "Prestaciones",
@@ -14,84 +14,139 @@ const channels = [
   "General",
 ];
 
+// 🔹 AUTORES (más realista)
 const users = [
-  { name: "Laura Gómez", role: "Prestaciones", avatar: "LG" },
-  { name: "Carlos Méndez", role: "Prestaciones", avatar: "CM" },
-  { name: "Dra. Marta Ruiz", role: "Dirección Médica", avatar: "MR" },
-  { name: "Luis Herrera", role: "Asesoría Jurídica", avatar: "LH" },
-  { name: "Ana Beltrán", role: "Prestaciones", avatar: "AB" },
+  { name: "Dirección", role: "Corporativo" },
+  { name: "Laura Gómez", role: "Prestaciones" },
+  { name: "Carlos Méndez", role: "Prestaciones" },
+  { name: "Ana Beltrán", role: "Prestaciones" },
+  { name: "Pedro Ruiz", role: "Prestaciones" },
+  { name: "Dra. Marta Ruiz", role: "Dirección Médica" },
+  { name: "Dr. Javier López", role: "Dirección Médica" },
+  { name: "Dra. Elena Torres", role: "Dirección Médica" },
+  { name: "Luis Herrera", role: "Asesoría Jurídica" },
+  { name: "Lucía Torres", role: "Asesoría Jurídica" },
 ];
 
-const systemMessages = [
-  "Solicitud SOL-4821 enviada a revisión médica.",
-  "Solicitud SOL-3992 marcada como DOCUMENTACION_SOLICITADA.",
-  "Solicitud SOL-5021 autorizada por Dirección Médica.",
-  "Nueva prueba diagnóstica añadida al catálogo.",
-  "Actualización del protocolo de autorizaciones.",
-];
+// 🔹 COMUNICADOS POR CANAL (estructura real)
+const channelCommunications = {
+  "Avisos Oficiales": [
+    {
+      titulo: "Nueva normativa en pruebas de alta complejidad",
+      contenido:
+        "A partir del próximo mes será obligatorio adjuntar informe clínico detallado en todas las solicitudes de pruebas de alta complejidad. Esta medida busca mejorar la validación médica previa.",
+      tipo: "normativa",
+    },
+    {
+      titulo: "Nuevo acuerdo con Hospital San Juan",
+      contenido:
+        "Se ha firmado un acuerdo estratégico con el Hospital San Juan para reducir los tiempos de autorización en pruebas diagnósticas.",
+      tipo: "acuerdo",
+    },
+  ],
 
-const normalMessages = [
-  "Revisad por favor este caso cuando tengáis un momento.",
-  "He actualizado la documentación en el expediente.",
-  "¿Tenemos informe clínico para este caso?",
-  "El hospital ha enviado el informe adicional.",
-  "Este caso necesita revisión médica.",
-  "Creo que ya podemos autorizar esta prueba.",
-  "¿Alguien puede revisar esta solicitud hoy?",
-  "He dejado notas internas en el expediente.",
-  "Confirmado, procedemos con la autorización.",
-  "Falta documentación del especialista.",
-];
+  Prestaciones: [
+    {
+      titulo: "Cambio en la validación documental",
+      contenido:
+        "Todos los expedientes deberán incluir copia certificada del documento original antes de avanzar a revisión médica.",
+      tipo: "actualizacion",
+    },
+    {
+      titulo: "Nuevo campo obligatorio en solicitudes",
+      contenido:
+        "Se incorpora el campo 'Centro Médico' como obligatorio en todas las nuevas solicitudes.",
+      tipo: "implementacion",
+    },
+  ],
 
+  "Dirección Médica": [
+    {
+      titulo: "Actualización de protocolos quirúrgicos",
+      contenido:
+        "Se han actualizado los protocolos de autorización para intervenciones quirúrgicas, priorizando casos oncológicos.",
+      tipo: "protocolo",
+    },
+    {
+      titulo: "Nuevo criterio en pruebas TAC",
+      contenido:
+        "Todas las solicitudes de TAC deberán incluir informe previo del especialista para su validación.",
+      tipo: "criterio",
+    },
+  ],
+
+  "Asesoría Jurídica": [
+    {
+      titulo: "Nueva normativa en rechazos",
+      contenido:
+        "Todos los rechazos deberán incluir justificación legal documentada para evitar posibles reclamaciones.",
+      tipo: "legal",
+    },
+    {
+      titulo: "Cobertura internacional actualizada",
+      contenido:
+        "Se actualizan las condiciones de cobertura para pruebas realizadas fuera del territorio nacional.",
+      tipo: "legal",
+    },
+  ],
+
+  General: [
+    {
+      titulo: "Recordatorio de uso de la plataforma",
+      contenido:
+        "Se recuerda a todos los usuarios la importancia de mantener los expedientes actualizados y revisar diariamente las solicitudes asignadas.",
+      tipo: "informativo",
+    },
+    {
+      titulo: "Mejora en tiempos de gestión",
+      contenido:
+        "Se han reducido los tiempos medios de autorización en un 15% durante el último mes.",
+      tipo: "informativo",
+    },
+  ],
+};
+
+// 🔹 UTILIDAD
 function randomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function randomTime() {
-  const h = Math.floor(Math.random() * 9) + 8;
-  const m = Math.floor(Math.random() * 60);
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-}
+// 🔹 GENERADOR DE COMUNICADOS
+function generateCommunications() {
+  const communications = [];
 
-function generateMessages(count = 80) {
-  const messages = [];
+  channels.forEach((channel) => {
+    const baseCommunications = channelCommunications[channel];
 
-  for (let i = 0; i < count; i++) {
-    const channel = randomItem(channels);
+    for (let i = 0; i < 20; i++) {
+      const comm = randomItem(baseCommunications);
 
-    let message;
+      const possibleAuthors = users.filter((u) =>
+        channel.includes(u.role.split(" ")[0]),
+      );
 
-    if (Math.random() < 0.2) {
-      message = {
-        channel,
-        user: "Sistema",
-        role: "Sistema",
-        avatar: "SY",
-        text: randomItem(systemMessages),
-        time: randomTime(),
-      };
-    } else {
-      const user = randomItem(users);
+      const author =
+        possibleAuthors.length > 0
+          ? randomItem(possibleAuthors)
+          : randomItem(users);
 
-      message = {
-        channel,
-        user: user.name,
-        role: user.role,
-        avatar: user.avatar,
-        text: randomItem(normalMessages),
-        time: randomTime(),
-      };
+      communications.push({
+        canal: channel,
+        titulo: comm.titulo,
+        contenido: comm.contenido,
+        tipo: comm.tipo,
+        autor: author.name,
+        departamento: author.role,
+        createdAt: new Date(
+          Date.now() - Math.floor(Math.random() * 1000000000),
+        ), // 🔥 fechas distintas
+      });
     }
+  });
 
-    messages.push({
-      ...message,
-      createdAt: new Date(),
-    });
-  }
-
-  return messages;
+  return communications;
 }
-
+// 🔹 SEED
 async function seed() {
   const client = new MongoClient(uri);
 
@@ -99,18 +154,17 @@ async function seed() {
     await client.connect();
 
     const db = client.db("autorizaciones_db");
-
     const collection = db.collection("communications");
 
     console.log("Limpiando colección communications...");
     await collection.deleteMany({});
 
-    const messages = generateMessages(80);
+    const communications = generateCommunications();
 
-    await collection.insertMany(messages);
+    await collection.insertMany(communications);
 
-    console.log("Seed avanzado completado.");
-    console.log("Mensajes creados:", messages.length);
+    console.log("Seed de comunicados completado.");
+    console.log("Comunicados creados:", communications.length);
   } catch (err) {
     console.error("Error ejecutando seed:", err);
   } finally {

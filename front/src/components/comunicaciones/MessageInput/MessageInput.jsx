@@ -1,12 +1,11 @@
 import { useState } from "react";
-import styles from "../../../styles/Comunicaciones.module.css";
-
-export default function MessageInput() {
+import styles from "../../../styles/Communications.module.css";
+export default function MessageInput({ channel }) {
   const [message, setMessage] = useState("");
 
   function handleSend() {
     if (!message) return;
-    console.log("Mensaje enviado:", message);
+    console.log(`Mensaje enviado en ${channel}:`, message);
     setMessage("");
   }
 

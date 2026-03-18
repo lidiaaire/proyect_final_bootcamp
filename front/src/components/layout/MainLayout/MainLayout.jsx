@@ -12,15 +12,16 @@ export default function MainLayout({ children }) {
     { name: "Comunicaciones", path: "/comunicaciones" },
   ];
 
+  // 🔹 Canales con ID (clave para routing)
   const channels = [
-    "Avisos Oficiales",
-    "Prestaciones",
-    "Dirección Médica",
-    "Asesoría Jurídica",
-    "General",
+    { id: "avisos-oficiales", name: "Avisos Oficiales" },
+    { id: "prestaciones", name: "Prestaciones" },
+    { id: "direccion-medica", name: "Dirección Médica" },
+    { id: "asesoria-juridica", name: "Asesoría Jurídica" },
+    { id: "general", name: "General" },
   ];
 
-  // ✅ LOGOUT AQUÍ (global)
+  // 🔹 Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/login");
@@ -29,6 +30,7 @@ export default function MainLayout({ children }) {
   return (
     <div className={styles.container}>
       <aside className={styles.sidebar}>
+        {/* 🔹 Logo */}
         <div className={styles.logoArea}>
           <div className={styles.logo}>Flowly</div>
           <div className={styles.subtitle}>
@@ -36,6 +38,7 @@ export default function MainLayout({ children }) {
           </div>
         </div>
 
+        {/* 🔹 Menú principal */}
         <nav className={styles.menu}>
           {menuItems.map((item) => (
             <Link
@@ -50,16 +53,30 @@ export default function MainLayout({ children }) {
           ))}
         </nav>
 
-        <div className={styles.sectionTitle}>CANALES</div>
+        {/* 🔹 Canales SOLO en comunicaciones */}
+        {router.pathname.startsWith("/comunicaciones") && (
+          <>
+            <div className={styles.sectionTitle}>CANALES</div>
 
-        <div className={styles.channels}>
-          {channels.map((channel) => (
-            <div key={channel} className={styles.channel}>
-              # {channel}
+            <div className={styles.channels}>
+              {channels.map((ch) => (
+                <div
+                  key={ch.id}
+                  onClick={() => router.push(`/comunicaciones/${ch.id}`)}
+                  className={`${styles.channel} ${
+                    router.pathname === `/comunicaciones/${ch.id}`
+                      ? styles.activeChannel
+                      : ""
+                  }`}
+                >
+                  # {ch.name}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
 
+        {/* 🔹 Accesos */}
         <div className={styles.sectionTitle}>ACCESOS DIRECTOS</div>
 
         <div className={styles.shortcuts}>
@@ -69,8 +86,8 @@ export default function MainLayout({ children }) {
         </div>
       </aside>
 
+      {/* 🔹 Contenido principal */}
       <div className={styles.mainContent}>
-        {/* 🔴 TOPBAR GLOBAL */}
         <header className={styles.topbar}>
           <div className={styles.search}>
             <input type="text" placeholder="Buscar..." />
@@ -84,7 +101,6 @@ export default function MainLayout({ children }) {
               <div className={styles.avatar}>P</div>
               <span>María López</span>
 
-              {/* ✅ LOGOUT AQUÍ */}
               <button onClick={handleLogout} className={styles.logoutButton}>
                 Salir
               </button>

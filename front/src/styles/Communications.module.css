@@ -1,0 +1,307 @@
+/* 🔹 Selector de canales */
+.selectorContainer {
+  padding: 30px;
+}
+
+.selectorTitle {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+/* Grid limpio */
+.selectorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Card */
+.selectorCard {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectorCard:hover {
+  transform: translateY(-4px);
+  border-color: #10b981;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+}
+
+.selectorCard h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #065f46;
+}
+
+.selectorCard p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* 🔹 Layout */
+.container {
+  display: flex;
+  height: calc(100vh - 80px);
+  background-color: #f3f4f6;
+}
+
+/* 🔹 Chat */
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+/* 🔹 Header canal */
+.chatHeader {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #065f46;
+}
+
+/* 🔹 Members */
+.membersPanel {
+  width: 240px;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
+  padding: 15px;
+}
+
+.member {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.avatarSmall {
+  width: 30px;
+  height: 30px;
+  background: #10b981;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.memberName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.memberDept {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* 🔹 LISTA DE COMUNICADOS */
+.communicationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 🔹 CARD */
+.communicationCard {
+  background: white;
+  border-radius: 14px;
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 16px; /* 🔥 separación */
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.communicationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.12);
+}
+
+/* línea lateral verde (identidad) */
+.communicationCard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15px;
+  bottom: 15px;
+  width: 4px;
+  background: #10b981;
+  border-radius: 4px;
+}
+
+.communicationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.12);
+}
+
+/* 🔹 HEADER */
+.communicationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 20px; /* 🔥 más grande */
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* 🔹 META */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* 🔹 BADGE BASE */
+.badge {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* 🔹 TIPOS (más vivos) */
+.normativa {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.legal {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.acuerdo {
+  background: #ccfbf1;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+}
+
+.protocolo {
+  background: #ede9fe;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+}
+/* 🔹 CONTENIDO */
+.content {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* 🔹 AUTOR */
+.author {
+  font-size: 12px;
+  color: #6b7280;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 8px;
+}
+
+/* 🔹 wrapper título + icono */
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 🔹 icono */
+.icon {
+  font-size: 18px;
+  background: #ecfdf5;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔹 NUEVO GRID (mejor que selectorGrid) */
+.channelsGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(380px, 1fr)
+  ); /* 🔥 más ancho */
+  gap: 24px;
+  max-width: 1200px; /* 🔥 centra y limita */
+}
+
+/* 🔹 CARD NUEVA */
+.channelCard {
+  display: flex;
+  gap: 20px; /* 🔥 más aire */
+  align-items: center;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+
+  padding: 26px; /* 🔥 más grande */
+  min-height: 110px; /* 🔥 altura mínima */
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 🔥 HOVER PRO */
+.channelCard:hover {
+  transform: translateY(-3px);
+  border-color: #10b981;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+}
+
+/* 🔹 ICONO */
+.cardIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+
+  background: #ecfdf5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 26px;
+}
+
+/* 🔹 TITULO */
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #065f46;
+  margin-bottom: 6px;
+}
+
+.cardDescription {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.selectorContainer {
+  padding: 30px;
+  max-width: 1300px;
+  margin: 0 auto; /* 🔥 centra */
+}
