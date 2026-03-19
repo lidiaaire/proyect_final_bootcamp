@@ -1,19 +1,29 @@
 const API_URL = "http://localhost:4000/api";
 
 export async function getChannelMessages(channel) {
-  const res = await fetch(`${API_URL}/communications/${channel}`);
+  const token = localStorage.getItem("token");
 
-  return res.json();
-}
+  // 👇 MAPEO CORRECTO
+  const CHANNEL_MAP = {
+    PRESTACIONES: "prestaciones",
+    DIRECCION_MEDICA: "direccion-medica",
+    ASESORIA_JURIDICA: "asesoria-juridica",
+    GENERAL: "general",
+  };
 
-export async function sendMessage(data) {
-  const res = await fetch(`${API_URL}/communications`, {
-    method: "POST",
+  const slug = CHANNEL_MAP[channel] || channel;
+
+  const res = await fetch(`${API_URL}/communications/${slug}`, {
     headers: {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data),
   });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("API ERROR:", text);
+    throw new Error("Error obteniendo comunicaciones");
+  }
 
   return res.json();
 }

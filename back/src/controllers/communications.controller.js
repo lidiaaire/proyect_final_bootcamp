@@ -27,7 +27,7 @@ async function getMessages(req, res) {
     client = new MongoClient(uri);
     await client.connect();
 
-    const db = client.db();
+    const db = client.db("flowly");
 
     const communications = await db
       .collection("communications")
