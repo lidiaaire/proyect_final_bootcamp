@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,67 +10,47 @@ import NotificationsWidget from "@/components/dashboard/NotificationsWidget/Noti
 import TeamWidget from "@/components/dashboard/TeamWidget/TeamWidget";
 import { ESTADOS } from "@/core/constants/solicitudEstados";
 
-function clasificarSolicitudes(solicitudes) {
-  const resultado = {
-    urgentes: [],
-    revisionMedica: [],
-    revisionJuridica: [],
-    autorizadas: [],
-    rechazadas: [],
-  };
-
-  solicitudes.forEach((s) => {
-    switch (s.estadoInterno) {
-      case ESTADOS.PENDIENTE_INICIO_GESTION:
-      case ESTADOS.DOCUMENTACION_SOLICITADA:
-        resultado.urgentes.push(s);
-        break;
-
-      case ESTADOS.DIRECCION_MEDICA:
-        resultado.revisionMedica.push(s);
-        break;
-
-      case ESTADOS.ASESORIA_JURIDICA:
-        resultado.revisionJuridica.push(s);
-        break;
-
-      case ESTADOS.AUTORIZADA:
-        resultado.autorizadas.push(s);
-        break;
-
-      case ESTADOS.RECHAZADA:
-        resultado.rechazadas.push(s);
-        break;
-    }
-  });
-
-  return resultado;
-}
-
 export default function Home() {
   const router = useRouter();
 
   const [solicitudes, setSolicitudes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
+  const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
+    if (!router.isReady) return;
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsAuth(true);
+    }
+  }, [router.isReady]);
+
+  useEffect(() => {
+    if (!isAuth) return;
+
     const fetchData = async () => {
       try {
         const data = await getSolicitudes();
         setSolicitudes(data);
-      } catch {
-        setErrorMessage("No se pudieron cargar las solicitudes.");
+      } catch (error) {
+        setErrorMessage("Error cargando solicitudes");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [isAuth]);
 
-  if (isLoading) return <p>Cargando...</p>;
+  if (!isAuth) return null;
+
+  if (loading) return <p>Cargando...</p>;
   if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
 
   const hoy = new Date();
@@ -96,10 +76,6 @@ export default function Home() {
       ? solicitudes
       : solicitudes.filter((s) => s.estadoInterno === filtroEstado);
 
-  // ===============================
-  // ACTIVITY FEED (historial + creación)
-  // ===============================
-
   const actividadReciente = solicitudes
     .flatMap((s) => {
       const eventosHistorial = (s.historial || []).map((h) => {
@@ -124,7 +100,6 @@ export default function Home() {
         };
       });
 
-      // Evento de creación de solicitud
       const eventoCreacion = {
         solicitudId: s._id,
         paciente: s.nombreCompleto,
@@ -203,12 +178,7 @@ export default function Home() {
 
                   <td>
                     {s.createdAt
-                      ? (() => {
-                          console.log("createdAt FRONT:", s.createdAt);
-                          return new Date(s.createdAt).toLocaleDateString(
-                            "es-ES",
-                          );
-                        })()
+                      ? new Date(s.createdAt).toLocaleDateString("es-ES")
                       : "—"}
                   </td>
                 </tr>

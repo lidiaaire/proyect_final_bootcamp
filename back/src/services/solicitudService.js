@@ -42,11 +42,7 @@ async function requestDocumentation(id, user, justificacion) {
       comment: justificacion,
     });
 
-    console.log("UPDATED:", updated);
-
     const solicitud = await Solicitud.findById(id);
-
-    console.log("REHIDRATADA:", solicitud);
 
     if (!solicitud) {
       throw new Error("Solicitud no encontrada");
@@ -62,11 +58,7 @@ async function requestDocumentation(id, user, justificacion) {
       date: new Date(),
     });
 
-    console.log("ANTES SAVE");
-
     await solicitud.save();
-
-    console.log("DESPUES SAVE");
 
     return solicitud;
   } catch (error) {

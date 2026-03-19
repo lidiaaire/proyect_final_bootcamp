@@ -31,6 +31,7 @@ export default function SolicitudDetallePage() {
   const [solicitud, setSolicitud] = useState(null);
   const [nuevaNota, setNuevaNota] = useState("");
   const [documentoSeleccionado, setDocumentoSeleccionado] = useState(null);
+  const [isAuth, setIsAuth] = useState(false);
 
   // =========================
   // TIMELINE CONFIG (ANTES DE USEEFFECT)
@@ -76,10 +77,23 @@ export default function SolicitudDetallePage() {
   }, [documentoSeleccionado]);
 
   useEffect(() => {
-    if (router.isReady && id) {
-      fetchSolicitud();
+    if (!router.isReady) return;
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      setIsAuth(true);
     }
-  }, [router.isReady, id]);
+  }, [router.isReady]);
+
+  // 📡 FETCH
+  useEffect(() => {
+    if (!router.isReady || !id || !isAuth) return;
+
+    fetchSolicitud();
+  }, [router.isReady, id, isAuth]);
 
   // 🔹 DEBUG (seguro, no rompe hooks)
   useEffect(() => {
@@ -265,7 +279,30 @@ export default function SolicitudDetallePage() {
                 />
               </div>
             )}
+            <div className={styles.docsActions}>
+              <button
+                className={`${styles.button} ${styles.buttonSecondary}`}
+                onClick={handleSolicitarDoc}
+              >
+                Solicitar documentación
+              </button>
+
+              <button
+                className={`${styles.button} ${styles.buttonSecondary}`}
+                onClick={handleDireccionMedica}
+              >
+                Dirección Médica
+              </button>
+
+              <button
+                className={`${styles.button} ${styles.buttonSecondary}`}
+                onClick={handleAsesoria}
+              >
+                Asesoría Jurídica
+              </button>
+            </div>
           </div>
+
           {/* ACTIVIDAD */}
           <div className={styles.section}>
             <h3>Actividad del caso</h3>

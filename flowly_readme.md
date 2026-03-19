@@ -42,6 +42,8 @@ git clone <repo>
 cd proyect_final_bootcamp
 ```
 
+---
+
 ### 2. Backend
 
 ```
@@ -53,9 +55,29 @@ Crear `.env`:
 
 ```
 PORT=4000
-MONGO_URI=mongodb://localhost:27017/flowly
+MONGO_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/flowly
 JWT_SECRET=secret
 ```
+
+### ⚠️ Configuración de MongoDB
+
+El proyecto utiliza **MongoDB Atlas (cloud)**.
+
+Para poder ejecutar el backend correctamente:
+
+1. Crear un cluster en MongoDB Atlas
+2. Añadir tu IP en:
+   - Network Access → "Allow access from anywhere"
+3. Crear un usuario de base de datos (Database Access)
+4. Configurar el `.env` con tu cadena de conexión
+
+Ejemplo:
+
+```
+MONGO_URI=mongodb+srv://usuario:password@cluster.mongodb.net/flowly
+```
+
+> Si no se configura correctamente, el backend no podrá conectarse a la base de datos.
 
 Arrancar:
 
@@ -220,7 +242,7 @@ npm run seed
 
 ### ⚠️ Consideraciones
 
-- Requiere base de datos `flowly`
+- Requiere MongoDB Atlas configurado correctamente
 - Si no existen policyholders, el seed de solicitudes fallará
 - Puede tardar unos segundos en ejecutarse
 
@@ -298,7 +320,9 @@ http://localhost:3000
 
 El sistema está diseñado para simular un flujo real de negocio, priorizando coherencia de datos, trazabilidad y claridad visual.
 
-## Autora
+---
+
+## 👩‍💻 Autora
 
 Lidia Garcia Torregrosa
 
