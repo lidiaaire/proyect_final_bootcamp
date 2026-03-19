@@ -73,8 +73,8 @@ async function seedPolicyholders() {
     console.log("Mongo desconectado");
   } catch (error) {
     console.error("Error generando policyholders:", error);
-    process.exit(1);
+    await mongoose.disconnect();
   }
 }
 
-seedPolicyholders();
+module.exports = seedPolicyholders;

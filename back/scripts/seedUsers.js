@@ -39,7 +39,7 @@ async function seedUsers() {
   ]);
 
   console.log("Usuarios creados");
-  process.exit();
+  await mongoose.disconnect();
 }
 
-seedUsers();
+module.exports = seedUsers;

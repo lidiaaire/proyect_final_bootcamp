@@ -1,9 +1,8 @@
-// Seed de comunicaciones tipo comunicados corporativos (Flowly - CORREGIDO)
+// Seed de comunicaciones tipo comunicados corporativos
 
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
-
-const uri = process.env.MONGO_URI || "mongodb://localhost:27017";
+const uri = process.env.MONGO_URI;
 const DB_NAME = "flowly";
 
 // 🔹 CANALES (deben coincidir con controller)
@@ -166,4 +165,4 @@ async function seed() {
   }
 }
 
-seed();
+module.exports = seed;

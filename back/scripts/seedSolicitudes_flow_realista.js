@@ -191,8 +191,8 @@ async function seedSolicitudes() {
     console.log("Mongo desconectado");
   } catch (error) {
     console.error("Error generando solicitudes:", error);
-    process.exit(1);
+    await mongoose.disconnect();
   }
 }
 
-seedSolicitudes();
+module.exports = seedSolicitudes;
