@@ -1,3 +1,6 @@
+require("dotenv").config();
+const mongoose = require("mongoose");
+
 const seedUsers = require("./seedUsers");
 const seedPolicyholders = require("./seedPolicyholders");
 const seedSolicitudes = require("./seedSolicitudes_flow_realista");
@@ -7,10 +10,16 @@ async function runSeeds() {
   try {
     console.log("🌱 Iniciando seeds...");
 
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Mongo conectado");
+
     await seedUsers();
     await seedPolicyholders();
     await seedSolicitudes();
     await seedCommunications();
+
+    await mongoose.disconnect();
+    console.log("Mongo desconectado");
 
     console.log("✅ Todos los seeds ejecutados correctamente");
     process.exit();
