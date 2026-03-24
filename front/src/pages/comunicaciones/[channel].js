@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import styles from "../../styles/Communications.module.css";
 
 import CommunicationsLayout from "@/components/comunicaciones/CommunicationsLayout/CommunicationsLayout";
-import CommunicationsList from "@/components/comunicaciones/CommunicationsList/CommunicationsList.";
+import CommunicationsList from "@/components/comunicaciones/CommunicationsList/CommunicationsList";
 
 export default function ChannelPage() {
   const router = useRouter();

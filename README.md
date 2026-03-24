@@ -14,11 +14,26 @@ diferenciados y trazabilidad completa.
 
 - Node.js + Express
 - MongoDB (base de datos: **flowly**)
+- Estructura:
+
+```{=html}
+<!-- -->
+```
+
+    src/
+     ├── configuration/
+     ├── controllers/
+     ├── services/
+     ├── routes/
+     ├── models/
+     ├── middlewares/
+     ├── utils/
 
 ### Frontend
 
 - Next.js
 - Consumo de API REST
+- Estilos en carpeta `/styles`
 
 ---
 
@@ -31,7 +46,7 @@ diferenciados y trazabilidad completa.
 
 ---
 
-## 🚀 Backend
+### 2. Backend
 
     cd back
     npm install
@@ -42,23 +57,17 @@ Crear `.env`:
     MONGO_URI=mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/flowly?retryWrites=true&w=majority
     JWT_SECRET=secret
 
-> Sustituir USER y PASSWORD por credenciales reales.
+> Sustituir USER y PASSWORD por credenciales reales de MongoDB Atlas.
 
 ---
 
-## 🌱 Seeds
-
-    node scripts/seedAll.cjs
-
----
-
-## ▶️ Arrancar backend
+Arrancar:
 
     npm start
 
 ---
 
-## 💻 Frontend
+### 3. Frontend
 
     cd front
     npm install
@@ -66,13 +75,233 @@ Crear `.env`:
 
 ---
 
-## 🌐 API
+## 🌐 API - Endpoints
 
-Prefijo: `/api`
+Todos los endpoints usan prefijo:
+
+    /api
+
+### Auth
+
+    POST /api/auth/login
+    POST /api/auth/register
+
+### Solicitudes
+
+    GET /api/solicitudes
+    GET /api/solicitudes/:id
+    GET /api/solicitudes/policyholder/:numeroPoliza
+
+    POST /api/solicitudes/:id/autorizar
+    POST /api/solicitudes/:id/rechazar
+    POST /api/solicitudes/:id/solicitar-documentacion
+    POST /api/solicitudes/:id/enviar-direccion-medica
+    POST /api/solicitudes/:id/enviar-asesoria-juridica
+
+### Policyholders
+
+    GET /api/policyholders
+    GET /api/policyholders/:id
+
+### Communications
+
+    GET /api/communications/:channel
+    POST /api/communications
+
+---
+
+## 🧾 Modelo de Datos
+
+### Policyholder
+
+    {
+     id,
+     name,
+     dni,
+     telefono,
+     email,
+     direccion,
+     policyType,
+     policyStartDate,
+     internalNotes
+    }
+
+### Solicitud
+
+    {
+     numeroSolicitud,
+     numeroPoliza,
+     estadoInterno,
+     currentDepartment,
+     documentos,
+     historial,
+     notas,
+     autorizacionPdf
+    }
+
+---
+
+## 🔄 Flujo de Estados
+
+Estados del sistema:
+
+    PENDIENTE_INICIO_GESTION
+    DOCUMENTACION_SOLICITADA
+    EN_REVISION
+    AUTORIZADA
+    RECHAZADA
+
+Estados adicionales (mapeados en frontend):
+
+    PENDIENTE_DOCUMENTACION_DEL_ASEGURADO → DOCUMENTACION_SOLICITADA
+    PENDIENTE_ASESORIA_JURIDICA → EN_REVISION
+
+---
+
+## 📊 Timeline
+
+El timeline del frontend usa estados normalizados mediante un mapper
+para evitar inconsistencias visuales.
+
+---
+
+## 🌱 Seeds
+
+El proyecto incluye un sistema automatizado para generar datos de prueba
+con relaciones reales entre entidades.
+
+### 🚀 Ejecución
+
+Desde la carpeta backend:
+
+    node scripts/seedAll.cjs
+
+### 🧠 Orden interno
+
+1.  Users
+2.  Policyholders
+3.  Solicitudes
+4.  Communications
+
+### 📊 Qué generan los seeds
+
+- **Users**
+  - PRESTACIONES
+  - DIRECCION_MEDICA
+  - ASESORIA_JURIDICA
+  - ADMIN
+- **Policyholders**
+  - 100 asegurados con datos completos
+- **Solicitudes**
+  - 300 solicitudes con historial, documentos y notas
+- **Communications**
+  - Comunicaciones por canal y departamento
+
+### ⚠️ Consideraciones
+
+- Requiere `.env` correctamente configurado
+- Si no existen policyholders, el seed de solicitudes fallará
+
+---
+
+## 📂 Documentos
+
+Los documentos se sirven desde:
+
+    /back/public/docs
+
+Acceso:
+
+    http://localhost:4000/docs/<archivo.pdf>
+
+---
+
+## 🔐 Autenticación
+
+- JWT
+- Middleware `verifyToken`
+- Roles:
+
+```{=html}
+<!-- -->
+```
+
+    PRESTACIONES
+    DIRECCION_MEDICA
+    ASESORIA_JURIDICA
+    ADMIN
+
+---
+
+## 🧪 Validación del sistema
+
+Checklist:
+
+- Login funcional ✔
+- Listado de solicitudes ✔
+- Detalle con documentos ✔
+- Timeline coherente ✔
+- Policyholders completos ✔
+- Historial y notas ✔
+- Generación de PDF ✔
+
+---
+
+## 🧠 Decisiones técnicas
+
+- Separación controller/service
+- Uso consistente de async/await
+- Normalización de estados en frontend
+- Prefijo global `/api`
+- Datos desacoplados entre frontend y backend
+
+---
+
+## 🚀 Ejecución final
+
+1.  Ejecutar seeds:
+
+```{=html}
+<!-- -->
+```
+
+    node scripts/seedAll.cjs
+
+2.  Levantar backend:
+
+```{=html}
+<!-- -->
+```
+
+    npm start
+
+3.  Levantar frontend:
+
+```{=html}
+<!-- -->
+```
+
+    npm run dev
+
+4.  Acceder a:
+
+```{=html}
+<!-- -->
+```
+
+    http://localhost:3000
 
 ---
 
 ## 📌 Notas
 
-Proyecto preparado para ejecutarse en cualquier entorno con MongoDB
-Atlas.
+El sistema está diseñado para simular un flujo real de negocio,
+priorizando coherencia de datos, trazabilidad y claridad visual.
+
+---
+
+## 👩‍💻 Autora
+
+Lidia Garcia Torregrosa
+
+Proyecto Final del Bootcamp FullStack CodeSpace
