@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const seedUsers = require("./seedUsers");
 const seedPolicyholders = require("./seedPolicyholders");
-const seedSolicitudes = require("./seedSolicitudes_flow_realista");
+const seedSolicitudes = require("./seedSolicitudes");
 const seedCommunications = require("./seedCommunicationsAdvanced");
 
 async function runSeeds() {
@@ -21,10 +21,10 @@ async function runSeeds() {
     await mongoose.disconnect();
     console.log("Mongo desconectado");
 
-    console.log("✅ Todos los seeds ejecutados correctamente");
+    console.log("✅ Seeds completados");
     process.exit();
   } catch (error) {
-    console.error("❌ Error ejecutando seeds:", error);
+    console.error("❌ Error:", error);
     process.exit(1);
   }
 }
