@@ -1,7 +1,7 @@
 import { normalizeSolicitud } from "@/core/normalizers/solicitudNormalizer";
 
-const API_URL = "http://localhost:4000/api/solicitudes";
-
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = `${API_BASE}/api/solicitudes`;
 /* ==============================
 GET solicitudes
 ============================== */
@@ -117,19 +117,16 @@ ENVIAR ASESORIA JURIDICA
 export const sendToLegal = async (id, motivo) => {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(
-    `http://localhost:4000/api/solicitudes/${id}/enviar-asesoria-juridica`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        justificacion: motivo,
-      }),
+  const response = await fetch(`${API_URL}/${id}/enviar-asesoria-juridica`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-  );
+    body: JSON.stringify({
+      justificacion: motivo,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error("Error enviando a asesoría jurídica");

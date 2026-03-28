@@ -21,7 +21,10 @@ connectDB();
 // Middlewares
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: [
+      "http://localhost:3000",
+      "https://proyect-final-bootcamp.vercel.app",
+    ],
     credentials: true,
   }),
 );
