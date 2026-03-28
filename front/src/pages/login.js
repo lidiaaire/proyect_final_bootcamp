@@ -8,12 +8,14 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch("http://localhost:4000/api/auth/login", {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,6 +36,11 @@ export default function Login() {
     }
   };
 
+  const fillDemoUser = () => {
+    setEmail("prestaciones@empresa.com");
+    setPassword("123456");
+  };
+
   return (
     <main className={styles.container}>
       {/* LEFT PANEL */}
@@ -47,7 +54,6 @@ export default function Login() {
       {/* RIGHT PANEL */}
       <div className={styles.rightPanel}>
         <div className={styles.card}>
-          {/* HEADER NUEVO */}
           <div className={styles.header}>
             <h1 className={styles.logoText}>Flowly</h1>
           </div>
@@ -93,6 +99,34 @@ export default function Login() {
 
             <p className={styles.forgotPassword}>¿Olvidaste tu contraseña?</p>
           </form>
+
+          {/* 🔓 BLOQUE DEMO */}
+          <div
+            style={{
+              marginTop: "20px",
+              padding: "12px",
+              borderRadius: "8px",
+              backgroundColor: "#f5f5f5",
+              fontSize: "14px",
+            }}
+          >
+            <strong>Acceso demo</strong>
+            <p>Email: prestaciones@empresa.com</p>
+            <p>Contraseña: 123456</p>
+
+            <button
+              onClick={fillDemoUser}
+              style={{
+                marginTop: "10px",
+                padding: "8px",
+                borderRadius: "6px",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Usar usuario demo
+            </button>
+          </div>
         </div>
       </div>
     </main>
