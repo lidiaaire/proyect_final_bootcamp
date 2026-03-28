@@ -19,7 +19,12 @@ const app = express();
 connectDB();
 
 // Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Servir documentos PDF
