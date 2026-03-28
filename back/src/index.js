@@ -24,6 +24,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://proyect-final-bootcamp.vercel.app",
+      "https://flowly-medical.vercel.app",
     ],
     credentials: true,
   }),
