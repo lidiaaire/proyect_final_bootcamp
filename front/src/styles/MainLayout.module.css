@@ -1,9 +1,14 @@
 .container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   background: #f5f7f6;
 }
 
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
 /* SIDEBAR */
 .sidebar {
   width: 260px;
@@ -160,6 +165,22 @@
   gap: 16px;
 }
 
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search input {
+    width: 100%;
+  }
+
+  .topbarRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
 .icon {
   font-size: 18px;
   cursor: pointer;
@@ -191,4 +212,23 @@
   flex: 1;
   padding: 30px;
   overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .pageContent {
+    padding: 16px;
+  }
+}
+/* ========================= */
+/* 📱 RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .container {
+    flex-direction: column;
+  }
 }
