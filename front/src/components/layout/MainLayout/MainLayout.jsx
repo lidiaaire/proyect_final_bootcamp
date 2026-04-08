@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import TestUser from "@/components/TestUser";
 import styles from "../../../styles/MainLayout.module.css";
 
 export default function MainLayout({ children }) {
   const router = useRouter();
-
+  const [user, setUser] = useState(null);
+  const [openUserMenu, setOpenUserMenu] = useState(false);
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "Solicitudes", path: "/solicitudes" },
@@ -24,9 +27,27 @@ export default function MainLayout({ children }) {
   // 🔹 Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     router.push("/login");
   };
 
+  useEffect(() => {
+    const userFromStorage = localStorage.getItem("user");
+
+    let parsedUser = null;
+
+    try {
+      if (userFromStorage && userFromStorage !== "undefined") {
+        parsedUser = JSON.parse(userFromStorage);
+      }
+    } catch (error) {
+      console.error("Error parsing user:", error);
+      localStorage.removeItem("user"); // limpiamos dato corrupto
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUser(parsedUser);
+  }, []);
   return (
     <div className={styles.container}>
       <aside className={styles.sidebar}>
@@ -98,12 +119,31 @@ export default function MainLayout({ children }) {
             <span className={styles.icon}>⚙️</span>
 
             <div className={styles.user}>
-              <div className={styles.avatar}>P</div>
-              <span>María López</span>
+              <div
+                className={styles.userInfo}
+                onClick={() => setOpenUserMenu(!openUserMenu)}
+              >
+                <div className={styles.avatar}>
+                  {user?.nombreCompleto ? user.nombreCompleto.charAt(0) : "U"}
+                </div>
 
-              <button onClick={handleLogout} className={styles.logoutButton}>
-                Salir
-              </button>
+                <span>{user?.nombreCompleto || "Usuario"}</span>
+              </div>
+
+              {openUserMenu && (
+                <div className={styles.userDropdown}>
+                  <TestUser />
+
+                  <div className={styles.divider}></div>
+
+                  <button
+                    onClick={handleLogout}
+                    className={styles.logoutButton}
+                  >
+                    Salir
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>

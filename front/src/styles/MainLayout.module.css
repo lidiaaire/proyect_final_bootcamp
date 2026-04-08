@@ -123,15 +123,14 @@
 }
 
 .logoutButton {
-  margin-left: 12px;
-  padding: 6px 10px;
-  font-size: 12px;
-  border: none;
+  width: 100%;
+  padding: 6px;
   border-radius: 6px;
-  background-color: #ef4444;
-  color: white;
+  border: 1px solid #ddd;
+  background-color: white;
+  color: #333;
   cursor: pointer;
-  transition: background 0.2s ease;
+  font-size: 13px;
 }
 
 .logoutButton:hover {
@@ -207,6 +206,34 @@
   font-weight: 600;
 }
 
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.user {
+  position: relative;
+}
+
+.userDropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 220px;
+}
+
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 10px 0;
+}
 /* 🔴 CONTENIDO REAL DE LAS PÁGINAS */
 .pageContent {
   flex: 1;

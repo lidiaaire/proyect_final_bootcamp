@@ -24,12 +24,14 @@ export default function Login() {
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.message || "Error al hacer login");
       }
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       router.push("/");
     } catch (error) {
       setError(error.message);
@@ -99,6 +101,15 @@ export default function Login() {
 
             <p className={styles.forgotPassword}>¿Olvidaste tu contraseña?</p>
           </form>
+          <p className={styles.registerText}>
+            ¿No tienes cuenta?{" "}
+            <span
+              className={styles.registerLink}
+              onClick={() => router.push("/register")}
+            >
+              Crear cuenta
+            </span>
+          </p>
 
           {/* 🔓 BLOQUE DEMO */}
           <div

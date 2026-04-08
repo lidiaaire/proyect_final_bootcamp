@@ -89,6 +89,11 @@
   box-shadow: none;
 }
 
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .sortable {
   cursor: pointer;
 }
@@ -218,4 +223,21 @@
 
 .detalleSolicitud {
   width: 55%;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .filters input,
+  .filters select {
+    width: 100%;
+  }
 }

@@ -8,6 +8,7 @@ const path = require("path");
 
 const connectDB = require("./configuration/db");
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 const { verifyToken } = require("./middlewares/authMiddleware");
 const solicitudRoutes = require("./routes/solicitudRoutes");
 const policyholderRoutes = require("./routes/policyholderRoutes");
@@ -40,6 +41,7 @@ app.use(
 
 // Rutas
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/solicitudes", solicitudRoutes);
 app.use("/api/policyholders", policyholderRoutes);
 app.use("/api", communicationsRoutes);

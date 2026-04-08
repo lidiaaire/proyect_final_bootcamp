@@ -54,10 +54,11 @@ diferenciados y trazabilidad completa.
 Crear `.env`:
 
     PORT=4000
-    MONGO_URI=mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/flowly?retryWrites=true&w=majority
+    MONGO_URI=mongodb+srv://flowly_user:Flowly1234@cluster0.d3tputi.mongodb.net/flowly?retryWrites=true&w=majority
     JWT_SECRET=secret
 
-> Sustituir USER y PASSWORD por credenciales reales de MongoDB Atlas.
+> ⚠️ Este usuario está creado únicamente para evaluación del proyecto.
+> La base de datos ya incluye datos de prueba generados mediante seeds.
 
 ---
 
@@ -85,6 +86,11 @@ Todos los endpoints usan prefijo:
 
     POST /api/auth/login
     POST /api/auth/register
+
+### Users
+
+    PUT /api/users/:id
+    DELETE /api/users/:id
 
 ### Solicitudes
 
@@ -244,6 +250,9 @@ Checklist:
 - Policyholders completos ✔
 - Historial y notas ✔
 - Generación de PDF ✔
+- Registro de usuario desde frontend ✔
+- Edición de usuario ✔
+- Eliminación de usuario con logout ✔
 
 ---
 
@@ -254,8 +263,22 @@ Checklist:
 - Normalización de estados en frontend
 - Prefijo global `/api`
 - Datos desacoplados entre frontend y backend
+- Implementación de CRUD de usuario (update/delete)
+- Sincronización de sesión mediante localStorage (token + user)
+- Gestión de estado de usuario en frontend con persistencia
 
 ---
+
+## 👤 Gestión de Usuario
+
+El sistema permite la gestión completa del usuario autenticado desde el frontend:
+
+- Edición de datos personales (nombre y email)
+- Eliminación de cuenta con invalidación de sesión
+- Persistencia de sesión mediante localStorage
+- Sincronización entre backend y frontend tras modificaciones
+
+Estas funcionalidades están integradas en el header de la aplicación mediante un dropdown accesible desde el avatar del usuario.
 
 ## 🚀 Ejecución final
 

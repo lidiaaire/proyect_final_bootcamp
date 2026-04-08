@@ -191,3 +191,15 @@
   color: #4a90e2;
   cursor: pointer;
 }
+
+.registerText {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.registerLink {
+  color: #4caf50;
+  cursor: pointer;
+  font-weight: 500;
+}
