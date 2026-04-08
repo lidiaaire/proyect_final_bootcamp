@@ -12,7 +12,7 @@ const userRoutes = require("./routes/userRoutes");
 const { verifyToken } = require("./middlewares/authMiddleware");
 const solicitudRoutes = require("./routes/solicitudRoutes");
 const policyholderRoutes = require("./routes/policyholderRoutes");
-const communicationsRoutes = require("./routes/comunications.routes");
+const communicationsRoutes = require("./routes/communications.routes");
 
 const app = express();
 
