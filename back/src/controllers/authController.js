@@ -1,26 +1,45 @@
-// Este archivo contiene los controladores para las rutas de autenticación (login y registro).
-// Aquí se manejan las solicitudes entrantes, se validan los datos y se llaman a los servicios correspondientes para realizar la lógica de negocio.
-// Se utiliza bcrypt para el hashing de contraseñas y se importan los modelos necesarios para interactuar con la base de datos.
+// Controladores de autenticación (login y registro)
+// Validación de email incluida para evitar formatos inválidos
 
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const { login } = require("../services/authService");
 
+// Función reutilizable de validación de email
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@empresa\.com$/;
+  return emailRegex.test(email);
+};
+
 const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validar email antes de lógica de negocio
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        message: "Formato de email inválido",
+      });
+    }
+
     const result = await login(email, password);
 
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
 
 const registerController = async (req, res) => {
   try {
     const { nombreCompleto, email, password, role } = req.body;
+
+    // Validar email antes de cualquier operación
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        message: "Formato de email inválido",
+      });
+    }
 
     const existingUser = await User.findOne({ email });
 

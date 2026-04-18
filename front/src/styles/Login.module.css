@@ -54,6 +54,7 @@
    RIGHT PANEL
 ========================= */
 .rightPanel {
+  width: 100%;
   flex: 1;
   background: #f5f7f6;
   display: flex;

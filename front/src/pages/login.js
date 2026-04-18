@@ -4,6 +4,7 @@ import styles from "../styles/Login.module.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -13,6 +14,13 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
+    const emailRegex = /^[^\s@]+@empresa\.com$/;
+
+    if (!emailRegex.test(email)) {
+      setEmailError("Debes usar un email corporativo (@empresa.com)");
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/api/auth/login`, {
@@ -24,7 +32,6 @@ export default function Login() {
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.message || "Error al hacer login");
@@ -39,8 +46,29 @@ export default function Login() {
   };
 
   const fillDemoUser = () => {
-    setEmail("prestaciones@empresa.com");
+    const demoEmail = "prestaciones@empresa.com";
+    setEmail(demoEmail);
     setPassword("123456");
+
+    const emailRegex = /^[^\s@]+@empresa\.com$/;
+    if (!emailRegex.test(demoEmail)) {
+      setEmailError("Debes usar un email corporativo (@empresa.com)");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(value)) {
+      setEmailError("Formato de email no válido");
+    } else {
+      setEmailError("");
+    }
   };
 
   return (
@@ -73,9 +101,10 @@ export default function Login() {
                   type="email"
                   placeholder="Introduce tu email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleEmailChange}
                   required
                 />
+                {emailError && <p className={styles.error}>{emailError}</p>}
               </div>
             </div>
 
