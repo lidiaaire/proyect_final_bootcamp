@@ -1,5 +1,9 @@
 # Flowly - Sistema de Gestión de Autorizaciones
 
+> Proyecto orientado a simular un flujo real de gestión de autorizaciones médicas con control de roles, estados y trazabilidad.
+
+---
+
 ## 📌 Descripción
 
 Flowly es una aplicación fullstack diseñada para gestionar solicitudes
@@ -16,18 +20,14 @@ diferenciados y trazabilidad completa.
 - MongoDB (base de datos: **flowly**)
 - Estructura:
 
-```{=html}
-<!-- -->
-```
-
-    src/
-     ├── configuration/
-     ├── controllers/
-     ├── services/
-     ├── routes/
-     ├── models/
-     ├── middlewares/
-     ├── utils/
+  src/
+  ├── configuration/
+  ├── controllers/
+  ├── services/
+  ├── routes/
+  ├── models/
+  ├── middlewares/
+  ├── utils/
 
 ### Frontend
 
@@ -46,33 +46,70 @@ diferenciados y trazabilidad completa.
 
 ---
 
-### 2. Backend
+## 🚀 Ejecución paso a paso
+
+### 1. Backend
 
     cd back
     npm install
 
-Crear `.env`:
+Configurar `.env`:
 
     PORT=4000
     MONGO_URI=mongodb+srv://flowly_user:Flowly1234@cluster0.d3tputi.mongodb.net/flowly?retryWrites=true&w=majority
-    JWT_SECRET=secret
+    JWT_SECRET=your_secret_key
 
-> ⚠️ Este usuario está creado únicamente para evaluación del proyecto.
-> La base de datos ya incluye datos de prueba generados mediante seeds.
+Ejecutar seeds:
 
----
+    node scripts/seedAll.cjs
 
-Arrancar:
+Arrancar backend:
 
     npm start
 
 ---
 
-### 3. Frontend
+### 2. Frontend
 
     cd front
     npm install
+
+Crear `.env.local`:
+
+    NEXT_PUBLIC_API_URL=http://localhost:4000
+
+Arrancar:
+
     npm run dev
+
+---
+
+### 3. Acceso
+
+Abrir en navegador:
+
+    http://localhost:3000
+
+---
+
+## 🔑 Acceso de prueba
+
+    Email: prestaciones@empresa.com
+    Password: 123456
+
+---
+
+## 🔐 Restricción de acceso
+
+El sistema solo permite el registro y login con emails corporativos:
+
+    *@empresa.com
+
+Ejemplo válido:
+
+    prestaciones@empresa.com
+
+Esta validación se aplica tanto en frontend como en backend.
 
 ---
 
@@ -82,15 +119,32 @@ Todos los endpoints usan prefijo:
 
     /api
 
+> 🔒 Los endpoints (excepto login y register) requieren autenticación mediante JWT:
+
+    Authorization: Bearer <token>
+
+---
+
 ### Auth
 
     POST /api/auth/login
     POST /api/auth/register
 
+#### Respuesta login
+
+    {
+      token,
+      user
+    }
+
+---
+
 ### Users
 
     PUT /api/users/:id
     DELETE /api/users/:id
+
+---
 
 ### Solicitudes
 
@@ -104,10 +158,14 @@ Todos los endpoints usan prefijo:
     POST /api/solicitudes/:id/enviar-direccion-medica
     POST /api/solicitudes/:id/enviar-asesoria-juridica
 
+---
+
 ### Policyholders
 
     GET /api/policyholders
     GET /api/policyholders/:id
+
+---
 
 ### Communications
 
@@ -173,46 +231,35 @@ para evitar inconsistencias visuales.
 
 ## 🌱 Seeds
 
-El proyecto incluye un sistema automatizado para generar datos de prueba
-con relaciones reales entre entidades.
+Sistema automatizado para generar datos de prueba con relaciones reales.
 
-### 🚀 Ejecución
-
-Desde la carpeta backend:
+### Ejecución
 
     node scripts/seedAll.cjs
 
-### 🧠 Orden interno
+### Orden interno
 
-1.  Users
-2.  Policyholders
-3.  Solicitudes
-4.  Communications
+1. Users
+2. Policyholders
+3. Solicitudes
+4. Communications
 
-### 📊 Qué generan los seeds
+### Genera
 
-- **Users**
+- Usuarios con roles:
   - PRESTACIONES
   - DIRECCION_MEDICA
   - ASESORIA_JURIDICA
   - ADMIN
-- **Policyholders**
-  - 100 asegurados con datos completos
-- **Solicitudes**
-  - 300 solicitudes con historial, documentos y notas
-- **Communications**
-  - Comunicaciones por canal y departamento
-
-### ⚠️ Consideraciones
-
-- Requiere `.env` correctamente configurado
-- Si no existen policyholders, el seed de solicitudes fallará
+- 100 policyholders
+- 300 solicitudes
+- Comunicaciones por canal
 
 ---
 
 ## 📂 Documentos
 
-Los documentos se sirven desde:
+Ruta:
 
     /back/public/docs
 
@@ -228,29 +275,23 @@ Acceso:
 - Middleware `verifyToken`
 - Roles:
 
-```{=html}
-<!-- -->
-```
-
-    PRESTACIONES
-    DIRECCION_MEDICA
-    ASESORIA_JURIDICA
-    ADMIN
+  PRESTACIONES  
+   DIRECCION_MEDICA  
+   ASESORIA_JURIDICA  
+   ADMIN
 
 ---
 
 ## 🧪 Validación del sistema
 
-Checklist:
-
 - Login funcional ✔
+- Registro con validación de dominio ✔
 - Listado de solicitudes ✔
 - Detalle con documentos ✔
 - Timeline coherente ✔
 - Policyholders completos ✔
 - Historial y notas ✔
 - Generación de PDF ✔
-- Registro de usuario desde frontend ✔
 - Edición de usuario ✔
 - Eliminación de usuario con logout ✔
 
@@ -260,71 +301,32 @@ Checklist:
 
 - Separación controller/service
 - Uso consistente de async/await
+- Validación en frontend + backend
+- Restricción de dominio corporativo
 - Normalización de estados en frontend
 - Prefijo global `/api`
-- Datos desacoplados entre frontend y backend
-- Implementación de CRUD de usuario (update/delete)
-- Sincronización de sesión mediante localStorage (token + user)
-- Gestión de estado de usuario en frontend con persistencia
+- Persistencia de sesión con localStorage
+- Arquitectura orientada a flujo de negocio
 
 ---
 
 ## 👤 Gestión de Usuario
 
-El sistema permite la gestión completa del usuario autenticado desde el frontend:
-
-- Edición de datos personales (nombre y email)
-- Eliminación de cuenta con invalidación de sesión
-- Persistencia de sesión mediante localStorage
-- Sincronización entre backend y frontend tras modificaciones
-
-Estas funcionalidades están integradas en el header de la aplicación mediante un dropdown accesible desde el avatar del usuario.
-
-## 🚀 Ejecución final
-
-1.  Ejecutar seeds:
-
-```{=html}
-<!-- -->
-```
-
-    node scripts/seedAll.cjs
-
-2.  Levantar backend:
-
-```{=html}
-<!-- -->
-```
-
-    npm start
-
-3.  Levantar frontend:
-
-```{=html}
-<!-- -->
-```
-
-    npm run dev
-
-4.  Acceder a:
-
-```{=html}
-<!-- -->
-```
-
-    http://localhost:3000
+- Edición de datos (nombreCompleto y email)
+- Eliminación de cuenta con logout automático
+- Persistencia de sesión
+- Sincronización frontend/backend
 
 ---
 
 ## 📌 Notas
 
 El sistema está diseñado para simular un flujo real de negocio,
-priorizando coherencia de datos, trazabilidad y claridad visual.
+priorizando coherencia de datos, trazabilidad y experiencia de usuario.
 
 ---
 
 ## 👩‍💻 Autora
 
-Lidia Garcia Torregrosa
-
-Proyecto Final del Bootcamp FullStack CodeSpace
+Lidia Garcia Torregrosa  
+Proyecto Final Bootcamp FullStack CodeSpace

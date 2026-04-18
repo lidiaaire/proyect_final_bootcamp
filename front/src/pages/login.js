@@ -7,6 +7,7 @@ export default function Login() {
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -21,6 +22,8 @@ export default function Login() {
       setEmailError("Debes usar un email corporativo (@empresa.com)");
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/api/auth/login`, {
@@ -39,9 +42,12 @@ export default function Login() {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
       router.push("/");
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,10 +68,10 @@ export default function Login() {
     const value = e.target.value;
     setEmail(value);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@empresa\.com$/;
 
     if (!emailRegex.test(value)) {
-      setEmailError("Formato de email no válido");
+      setEmailError("Debes usar un email corporativo (@empresa.com)");
     } else {
       setEmailError("");
     }
@@ -111,21 +117,21 @@ export default function Login() {
             <div className={styles.field}>
               <label>Contraseña</label>
               <div className={styles.inputWrapper}>
-                <span className={styles.icon}>🔒</span>
+                <span className={styles.icon}>📧</span>
                 <input
-                  type="password"
-                  placeholder="Introduce tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  type="email"
+                  placeholder="Introduce tu email"
+                  value={email}
+                  onChange={handleEmailChange}
                   required
                 />
               </div>
             </div>
 
-            {error && <p className={styles.error}>{error}</p>}
+            {emailError && <p className={styles.error}>{emailError}</p>}
 
-            <button type="submit" className={styles.button}>
-              Entrar
+            <button type="submit" className={styles.button} disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
             </button>
 
             <p className={styles.forgotPassword}>¿Olvidaste tu contraseña?</p>

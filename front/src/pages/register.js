@@ -10,6 +10,7 @@ export default function Register() {
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -23,6 +24,13 @@ export default function Register() {
       setEmailError("Debes usar un email corporativo (@empresa.com)");
       return;
     }
+
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE}/api/auth/register`, {
@@ -47,6 +55,8 @@ export default function Register() {
       router.push("/login");
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,8 +133,8 @@ export default function Register() {
 
             {error && <p className={styles.error}>{error}</p>}
 
-            <button type="submit" className={styles.button}>
-              Crear cuenta
+            <button type="submit" className={styles.button} disabled={loading}>
+              {loading ? "Creando..." : "Crear cuenta"}
             </button>
           </form>
 
