@@ -117,12 +117,12 @@ export default function Login() {
             <div className={styles.field}>
               <label>Contraseña</label>
               <div className={styles.inputWrapper}>
-                <span className={styles.icon}>📧</span>
+                <span className={styles.icon}>🔒</span>
                 <input
-                  type="email"
-                  placeholder="Introduce tu email"
-                  value={email}
-                  onChange={handleEmailChange}
+                  type="password"
+                  placeholder="Introduce tu contraseña"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>

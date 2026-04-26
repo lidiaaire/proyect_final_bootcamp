@@ -19,15 +19,18 @@ export default function PolicyholderProfile() {
 
     async function loadData() {
       try {
+        const token = localStorage.getItem("token");
+        const authHeader = { Authorization: `Bearer ${token}` };
+
         const resPolicyholder = await fetch(
-          `http://localhost:4000/api/policyholders/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/policyholders/${id}`,
+          { headers: authHeader },
         );
         const policyholderData = await resPolicyholder.json();
 
-        const token = localStorage.getItem("token");
-
         const resRequests = await fetch(
-          `http://localhost:4000/api/solicitudes/policyholder/${policyholderData.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/solicitudes/policyholder/${policyholderData.id}`,
+          { headers: authHeader },
         );
 
         const requestsData = await resRequests.json();

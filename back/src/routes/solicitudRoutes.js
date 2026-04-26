@@ -13,6 +13,7 @@ const {
   sendToDireccionMedica,
   sendToAsesoriaJuridica,
   getSolicitudesByPolicyholder,
+  addNota,
 } = require("../controllers/solicitudController");
 
 // 🔐 Middleware de autenticación
@@ -21,13 +22,17 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 /* ==============================
 GET /api/solicitudes
 ============================== */
-// 🔓 SIN TOKEN
-router.get("/", getSolicitudes);
+router.get("/", verifyToken, getSolicitudes);
 
 /* ==============================
 GET /api/solicitudes/policyholder/:numeroPoliza
 ============================== */
-router.get("/policyholder/:numeroPoliza", getSolicitudesByPolicyholder);
+router.get("/policyholder/:numeroPoliza", verifyToken, getSolicitudesByPolicyholder);
+
+/* ==============================
+POST /api/solicitudes/:id/notas
+============================== */
+router.post("/:id/notas", verifyToken, addNota);
 
 /* ==============================
 GET /api/solicitudes/:id

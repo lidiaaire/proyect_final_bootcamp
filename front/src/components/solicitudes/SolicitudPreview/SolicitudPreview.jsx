@@ -22,7 +22,7 @@ export default function SolicitudPreview({ solicitud }) {
   async function autorizarSolicitud() {
     try {
       await fetch(
-        `http://localhost:4000/api/solicitudes/${solicitudId}/autorizar`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/solicitudes/${solicitudId}/autorizar`,
         {
           method: "POST",
           headers: {
@@ -42,7 +42,7 @@ export default function SolicitudPreview({ solicitud }) {
   async function handleEnviarDocumentos(documentos) {
     try {
       await fetch(
-        `http://localhost:4000/api/solicitudes/${solicitudId}/solicitar-documentacion`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/solicitudes/${solicitudId}/solicitar-documentacion`,
         {
           method: "POST",
           headers: {
@@ -66,7 +66,7 @@ export default function SolicitudPreview({ solicitud }) {
   async function handleRechazarSolicitud(data) {
     try {
       await fetch(
-        `http://localhost:4000/api/solicitudes/${solicitudId}/rechazar`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/solicitudes/${solicitudId}/rechazar`,
         {
           method: "POST",
           headers: {
@@ -160,7 +160,7 @@ export default function SolicitudPreview({ solicitud }) {
       {documentoSeleccionado && (
         <div className={styles.viewer}>
           <PDFViewer
-            url={`http://localhost:4000/docs/${documentoSeleccionado}`}
+            url={`${process.env.NEXT_PUBLIC_API_URL}/docs/${documentoSeleccionado}`}
           />
         </div>
       )}

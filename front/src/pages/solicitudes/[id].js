@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "../../styles/SolicitudDetalle.module.css";
 import PDFViewer from "@/components/ui/PDFViewer/PDFViewer";
 
@@ -24,6 +24,8 @@ function getEstadoLabel(estado) {
   return map[estado] || estado;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
 export default function SolicitudDetallePage() {
   const router = useRouter();
   const { id } = router.query;
@@ -31,7 +33,6 @@ export default function SolicitudDetallePage() {
   const [solicitud, setSolicitud] = useState(null);
   const [nuevaNota, setNuevaNota] = useState("");
   const [documentoSeleccionado, setDocumentoSeleccionado] = useState(null);
-  const [isAuth, setIsAuth] = useState(false);
 
   // =========================
   // TIMELINE CONFIG (ANTES DE USEEFFECT)
@@ -58,6 +59,16 @@ export default function SolicitudDetallePage() {
     estadoNormalizado !== null ? timelineSteps.indexOf(estadoNormalizado) : -1;
 
   // =========================
+  // DATA
+  // =========================
+
+  const fetchSolicitud = useCallback(async () => {
+    if (!id) return;
+    const data = await getRequest(id);
+    setSolicitud(data);
+  }, [id]);
+
+  // =========================
   // EFFECTS (TODOS ARRIBA)
   // =========================
 
@@ -76,26 +87,35 @@ export default function SolicitudDetallePage() {
     }
   }, [documentoSeleccionado]);
 
+  // 📡 FETCH
   useEffect(() => {
-    if (!router.isReady) return;
+    if (!router.isReady || !id) return;
 
     const token = localStorage.getItem("token");
 
     if (!token) {
       router.push("/login");
-    } else {
-      setIsAuth(true);
+      return;
     }
-  }, [router.isReady]);
 
-  // 📡 FETCH
-  useEffect(() => {
-    if (!router.isReady || !id || !isAuth) return;
+    let isMounted = true;
 
-    fetchSolicitud();
-  }, [router.isReady, id, isAuth]);
+    const loadSolicitud = async () => {
+      const data = await getRequest(id);
 
-  // 🔹 DEBUG (seguro, no rompe hooks)
+      if (isMounted) {
+        setSolicitud(data);
+      }
+    };
+
+    loadSolicitud();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, router.isReady, id]);
+
+  //  DEBUG
   useEffect(() => {
     if (solicitud && estadoNormalizado) {
       if (!timelineSteps.includes(estadoNormalizado)) {
@@ -106,16 +126,6 @@ export default function SolicitudDetallePage() {
       }
     }
   }, [solicitud, estadoNormalizado]);
-
-  // =========================
-  // DATA
-  // =========================
-
-  const fetchSolicitud = async () => {
-    if (!id) return;
-    const data = await getRequest(id);
-    setSolicitud(data);
-  };
 
   // =========================
   // ACCIONES
@@ -168,7 +178,7 @@ export default function SolicitudDetallePage() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://localhost:4000/api/solicitudes/${id}/notas`, {
+      await fetch(`${API_BASE}/api/solicitudes/${id}/notas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -275,7 +285,7 @@ export default function SolicitudDetallePage() {
             {documentoSeleccionado && (
               <div className={styles.section} style={{ marginTop: "16px" }}>
                 <PDFViewer
-                  url={`http://localhost:4000/docs/${documentoSeleccionado}`}
+                  url={`${API_BASE}/docs/${documentoSeleccionado}`}
                 />
               </div>
             )}
@@ -404,7 +414,7 @@ export default function SolicitudDetallePage() {
                 </div>
 
                 <a
-                  href={`http://localhost:4000${solicitud.autorizacionPdf}`}
+                  href={`${API_BASE}${solicitud.autorizacionPdf}`}
                   target="_blank"
                   className={styles.docButton}
                 >

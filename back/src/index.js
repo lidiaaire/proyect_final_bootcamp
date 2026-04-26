@@ -15,21 +15,39 @@ const policyholderRoutes = require("./routes/policyholderRoutes");
 const communicationsRoutes = require("./routes/communications.routes");
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://proyect-final-bootcamp.vercel.app",
+  "https://flowly-medical.vercel.app",
+  ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : []),
+].map((origin) => origin.trim().replace(/\/$/, ""));
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    const normalizedOrigin = origin.replace(/\/$/, "");
+
+    if (allowedOrigins.includes(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Origen no permitido por CORS: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
 // Conectar a Mongo
 connectDB();
 
 // Middlewares
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://proyect-final-bootcamp.vercel.app",
-      "https://flowly-medical.vercel.app",
-    ],
-    credentials: true,
-  }),
-);
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
 // Servir documentos PDF

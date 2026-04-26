@@ -18,6 +18,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
   const [isAuth, setIsAuth] = useState(false);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -28,6 +29,15 @@ export default function Home() {
       router.push("/login");
     } else {
       setIsAuth(true);
+      try {
+        const stored = localStorage.getItem("user");
+        if (stored && stored !== "undefined") {
+          const parsed = JSON.parse(stored);
+          setUserName(parsed?.nombreCompleto || "");
+        }
+      } catch {
+        // usuario corrupto, se ignora
+      }
     }
   }, [router.isReady]);
 
@@ -119,7 +129,7 @@ export default function Home() {
       <div className={styles.dashboardMain}>
         <div className={styles.welcomeCard}>
           <div className={styles.welcomeText}>
-            <h3>Hola María</h3>
+            <h3>Hola {userName || "de nuevo"}</h3>
             <p>
               Tienes <strong>{solicitudes.length}</strong> solicitudes activas.
               <br />

@@ -7,11 +7,12 @@ const {
   getMessages,
   sendMessage,
 } = require("../controllers/communications.controller");
+const { verifyToken } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
 /* Rutas de comunicaciones */
-router.get("/communications/:channel", getMessages);
-router.post("/communications", sendMessage);
+router.get("/communications/:channel", verifyToken, getMessages);
+router.post("/communications", verifyToken, sendMessage);
 
 module.exports = router;

@@ -189,6 +189,32 @@ const rejectSolicitud = async (req, res) => {
   }
 };
 
+/* ==============================
+POST /solicitudes/:id/notas
+============================== */
+const addNota = async (req, res) => {
+  try {
+    const { descripcion } = req.body || {};
+
+    if (!descripcion || !descripcion.trim()) {
+      return res.status(400).json({ message: "La nota no puede estar vacía" });
+    }
+
+    const solicitud = await solicitudService.addNota(
+      req.params.id,
+      req.user,
+      descripcion.trim(),
+    );
+
+    res.status(201).json({
+      message: "Nota añadida correctamente",
+      solicitud: mapSolicitud(solicitud),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getSolicitudes,
   getSolicitudById,
@@ -198,4 +224,5 @@ module.exports = {
   authorizeSolicitud,
   rejectSolicitud,
   getSolicitudesByPolicyholder,
+  addNota,
 };

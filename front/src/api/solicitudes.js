@@ -7,7 +7,11 @@ GET solicitudes
 ============================== */
 
 export async function getSolicitudes() {
-  const res = await fetch(API_URL);
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(API_URL, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
 
   if (!res.ok) {
     const text = await res.text();

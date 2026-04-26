@@ -206,6 +206,27 @@ Flowly
   return solicitud;
 }
 
+/* ==============================
+AÑADIR NOTA INTERNA
+============================== */
+async function addNota(id, user, descripcion) {
+  const solicitud = await Solicitud.findById(id);
+
+  if (!solicitud) {
+    throw new Error("Solicitud no encontrada");
+  }
+
+  solicitud.notas.push({
+    text: descripcion,
+    author: user?.role || "PRESTACIONES",
+    date: new Date(),
+  });
+
+  await solicitud.save();
+
+  return solicitud;
+}
+
 module.exports = {
   getSolicitudes,
   getSolicitudById,
@@ -215,4 +236,5 @@ module.exports = {
   authorizeRequest,
   rejectRequest,
   getSolicitudesByPolicyholder,
+  addNota,
 };

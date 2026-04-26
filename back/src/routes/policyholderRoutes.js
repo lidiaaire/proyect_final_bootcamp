@@ -5,8 +5,9 @@ const express = require("express");
 const router = express.Router();
 
 const controller = require("../controllers/policyholderController");
+const { verifyToken } = require("../middlewares/authMiddleware");
 
-router.get("/", controller.getPolicyholders);
-router.get("/:id", controller.getPolicyholderById);
+router.get("/", verifyToken, controller.getPolicyholders);
+router.get("/:id", verifyToken, controller.getPolicyholderById);
 
 module.exports = router;
