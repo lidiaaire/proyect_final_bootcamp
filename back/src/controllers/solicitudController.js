@@ -8,12 +8,38 @@ const {
   mapSolicitudes,
 } = require("../transformers/solicitudTransformer");
 
+// Errores de transición (InvalidTransitionError) y de "no encontrada"
+// llevan su propio `statusCode`. Cualquier otro error se trata como 500.
+function respondError(res, error, fallbackMessage) {
+  const status = error.statusCode || 500;
+  const body = { message: error.message || fallbackMessage };
+  if (error.code) body.code = error.code;
+  if (error.errors) body.errors = error.errors;
+  res.status(status).json(body);
+}
+
+/* ==============================
+POST /solicitudes
+============================== */
+const createSolicitud = async (req, res) => {
+  try {
+    const solicitud = await solicitudService.createSolicitud(req.body, req.user);
+
+    res.status(201).json({
+      message: "Solicitud creada correctamente",
+      solicitud: mapSolicitud(solicitud),
+    });
+  } catch (error) {
+    respondError(res, error, "Error creando la solicitud");
+  }
+};
+
 /* ==============================
 GET /solicitudes
 ============================== */
 const getSolicitudes = async (req, res) => {
   try {
-    const solicitudes = await solicitudService.getSolicitudes();
+    const solicitudes = await solicitudService.getSolicitudes(req.user?.role);
 
     res.json({
       solicitudes: mapSolicitudes(solicitudes),
@@ -34,7 +60,7 @@ const getSolicitudesByPolicyholder = async (req, res) => {
     const { numeroPoliza } = req.params;
 
     const solicitudes =
-      await solicitudService.getSolicitudesByPolicyholder(numeroPoliza);
+      await solicitudService.getSolicitudesByPolicyholder(numeroPoliza, req.user?.role);
 
     res.json({
       solicitudes: mapSolicitudes(solicitudes),
@@ -51,7 +77,10 @@ GET /solicitudes/:id
 ============================== */
 const getSolicitudById = async (req, res) => {
   try {
-    const solicitud = await solicitudService.getSolicitudById(req.params.id);
+    const solicitud = await solicitudService.getSolicitudById(
+      req.params.id,
+      req.user?.role,
+    );
 
     if (!solicitud) {
       return res.status(404).json({
@@ -61,9 +90,7 @@ const getSolicitudById = async (req, res) => {
 
     res.json(mapSolicitud(solicitud));
   } catch (error) {
-    res.status(500).json({
-      message: "Error obteniendo solicitud",
-    });
+    respondError(res, error, "Error obteniendo solicitud");
   }
 };
 
@@ -85,9 +112,7 @@ const requestDocumentation = async (req, res) => {
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    respondError(res, error, "Error solicitando documentación");
   }
 };
 
@@ -109,9 +134,7 @@ const sendToDireccionMedica = async (req, res) => {
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    respondError(res, error, "Error enviando la solicitud a Dirección Médica");
   }
 };
 
@@ -133,9 +156,7 @@ const sendToAsesoriaJuridica = async (req, res) => {
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    respondError(res, error, "Error enviando la solicitud a Asesoría Jurídica");
   }
 };
 
@@ -159,9 +180,7 @@ const authorizeSolicitud = async (req, res) => {
   } catch (error) {
     console.error("ERROR AUTORIZAR:", error);
 
-    res.status(500).json({
-      message: error.message,
-    });
+    respondError(res, error, "Error autorizando la solicitud");
   }
 };
 
@@ -183,9 +202,7 @@ const rejectSolicitud = async (req, res) => {
       solicitud: mapSolicitud(solicitud),
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    respondError(res, error, "Error rechazando la solicitud");
   }
 };
 
@@ -216,6 +233,7 @@ const addNota = async (req, res) => {
 };
 
 module.exports = {
+  createSolicitud,
   getSolicitudes,
   getSolicitudById,
   requestDocumentation,

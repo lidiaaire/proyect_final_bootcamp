@@ -1,0 +1,227 @@
+.row {
+  display: grid;
+  grid-template-columns: 110px 1.3fr 1.1fr 150px 170px 110px 170px;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  border-left: 3px solid var(--row-accent, transparent);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background: var(--bg-surface-2);
+}
+
+.numeroCol,
+.aseguradoCol,
+.prestacionCol,
+.tiempoCol {
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.numeroCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.numero {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+
+.fecha {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.aseguradoCol {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aseguradoInfo,
+.prestacionInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nombre {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subdato {
+  font-size: 0.76rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prestacionCol {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.prestacionIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-control);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.prueba {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.responsableCol,
+.estadoCol {
+  min-width: 0;
+}
+
+.departmentBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  border-radius: var(--radius-control);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.tiempoCol {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.accionesCol {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.actionUrgent {
+  background: var(--warning);
+  color: #171a18;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+}
+
+.actionUrgent:hover {
+  background: var(--warning);
+  opacity: 0.88;
+}
+
+.menuWrap {
+  position: relative;
+}
+
+.menuTrigger {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-control);
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.menuTrigger:hover {
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+}
+
+.menuDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-elevation);
+  padding: 4px;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  background: var(--bg-surface-2);
+}
+
+@media (max-width: 1300px) {
+  .row {
+    grid-template-columns: 100px 1.2fr 1fr 130px 150px 170px;
+  }
+
+  .tiempoCol {
+    display: none;
+  }
+}

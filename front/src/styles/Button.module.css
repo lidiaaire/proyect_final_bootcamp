@@ -1,0 +1,78 @@
+/* Sistema de botones definitivo de Flowly (Sprint 3A): 3 niveles
+   (principal/secundario/terciario) + peligroso, con estados
+   normal/hover/active/disabled explícitos -- mismos tokens que
+   AppShell/Sidebar/Topbar. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 1px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Principal: lima sólido. Texto oscuro (--on-accent), no blanco -- el
+   lima es un color claro y el blanco sobre él no da contraste suficiente. */
+.primary {
+  background: var(--brand-primary);
+  color: var(--on-accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+}
+
+.primary:active:not(:disabled) {
+  background: var(--brand-primary-active);
+}
+
+/* Secundario: contorno sobre superficie oscura */
+.secondary {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--bg-surface-2);
+}
+
+.secondary:active:not(:disabled) {
+  background: var(--bg-surface-2);
+  border-color: var(--text-faint);
+}
+
+/* Terciario: solo texto, sin fondo ni borde -- para acciones de menor
+   peso (nuevo en 3A, el sistema anterior de 2C solo tenía 2 niveles) */
+.tertiary {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+  padding: 9px 10px;
+}
+
+.tertiary:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-surface-2);
+}
+
+.tertiary:active:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--border-color);
+}

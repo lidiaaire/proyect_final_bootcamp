@@ -2,6 +2,7 @@ require("dotenv").config();
 const { faker } = require("@faker-js/faker");
 const Solicitud = require("../src/models/solicitudModel");
 const Policyholder = require("../src/models/policyholderModel").default;
+const { ESTADOS } = require("../src/core/solicitudFlowRules");
 
 async function seedSolicitudes() {
   try {
@@ -27,7 +28,7 @@ async function seedSolicitudes() {
         nombrePrueba: "TAC",
         especialidad: "Radiología",
         centroMedico: "Hospital Central",
-        estadoInterno: "PENDIENTE_INICIO_GESTION",
+        estadoInterno: ESTADOS.PENDIENTE_GESTION,
         currentDepartment: "PRESTACIONES",
         documentos: [],
         historial: [],

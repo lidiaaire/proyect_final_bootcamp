@@ -1,21 +1,35 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import SolicitudesList from "@/components/solicitudes/SolicitudesList/SolicitudesList";
-import SolicitudPreview from "@/components/solicitudes/SolicitudPreview/SolicitudPreview";
+import PageHeader from "@/components/ui/PageHeader/PageHeader";
 import { getSolicitudes } from "@/api/solicitudes";
-import styles from "@/styles/SolicitudesList.module.css";
+import buttonStyles from "@/styles/Button.module.css";
 
+// Bandeja operativa de solicitudes (Sprint 2C). El backend ya filtra por
+// rol (Sprint 1B): Prestaciones/Admin reciben todas, Dirección Médica y
+// Asesoría Jurídica solo las de su departamento -- esta página no
+// duplica esa lógica, solo la presenta. El detalle completo (con las
+// acciones reales) vive en /solicitudes/[id]; esta pantalla ya no
+// abre un panel dividido con una segunda implementación de las mismas
+// acciones (ver auditoría UX/UI, sección 6).
 export default function Solicitudes() {
   const router = useRouter();
 
   const [solicitudes, setSolicitudes] = useState([]);
-  const [filtroEstado, setFiltroEstado] = useState("TODOS");
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [solicitudSeleccionada, setSolicitudSeleccionada] = useState(null);
-  const [selectedSolicitudId, setSelectedSolicitudId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [puedeCrear, setPuedeCrear] = useState(false);
 
-  const { estado, hoy, tipo, area } = router.query;
+  useEffect(() => {
+    let user = null;
+    try {
+      user = JSON.parse(localStorage.getItem("user") || "null");
+    } catch {
+      user = null;
+    }
+    setPuedeCrear(user?.role === "PRESTACIONES");
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -27,48 +41,35 @@ export default function Solicitudes() {
 
     const fetchData = async () => {
       try {
-        const data = await getSolicitudes(token);
+        const data = await getSolicitudes();
         setSolicitudes(data);
-      } catch {
-        setErrorMessage("No se pudieron cargar las solicitudes.");
+      } catch (err) {
+        setError(err.message || "No se pudieron cargar las solicitudes.");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [router]);
 
-  if (isLoading) return <p>Cargando...</p>;
-  if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
-
   return (
-    <div className={styles.container}>
-      <h2>Solicitudes</h2>
-
-      <div
-        className={
-          solicitudSeleccionada ? styles.splitLayout : styles.fullLayout
+    <div>
+      <PageHeader
+        title="Solicitudes"
+        subtitle="Todas las solicitudes de autorización médica. Prioriza, revisa y da el siguiente paso."
+        action={
+          puedeCrear && (
+            <Link href="/solicitudes/nueva">
+              <button className={`${buttonStyles.btn} ${buttonStyles.primary}`}>
+                + Nueva solicitud
+              </button>
+            </Link>
+          )
         }
-      >
-        <div className={styles.listaSolicitudes}>
-          <SolicitudesList
-            solicitudes={solicitudes}
-            filtroEstado={filtroEstado}
-            setFiltroEstado={setFiltroEstado}
-            solicitudSeleccionada={solicitudSeleccionada}
-            setSolicitudSeleccionada={setSolicitudSeleccionada}
-            selectedSolicitudId={selectedSolicitudId}
-            setSelectedSolicitudId={setSelectedSolicitudId}
-          />
-        </div>
+      />
 
-        {solicitudSeleccionada && (
-          <div className={styles.detalleSolicitud}>
-            <SolicitudPreview solicitud={solicitudSeleccionada} />
-          </div>
-        )}
-      </div>
+      <SolicitudesList solicitudes={solicitudes} loading={loading} error={error} />
     </div>
   );
 }

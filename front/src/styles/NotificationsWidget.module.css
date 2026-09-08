@@ -1,15 +1,37 @@
 .card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-elevation);
+  padding: var(--space-6);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .title {
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.footerLink {
+  font-size: 0.82rem;
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 18px;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  color: var(--brand-primary);
 }
 
 /* TIMELINE */
@@ -17,117 +39,72 @@
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: 0px;
+  gap: 0;
 }
 
 .event {
   display: grid;
-  grid-template-columns: 16px 1fr;
-  column-gap: 12px;
-  margin-bottom: 14px;
+  grid-template-columns: 30px 1fr;
+  column-gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-4);
   text-decoration: none;
   color: inherit;
   position: relative;
 }
 
-/* línea vertical */
-
 .event::before {
   content: "";
   position: absolute;
-  left: 7px;
-  top: 16px;
-  bottom: -22px;
-  width: 2px;
-  background: #e5e7eb;
+  left: 14px;
+  top: 30px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-color);
+}
+
+.event:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .event:last-child::before {
   display: none;
 }
 
-/* DOT */
-
-.dot {
-  width: 10px;
-  height: 10px;
+.iconDot {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #9ca3af;
-  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tone-bg, var(--bg-surface-2));
+  color: var(--tone, var(--text-secondary));
+  flex-shrink: 0;
+  z-index: 1;
 }
-
-/* CONTENT */
 
 .content {
   display: flex;
   flex-direction: column;
+  padding-top: 4px;
 }
-
-/* ROLE (tipo badge gris suave) */
-
-.role {
-  font-size: 12px;
-  font-weight: 500;
-  color: white;
-  background: #7fa393;
-  padding: 4px 10px;
-  border-radius: 999px;
-  width: fit-content;
-  margin-bottom: 4px;
-}
-
-/* TEXTO PRINCIPAL */
-
-.text {
-  font-size: 13px;
-  line-height: 1.4;
-  margin: 0;
-}
-
-/* ACCIÓN (verbo) */
 
 .action {
+  font-size: 0.87rem;
   font-weight: 600;
-  color: #111827;
-  font-weight: 600;
-}
-.action::first-letter {
-  text-transform: uppercase;
-}
-/* PRUEBA (secundario) */
-
-.prueba {
-  color: #6b7280;
+  color: var(--text-primary);
 }
 
-/* PACIENTE (importante pero no agresivo) */
-
-.paciente {
-  color: #111827;
-  font-weight: 500;
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
 }
-
-/* TIME */
 
 .time {
-  font-size: 11px;
-  color: #9ca3af;
-  margin-top: 6px;
-}
-
-/* FOOTER */
-
-.footer {
-  margin-top: 16px;
-  text-align: right;
-}
-
-.footer a {
-  font-size: 13px;
-  color: #6b7280;
-  text-decoration: none;
-}
-
-.footer a:hover {
-  color: #111827;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  margin-top: 4px;
 }

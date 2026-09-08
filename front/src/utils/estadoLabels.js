@@ -1,9 +1,7 @@
-export const ESTADO_LABELS = {
-  PENDIENTE_INICIO_GESTION: "Inicio",
-  PENDIENTE_DIRECCION_MEDICA: "Dir. Médica",
-  PENDIENTE_ASESORIA_JURIDICA: "Jurídica",
-  PENDIENTE_DOCUMENTACION_DEL_ASEGURADO: "Documentación",
-  PENDIENTE_REVISION_PRESTACIONES: "Revisión",
-  AUTORIZADA: "Autorizada",
-  RECHAZADA: "Rechazada",
-};
+// Mantenido solo por compatibilidad de import. La fuente única de verdad
+// de labels de estado es ahora core/constants/estados.js (Sprint 2A).
+import { ESTADOS, getEstadoLabel } from "@/core/constants/estados";
+
+export const ESTADO_LABELS = Object.fromEntries(
+  Object.values(ESTADOS).map((estado) => [estado, getEstadoLabel(estado)]),
+);

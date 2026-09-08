@@ -1,6 +1,6 @@
 import styles from "@/styles/NotificationsWidget.module.css";
 import Link from "next/link";
-import { ROLE_CONFIG } from "@/core/constants/roles";
+import { CheckCircle2, XCircle, FileText, Send, PlusCircle, History } from "lucide-react";
 
 function timeAgo(date) {
   const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -22,68 +22,51 @@ function timeAgo(date) {
 
   return "hace unos segundos";
 }
-const normalizeRole = (role) => {
-  const map = {
-    direccionmedica: "DIRECCION_MEDICA",
-    prestaciones: "PRESTACIONES",
-    asesoriajuridica: "ASESORIA_JURIDICA",
-    admin: "ADMIN",
-  };
 
-  return map[role] || role;
-};
-
-const capitalize = (text) => {
-  if (!text) return "";
-  return text.charAt(0).toUpperCase() + text.slice(1);
+// Título + icono por tipo de evento real de historial (Sprint 1A) --
+// vocabulario honesto de lo que ocurrió, no una reinterpretación.
+const EVENTO_POR_ACCION = {
+  AUTORIZAR: { titulo: "Solicitud autorizada", Icon: CheckCircle2, tone: "success" },
+  RECHAZAR: { titulo: "Solicitud rechazada", Icon: XCircle, tone: "danger" },
+  SOLICITAR_DOCUMENTACION: { titulo: "Documentación solicitada", Icon: FileText, tone: "info" },
+  ENVIAR_DIRECCION_MEDICA: { titulo: "Derivada a Dirección médica", Icon: Send, tone: "neutral" },
+  ENVIAR_ASESORIA_JURIDICA: { titulo: "Derivada a Asesoría jurídica", Icon: Send, tone: "neutral" },
+  CREACION: { titulo: "Nueva solicitud creada", Icon: PlusCircle, tone: "neutral" },
 };
 
 export default function NotificationsWidget({ actividad = [] }) {
-  const notifications = actividad.slice(0, 3).map((item) => {
-    const role = normalizeRole(item.usuario);
-
-    return {
-      id: item.solicitudId,
-      paciente: item.paciente,
-      prueba: item.prueba,
-      role,
-      actor: ROLE_CONFIG[role]?.label || role,
-      accion: item.accion,
-      time: timeAgo(item.fecha),
-    };
-  });
+  const eventos = actividad.slice(0, 6);
 
   return (
     <div className={styles.card}>
-      <h4 className={styles.title}>Actividad reciente</h4>
-
-      <div className={styles.timeline}>
-        {notifications.map((n, i) => (
-          <Link key={i} href={`/solicitudes/${n.id}`} className={styles.event}>
-            {/* DOT */}
-            <div className={styles.dot}></div>
-
-            {/* CONTENT */}
-            <div className={styles.content}>
-              {/* ROLE */}
-              <span className={styles.role}>{n.actor}</span>
-
-              {/* ACTION */}
-              <p className={styles.text}>
-                <span className={styles.action}>{capitalize(n.accion)}</span>{" "}
-                <span className={styles.prueba}>{n.prueba}</span> de{" "}
-                <span className={styles.paciente}>{n.paciente}</span>
-              </p>
-
-              {/* TIME */}
-              <span className={styles.time}>{n.time}</span>
-            </div>
-          </Link>
-        ))}
+      <div className={styles.headerRow}>
+        <h4 className={styles.title}>Actividad reciente</h4>
+        <Link href="/solicitudes" className={styles.footerLink}>
+          Ver todas
+        </Link>
       </div>
 
-      <div className={styles.footer}>
-        <Link href="/solicitudes">Ver todas</Link>
+      <div className={styles.timeline}>
+        {eventos.map((item, i) => {
+          const meta = EVENTO_POR_ACCION[item.accionCodigo] || { titulo: "Actualización", Icon: History, tone: "neutral" };
+          const { Icon, tone, titulo } = meta;
+
+          return (
+            <Link key={i} href={`/solicitudes/${item.solicitudId}`} className={styles.event}>
+              <span className={styles.iconDot} style={{ "--tone": `var(--${tone})`, "--tone-bg": `var(--${tone}-bg)` }}>
+                <Icon size={14} strokeWidth={2} />
+              </span>
+
+              <div className={styles.content}>
+                <span className={styles.action}>{titulo}</span>
+                <span className={styles.subtitle}>
+                  {item.numeroSolicitud} · {item.paciente}
+                </span>
+                <span className={styles.time}>{timeAgo(item.fecha)}</span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,150 +1,100 @@
-.item {
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.link {
+.row {
   cursor: pointer;
 }
 
-/* Colores por estado */
-.autorizada {
-  background-color: #dcfce7;
-  color: #166534;
+.row:hover {
+  background: var(--bg-surface-2);
 }
 
-.rechazada {
-  background-color: #fee2e2;
-  color: #991b1b;
+.rowWarning {
+  box-shadow: inset 3px 0 0 var(--warning);
 }
 
-.documentacion {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
-
-.pendiente {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.default {
-  background-color: #e5e7eb;
-  color: #374151;
-}
-
-.badge {
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 999px;
-  letter-spacing: 0.3px;
-}
-
-.departmentBadge {
-  background-color: #eef5f2;
-  color: #5f7f73;
-  padding: 3px 8px;
-  font-size: 11px;
-  border-radius: 10px;
-  font-weight: 500;
-}
-
-.medicalInfo {
-  margin-top: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.idLabel {
+  font-family: var(--font-mono);
   font-size: 0.78rem;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-.medicalInfo span {
-  display: block;
+  color: var(--text-faint);
 }
 
 .nameLink {
   font-weight: 600;
-  font-size: 14px;
-  color: #111827;
-  text-decoration: none;
+  font-size: 0.87rem;
+  color: var(--text-primary);
 }
 
-.nameLink:hover {
-  color: #5f7f73;
-  text-decoration: none;
-}
-
-.nameCell {
+.medicalInfo {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.83rem;
+  color: var(--text-secondary);
 }
 
-.idLabel {
-  font-size: 11px;
-  color: #c0c4cc;
-  font-weight: 500;
+.especialidad {
+  font-size: 0.76rem;
+  color: var(--text-faint);
 }
 
-.dateCell {
-  color: #6b7280;
-  font-size: 0.85rem;
-}
-
-.actionsCell {
-  text-align: right;
-}
-
-.actionsBtn {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #9ca3af;
-}
-
-.actionsBtn:hover {
-  color: #111827;
-}
-
-.summary {
-  margin-bottom: 12px;
-  font-size: 0.9rem;
-  color: #4b5563;
-}
-
-.rowWarning td:first-child {
-  border-left: 3px solid #f59e0b;
-}
-
-.rowWarning {
-  border-left: 3px solid #f59e0b;
-}
-
-.daysBadge {
-  display: block;
-  margin-top: 4px;
-  font-size: 11px;
-  color: #b45309;
+/* Badge de estado -- variantes semánticas de core/constants/estados.js */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 0.72rem;
   font-weight: 600;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.autorizada {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.rechazada {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.documentacion {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+
+.pendiente {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+/* Badge de responsable (departamento) -- deliberadamente distinto del
+   badge de estado: son dos preguntas distintas ("¿qué pasa?" vs. "¿quién
+   debe actuar?") que en el listado anterior se confundían en una sola
+   columna "Estado". */
+.departmentBadge {
+  display: inline-block;
+  padding: 3px 9px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: var(--radius-control);
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
 }
 
 .dateWrapper {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
-.urgencyBadge {
-  font-size: 11px;
-  background: #fef3c7;
-  color: #92400e;
-  padding: 3px 8px;
-  border-radius: 8px;
+.dateCell {
+  color: var(--text-secondary);
+  font-size: 0.83rem;
+}
+
+.daysBadge {
+  font-size: 0.72rem;
+  color: var(--warning);
   font-weight: 600;
-  width: fit-content;
 }

@@ -1,33 +1,41 @@
+/* Recoloreado para el tema oscuro definitivo (Sprint 3A). Se mantienen
+   exactamente las mismas 5 variantes que en Sprint 2A/2C -- separar
+   "en revisión" de "pendiente" en su propio color es Sprint 3B, no
+   este. Antes usaba hex sueltos (pastel sobre fondo claro); ahora usa
+   los tokens semánticos definidos en globals.css, ya pensados para
+   superficie oscura (fondo translúcido + texto del color de acento). */
+
 .badge {
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 100px;
   letter-spacing: 0.3px;
   white-space: nowrap;
+  font-family: var(--font-body);
 }
 
 .autorizada {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--success-bg);
+  color: var(--success);
 }
 
 .rechazada {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: var(--danger-bg);
+  color: var(--danger);
 }
 
 .documentacion {
-  background-color: #dbeafe;
-  color: #1e3a8a;
+  background-color: var(--info-bg);
+  color: var(--info);
 }
 
 .pendiente {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: var(--warning-bg);
+  color: var(--warning);
 }
 
 .default {
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: var(--neutral-bg);
+  color: var(--neutral);
 }

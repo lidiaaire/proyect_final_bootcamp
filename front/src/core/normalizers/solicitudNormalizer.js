@@ -46,6 +46,13 @@ export function normalizeSolicitud(solicitud) {
     ========================= */
     historial: (solicitud.historial || []).map((item) => ({
       estado: item.estadoNuevo || item.estado || item.status || "SIN_ESTADO",
+      estadoAnterior: item.estadoAnterior || null,
+
+      // `accion` y `comentario` los añadió Sprint 1A al historial real;
+      // se preservan aquí para que el Timeline (Sprint 2D) pueda mostrar
+      // "solicitó documentación" en vez de solo "cambió el estado a...".
+      accion: item.accion || null,
+      comentario: item.comentario || null,
 
       changedBy: item.changedBy || item.usuario || item.user || "Sistema",
 

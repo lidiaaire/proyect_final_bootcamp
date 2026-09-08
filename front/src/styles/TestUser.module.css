@@ -7,13 +7,25 @@
 .title {
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--text-primary);
 }
 
+/* Antes sin background/color propios: el texto heredaba el color claro
+   del tema (crema) mientras el <input> mostraba el fondo blanco por
+   defecto del navegador -- texto claro sobre fondo claro, ilegible.
+   Se fijan ambos explícitamente (Sprint 3A). */
 .input {
   padding: 6px 8px;
   border-radius: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
   font-size: 13px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
 }
 
 .saveButton {
@@ -21,18 +33,20 @@
   padding: 6px;
   border: none;
   border-radius: 6px;
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--success);
+  color: var(--on-accent);
   cursor: pointer;
   font-size: 13px;
+  font-weight: 600;
 }
 
 .deleteButton {
   padding: 6px;
   border: none;
   border-radius: 6px;
-  background-color: #e53935;
-  color: white;
+  background-color: var(--danger);
+  color: #fff;
   cursor: pointer;
   font-size: 13px;
+  font-weight: 600;
 }

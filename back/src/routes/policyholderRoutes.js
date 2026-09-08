@@ -5,9 +5,20 @@ const express = require("express");
 const router = express.Router();
 
 const controller = require("../controllers/policyholderController");
-const { verifyToken } = require("../middlewares/authMiddleware");
+const { verifyToken, authorizeRoles } = require("../middlewares/authMiddleware");
 
-router.get("/", verifyToken, controller.getPolicyholders);
-router.get("/:id", verifyToken, controller.getPolicyholderById);
+// Sprint 2F: guard real de rol. Antes solo `verifyToken` protegía estas
+// rutas -- cualquier rol autenticado (incluidos Dirección Médica y
+// Asesoría Jurídica, que no gestionan pólizas) podía leer el listado
+// completo de asegurados llamando directamente a la API, aunque el
+// enlace estuviera oculto en la sidebar (Sprint 2B). `authorizeRoles` ya
+// existía en el middleware desde Sprint 1B sin usarse en ninguna ruta.
+router.get("/", verifyToken, authorizeRoles("PRESTACIONES", "ADMIN"), controller.getPolicyholders);
+router.get(
+  "/:id",
+  verifyToken,
+  authorizeRoles("PRESTACIONES", "ADMIN"),
+  controller.getPolicyholderById,
+);
 
 module.exports = router;

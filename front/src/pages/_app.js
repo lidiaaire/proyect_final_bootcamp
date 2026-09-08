@@ -1,22 +1,18 @@
-import MainLayout from "../components/layout/MainLayout/MainLayout";
+import AppShell from "@/components/layout/AppShell/AppShell";
 import "@/styles/globals.css";
-import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }) {
-  const router = useRouter();
-
-  // 🔴 RUTAS SIN LAYOUT
-  const noLayoutRoutes = ["/login"];
-
-  const isNoLayout = noLayoutRoutes.includes(router.pathname);
-
-  if (isNoLayout) {
+  // Cada página declara si quiere el shell (Login.noLayout = true, etc.)
+  // -- antes esto se decidía con una lista aparte que solo contenía
+  // "/login", por lo que /register (que ya declaraba el flag) se
+  // renderizaba igualmente con el sidebar/topbar de la app detrás.
+  if (Component.noLayout) {
     return <Component {...pageProps} />;
   }
 
   return (
-    <MainLayout>
+    <AppShell>
       <Component {...pageProps} />
-    </MainLayout>
+    </AppShell>
   );
 }

@@ -1,29 +1,56 @@
-// Este archivo contiene la lógica relacionada con las solicitudes en la aplicación. Define la función updateRequestStatus, que se encarga de actualizar el estado y el departamento actual de una solicitud específica, así como de agregar un nuevo registro al historial de la solicitud con la información del cambio realizado. La función toma como parámetros el ID de la solicitud, el nuevo estado, el nuevo departamento, el usuario que realiza el cambio y un comentario opcional. La función busca la solicitud en la base de datos, actualiza los campos correspondientes y guarda los cambios, devolviendo la solicitud actualizada. Esta función es fundamental para gestionar el flujo de trabajo de las solicitudes dentro de la aplicación, permitiendo a los usuarios realizar cambios en el estado y departamento de las solicitudes de manera efectiva y mantener un historial detallado de todas las modificaciones realizadas.
-// La función updateRequestStatus maneja la lógica de actualización de las solicitudes, asegurándose de que los cambios se registren correctamente en el historial de la solicitud. El historial incluye información sobre el estado, el departamento, el usuario que realizó el cambio, cualquier comentario adicional y la fecha del cambio. Esta función es utilizada por los controladores de solicitudes para procesar las acciones de autorización, rechazo, solicitud de documentación adicional y envío a diferentes departamentos, lo que mejora la gestión y el seguimiento de las solicitudes dentro de la aplicación.
-// Importamos el modelo de datos de las solicitudes para interactuar con la base de datos.
+// Este archivo contiene la función updateRequestStatus, punto único por el
+// que pasa cualquier cambio de estado de una Solicitud. Antes de tocar
+// nada comprueba DOS condiciones independientes, en este orden:
+//   1. RBAC (core/solicitudPermissions.js): ¿tiene este rol
+//      responsabilidad actual sobre esta solicitud para ejecutar esta
+//      acción? Si no, ForbiddenActionError (403) y no se modifica nada.
+//   2. Máquina de estados (core/solicitudFlowRules.js): ¿es esta acción
+//      una transición válida desde el estado actual? Si no,
+//      InvalidTransitionError (409) y tampoco se modifica nada.
+// Solo si ambas pasan se aplica el nuevo estado/departamento y se deja
+// constancia completa en el historial (estado anterior, estado nuevo,
+// acción, departamento, autor real y fecha).
 
 const Solicitud = require("../models/solicitudModel");
+const {
+  getNextEstado,
+  getDepartamentoPorEstado,
+} = require("../core/solicitudFlowRules");
+const { assertPuedeEjecutar } = require("../core/solicitudPermissions");
 
-async function updateRequestStatus({
-  requestId,
-  newStatus,
-  newDepartment,
-  user,
-  comment,
-}) {
+async function updateRequestStatus({ requestId, accion, user, comment }) {
   const request = await Solicitud.findById(requestId);
 
   if (!request) {
-    throw new Error("Solicitud no encontrada");
+    const error = new Error("Solicitud no encontrada");
+    error.statusCode = 404;
+    throw error;
   }
 
-  if (newStatus) request.estadoInterno = newStatus;
-  if (newDepartment) request.currentDepartment = newDepartment;
+  // RBAC primero: puede lanzar ForbiddenActionError (403). No depende del
+  // estado, solo de quién es responsable del caso ahora mismo.
+  assertPuedeEjecutar({
+    rol: user?.role,
+    accion,
+    currentDepartment: request.currentDepartment,
+  });
+
+  const estadoAnterior = request.estadoInterno;
+
+  // Puede lanzar InvalidTransitionError (409). Se calcula ANTES de tocar
+  // el documento: si la transición no es válida, `request` no se modifica.
+  const nextEstado = getNextEstado(estadoAnterior, accion);
+  const nextDepartment = getDepartamentoPorEstado(nextEstado) ?? request.currentDepartment;
+
+  request.estadoInterno = nextEstado;
+  request.currentDepartment = nextDepartment;
 
   request.historial.push({
-    estado: newStatus || request.estadoInterno,
-    departamento: newDepartment || request.currentDepartment,
-    changedBy: user?.role || "PRESTACIONES", //
+    estadoAnterior,
+    estado: nextEstado,
+    accion,
+    departamento: nextDepartment,
+    changedBy: user?.role || "DESCONOCIDO",
     comentario: comment || "",
     fecha: new Date(),
   });

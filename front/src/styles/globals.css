@@ -1,25 +1,87 @@
+/* Identidad visual definitiva de Flowly (Sprint 3A), sustituye a la
+   base provisional de Sprint 2B. Tema oscuro único (sin variante clara):
+   grafito/verde profundo de fondo, lima como acento de interacción,
+   crema como texto principal. Paleta y tipografía tomadas del brand
+   board de referencia; los 6 estados canónicos de la solicitud (Sprint
+   1A/2A) se mapean sobre la paleta semántica del board sin cambiar la
+   agrupación de variantes -- eso es Sprint 3B.
+
+   Ninguna de estas variables tenía ya un valor incompatible en uso: los
+   componentes de 2B-2F leen todos por variable, así que este archivo es
+   el único punto real de cambio de color para la mayoría de la app. */
+
 :root {
-  --bg-main: #f8fafc; /* más claro */
-  --bg-sidebar: #ffffff;
-  --bg-card: #ffffff;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
-  --hover-bg: #f3f4f6;
-  --active-bg: #eef2ff;
-  --brand-primary: #2563eb;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
+  /* Fondo y superficies */
+  --bg-app: #171a18; /* Grafito */
+  --bg-surface: #1e2922; /* Verde profundo -- sidebar, cards */
+  --bg-surface-2: #26332b; /* superficie elevada / hover / cabecera de tabla */
+  --border-color: #2c3a32;
+
+  /* Texto */
+  --text-primary: #edeae1; /* Crema */
+  --text-secondary: #a7b8a1; /* Gris cálido */
+  --text-faint: #7c8c7e;
+
+  /* Marca / interacción */
+  --brand-primary: #c7f36e; /* Lima -- único acento de interacción */
+  --brand-primary-hover: #b3de5c;
+  --brand-primary-active: #9fc94a;
+  --on-accent: #171a18; /* texto sobre fondo lima sólido */
+  --brand-ink: #d9f2a6; /* texto de acento sobre superficie oscura (chips suaves) */
+  --brand-soft: rgba(199, 243, 110, 0.14); /* fondo de chip suave sobre superficie oscura */
+
+  /* Semánticos -- iguales a los 6 estados canónicos de la solicitud.
+     La agrupación de variantes (qué estado usa qué color) no cambia en
+     este sprint; solo se sustituyen los valores. */
+  --success: #22c55e; /* Autorizada */
+  --success-bg: rgba(34, 197, 94, 0.16);
+  --danger: #ef4444; /* Rechazada */
+  --danger-bg: rgba(239, 68, 68, 0.16);
+  --warning: #f59e0b; /* En revisión / pendiente */
+  --warning-bg: rgba(245, 158, 11, 0.16);
+  --info: #60a5fa; /* Documentación pendiente */
+  --info-bg: rgba(96, 165, 250, 0.16);
+  --neutral: #9ca3af; /* Estado sin variante reconocida */
+  --neutral-bg: rgba(156, 163, 175, 0.14);
+
+  /* Tipografía */
+  --font-display: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Spacing -- escala de 4px (sin cambios respecto a 2B; se añaden
+     space-5/space-10 en Sprint 3A-corrección para el ajuste de densidad
+     de sidebar/topbar/contenido sin romper la escala existente) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radios -- 2 niveles, sin cambios respecto a 2B */
+  --radius-control: 8px;
+  --radius-card: 12px;
+
+  /* Sombra de elevación, recalibrada para superficie oscura (antes
+     usaba un tinte claro que no aportaba profundidad sobre fondo oscuro) */
+  --shadow-elevation: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 24px -8px rgba(0, 0, 0, 0.55);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: linear-gradient(180deg, #f4f7fb 0%, #eef3f9 100%);
+  background: var(--bg-app);
+  color: var(--text-primary);
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
 }

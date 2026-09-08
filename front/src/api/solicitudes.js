@@ -2,6 +2,19 @@ import { normalizeSolicitud } from "@/core/normalizers/solicitudNormalizer";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const API_URL = `${API_BASE}/api/solicitudes`;
+
+// Construye un Error con el mensaje REAL devuelto por el backend
+// (403 "fuera de responsabilidad", 409 "estado final", etc.) en vez de
+// un texto genérico -- Sprint 2A, punto 8: un error esperado no debe
+// representarse como un fallo incomprensible.
+async function throwApiError(res, fallback) {
+  const data = await res.json().catch(() => ({}));
+  const error = new Error(data.message || fallback);
+  error.status = res.status;
+  error.code = data.code;
+  throw error;
+}
+
 /* ==============================
 GET solicitudes
 ============================== */
@@ -14,9 +27,7 @@ export async function getSolicitudes() {
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    console.error("API ERROR:", res.status, text);
-    throw new Error("Error obteniendo solicitudes");
+    await throwApiError(res, "Error obteniendo solicitudes");
   }
 
   const data = await res.json();
@@ -29,6 +40,9 @@ export async function getSolicitudes() {
 }
 /* ==============================
 GET solicitud
+Distingue 404 (no existe, devuelve null) de cualquier otro error
+(403 sin visibilidad, etc.), que se lanza con su status real para que
+la pantalla pueda mostrar el estado adecuado (ver pages/solicitudes/[id].js).
 ============================== */
 
 export async function getRequest(id) {
@@ -43,20 +57,46 @@ export async function getRequest(id) {
   const res = await fetch(`${API_URL}/${id}`, { headers });
 
   if (res.status === 404) {
-    console.warn("Solicitud no encontrada");
     return null;
   }
 
   if (!res.ok) {
-    const text = await res.text();
-    console.error("API ERROR:", res.status, text);
-    throw new Error("Error obteniendo solicitud");
+    await throwApiError(res, "Error obteniendo solicitud");
   }
 
   const data = await res.json();
   const solicitud = data.solicitud || data;
 
   return normalizeSolicitud(solicitud);
+}
+
+/* ==============================
+CREAR SOLICITUD
+============================== */
+
+export async function createSolicitud(payload) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const error = new Error(data.message || "Error creando la solicitud");
+    error.status = res.status;
+    error.code = data.code;
+    error.details = data.errors;
+    throw error;
+  }
+
+  return normalizeSolicitud(data.solicitud);
 }
 
 /* ==============================
@@ -81,7 +121,7 @@ export async function requestMoreDocs(id, payload) {
   });
 
   if (!res.ok) {
-    throw new Error("Error solicitando documentación");
+    await throwApiError(res, "Error solicitando documentación");
   }
 
   return res.json();
@@ -109,7 +149,7 @@ export async function sendToMedicalDirection(id, justificacion) {
   });
 
   if (!res.ok) {
-    throw new Error("Error enviando a dirección médica");
+    await throwApiError(res, "Error enviando a dirección médica");
   }
 
   return res.json();
@@ -133,7 +173,7 @@ export const sendToLegal = async (id, motivo) => {
   });
 
   if (!response.ok) {
-    throw new Error("Error enviando a asesoría jurídica");
+    await throwApiError(response, "Error enviando a asesoría jurídica");
   }
 
   return response.json();
@@ -160,7 +200,7 @@ export async function authorizeRequest(id, justificacion) {
   });
 
   if (!res.ok) {
-    throw new Error("Error autorizando solicitud");
+    await throwApiError(res, "Error autorizando solicitud");
   }
 
   return res.json();
@@ -188,7 +228,7 @@ export async function rejectRequest(id, justificacion) {
   });
 
   if (!res.ok) {
-    throw new Error("Error rechazando solicitud");
+    await throwApiError(res, "Error rechazando solicitud");
   }
 
   return res.json();

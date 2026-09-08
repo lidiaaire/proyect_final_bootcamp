@@ -91,7 +91,15 @@ export default function Login() {
       <div className={styles.rightPanel}>
         <div className={styles.card}>
           <div className={styles.header}>
-            <h1 className={styles.logoText}>Flowly</h1>
+            {/* eslint-disable-next-line @next/next/no-img-element -- asset
+                de marca oficial, servido tal cual desde /public/branding. */}
+            <img
+              src="/branding/flowly-logo.png"
+              alt="Flowly · Gestión de autorizaciones médicas"
+              width={2172}
+              height={724}
+              className={styles.logoImg}
+            />
           </div>
 
           <p className={styles.subtitle}>
@@ -147,12 +155,17 @@ export default function Login() {
           </p>
 
           {/* 🔓 BLOQUE DEMO */}
+          {/* Sprint 3A: fondo/color explícitos con tokens -- el fondo
+              gris claro fijo quedaba con texto claro heredado del tema
+              oscuro encima (ilegible). Contenido sin cambios. */}
           <div
             style={{
               marginTop: "20px",
               padding: "12px",
               borderRadius: "8px",
-              backgroundColor: "#f5f5f5",
+              backgroundColor: "var(--bg-surface-2)",
+              border: "1px solid var(--border-color)",
+              color: "var(--text-primary)",
               fontSize: "14px",
             }}
           >
@@ -166,7 +179,9 @@ export default function Login() {
                 marginTop: "10px",
                 padding: "8px",
                 borderRadius: "6px",
-                border: "none",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-surface)",
+                color: "var(--text-primary)",
                 cursor: "pointer",
               }}
             >

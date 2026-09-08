@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 
 const {
+  createSolicitud,
   getSolicitudes,
   getSolicitudById,
   authorizeSolicitud,
@@ -18,6 +19,13 @@ const {
 
 // 🔐 Middleware de autenticación
 const { verifyToken } = require("../middlewares/authMiddleware");
+
+/* ==============================
+POST /api/solicitudes
+Solo PRESTACIONES puede crear (comprobado en el servicio, no aquí, para
+no duplicar la lógica de permisos en dos sitios).
+============================== */
+router.post("/", verifyToken, createSolicitud);
 
 /* ==============================
 GET /api/solicitudes

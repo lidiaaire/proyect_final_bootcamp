@@ -78,7 +78,15 @@ export default function Register() {
       <div className={styles.rightPanel}>
         <div className={styles.card}>
           <div className={styles.header}>
-            <h1 className={styles.logoText}>Flowly</h1>
+            {/* eslint-disable-next-line @next/next/no-img-element -- asset
+                de marca oficial, servido tal cual desde /public/branding. */}
+            <img
+              src="/branding/flowly-logo.png"
+              alt="Flowly · Gestión de autorizaciones médicas"
+              width={2172}
+              height={724}
+              className={styles.logoImg}
+            />
           </div>
 
           <p className={styles.subtitle}>Crea tu cuenta para comenzar</p>

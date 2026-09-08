@@ -56,7 +56,7 @@
 .rightPanel {
   width: 100%;
   flex: 1;
-  background: #f5f7f6;
+  background: var(--bg-app);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,12 +67,13 @@
    CARD
 ========================= */
 .card {
-  background: white;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   padding: 52px 48px;
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-elevation);
   transform: translateY(20px);
 }
 
@@ -86,24 +87,27 @@
   margin-bottom: 20px;
 }
 
-.logoText {
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: #2f3e3a;
-  margin: 0;
+/* Logotipo oficial (Sprint 3A-branding): sustituye al antiguo "Flowly"
+   en texto (.logoText, ya no se usa). Se ajusta solo el tamaño de
+   visualización, manteniendo su proporción intrínseca 3:1. */
+.logoImg {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  display: block;
 }
 
 .title {
+  font-family: var(--font-display);
   font-size: 30px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .subtitle {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 28px;
   text-align: center;
 }
@@ -129,10 +133,10 @@
 .inputWrapper {
   display: flex;
   align-items: center;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-control);
   padding: 0 12px;
-  background-color: #f9fafb;
+  background-color: var(--bg-surface-2);
   transition: all 0.2s ease;
 }
 
@@ -143,11 +147,13 @@
   padding: 10px;
   font-size: 14px;
   background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
 }
 
 .inputWrapper:focus-within {
-  border-color: #7fa393;
-  box-shadow: 0 0 0 2px rgba(127, 163, 147, 0.15);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px var(--brand-soft);
 }
 
 .icon {
@@ -163,24 +169,30 @@
   margin-top: 12px;
   padding: 14px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   cursor: pointer;
-  font-weight: 600;
-  background: #7fa393;
-  color: white;
+  font-weight: 700;
+  font-family: var(--font-body);
+  background: var(--brand-primary);
+  color: var(--on-accent);
   transition: all 0.2s ease;
 }
 
 .button:hover {
-  background: #6c8f7d;
+  background: var(--brand-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-elevation);
 }
+
+.button:active {
+  background: var(--brand-primary-active);
+}
+
 /* =========================
    OTROS
 ========================= */
 .error {
-  color: red;
+  color: var(--danger);
   font-size: 13px;
   text-align: center;
 }
@@ -189,7 +201,7 @@
   margin-top: 12px;
   font-size: 13px;
   text-align: center;
-  color: #4a90e2;
+  color: var(--info);
   cursor: pointer;
 }
 
@@ -197,10 +209,11 @@
   margin-top: 10px;
   font-size: 14px;
   text-align: center;
+  color: var(--text-secondary);
 }
 
 .registerLink {
-  color: #4caf50;
+  color: var(--brand-ink);
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
 }

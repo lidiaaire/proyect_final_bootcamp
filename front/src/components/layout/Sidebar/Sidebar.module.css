@@ -1,0 +1,146 @@
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-color);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+}
+
+/* Logotipo oficial (Sprint 3A-branding): asset de marca real
+   (/public/branding/flowly-logo.png), servido tal cual -- ya incluye el
+   nombre y el subtítulo, así que sustituye por completo a la antigua
+   marca "F" + texto compuesta en CSS. Solo se ajusta el tamaño de
+   visualización (manteniendo su proporción intrínseca 3:1). */
+.brandLogo {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.navLink:hover {
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+}
+
+.navLink:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 1px;
+}
+
+/* Nav principal activo: chip lima sólido (tratamiento distinto y más
+   marcado que los chips suaves de departamento/canal -- es el único
+   nivel de navegación primario). */
+.navLinkActive {
+  background: var(--brand-primary);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+.navLinkActive:hover {
+  background: var(--brand-primary);
+  color: var(--on-accent);
+}
+
+.section {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.channelList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.channelLink {
+  font-size: 0.83rem;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-control);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.channelLink:hover {
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+}
+
+.channelLinkActive {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.promoCard {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--bg-surface-2), var(--bg-app));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+}
+
+.promoText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+  max-width: 85%;
+}
+
+.promoAccent {
+  display: block;
+  width: 28px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--brand-primary);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
