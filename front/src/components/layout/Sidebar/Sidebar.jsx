@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { LayoutDashboard, ClipboardList, Users, MessageSquare } from "lucide-react";
+import { CHANNELS } from "@/core/constants/channels";
 import styles from "./Sidebar.module.css";
 
 // Navegación aprobada en la auditoría UX/UI (Sprint 2B): una sola
@@ -13,14 +14,6 @@ const NAV_ITEMS = [
   { key: "solicitudes", label: "Solicitudes", href: "/solicitudes", icon: ClipboardList, roles: null },
   { key: "asegurados", label: "Asegurados", href: "/policyholders", icon: Users, roles: ["PRESTACIONES", "ADMIN"] },
   { key: "comunicaciones", label: "Comunicaciones", href: "/comunicaciones", icon: MessageSquare, roles: null },
-];
-
-const CHANNELS = [
-  { id: "avisos-oficiales", name: "Avisos Oficiales" },
-  { id: "prestaciones", name: "Prestaciones" },
-  { id: "direccion-medica", name: "Dirección Médica" },
-  { id: "asesoria-juridica", name: "Asesoría Jurídica" },
-  { id: "general", name: "General" },
 ];
 
 function esRutaActiva(pathname, href) {
@@ -82,7 +75,7 @@ export default function Sidebar({ rol }) {
                   href={href}
                   className={`${styles.channelLink} ${active ? styles.channelLinkActive : ""}`}
                 >
-                  # {ch.name}
+                  # {ch.label}
                 </Link>
               );
             })}

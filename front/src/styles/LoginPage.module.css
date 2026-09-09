@@ -1,0 +1,508 @@
+/* =========================
+   CONTENEDOR
+========================= */
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background: var(--bg-app);
+}
+
+/* =========================
+   LEFT PANEL — branding
+========================= */
+.leftPanel {
+  position: relative;
+  flex: 1 1 50%;
+  min-width: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(to right, transparent 0%, transparent 88%, rgba(23, 26, 24, 0.6) 100%),
+    radial-gradient(ellipse 900px 620px at 85% 6%, rgba(199, 243, 110, 0.20), transparent 62%),
+    radial-gradient(ellipse 720px 560px at -8% 98%, rgba(147, 197, 114, 0.20), transparent 60%),
+    radial-gradient(ellipse 620px 620px at 55% 105%, rgba(199, 243, 110, 0.10), transparent 70%),
+    linear-gradient(160deg, #1b2721 0%, #171a18 55%, #0d0f0c 100%);
+}
+
+.leftPanel::before,
+.leftPanel::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.leftPanel::before {
+  width: 620px;
+  height: 620px;
+  top: -180px;
+  right: -160px;
+  border-radius: 62% 38% 55% 45% / 45% 55% 45% 55%;
+  background: radial-gradient(
+    circle,
+    rgba(199, 243, 110, 0.22) 0%,
+    rgba(199, 243, 110, 0) 68%
+  );
+  transform: rotate(-12deg);
+}
+
+.leftPanel::after {
+  width: 520px;
+  height: 520px;
+  bottom: -160px;
+  left: -120px;
+  border-radius: 55% 45% 40% 60% / 60% 40% 60% 40%;
+  background: radial-gradient(
+    circle,
+    rgba(147, 197, 114, 0.20) 0%,
+    rgba(147, 197, 114, 0) 68%
+  );
+  transform: rotate(8deg);
+}
+
+.brandLogo {
+  position: absolute;
+  top: clamp(44px, 4vw, 60px);
+  left: clamp(48px, 4.4vw, 68px);
+  width: clamp(190px, 13vw, 230px);
+  height: auto;
+  z-index: 1;
+}
+
+.leftContent {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(40px, 4vw, 56px);
+  padding: clamp(60px, 5.6vw, 88px) clamp(48px, 4.4vw, 68px) clamp(72px, 6.4vw, 92px);
+}
+
+.eyebrow {
+  margin: 0 0 clamp(14px, 1.1vw, 18px);
+  font-size: clamp(12px, 0.85vw, 14px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-ink);
+}
+
+.headline {
+  margin: 0 0 clamp(20px, 1.8vw, 26px);
+  max-width: 700px;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 3.6vw, 54px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+}
+
+.headlineAccent {
+  color: var(--brand-primary);
+}
+
+.description {
+  margin: 0;
+  max-width: 460px;
+  font-size: clamp(15px, 1.05vw, 17px);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.benefits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 1.8vw, 28px);
+}
+
+.benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(15px, 1.3vw, 19px);
+}
+
+.benefitIcon {
+  flex-shrink: 0;
+  width: clamp(46px, 3.4vw, 58px);
+  height: clamp(46px, 3.4vw, 58px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+  color: var(--brand-primary);
+}
+
+.benefitIcon svg {
+  width: clamp(21px, 1.6vw, 25px);
+  height: clamp(21px, 1.6vw, 25px);
+}
+
+.benefitTitle {
+  display: block;
+  font-size: clamp(16px, 1.15vw, 17.5px);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.benefitDescription {
+  display: block;
+  font-size: clamp(13.5px, 1vw, 15px);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* =========================
+   RIGHT PANEL — acceso
+========================= */
+.rightPanel {
+  position: relative;
+  flex: 1 1 50%;
+  min-width: 0;
+  background: var(--bg-app);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 48px);
+  overflow-y: auto;
+}
+
+.rightPanel::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(760px, 62vw);
+  height: min(600px, 62vw);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(199, 243, 110, 0.12) 0%, rgba(199, 243, 110, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: clamp(520px, 40vw, 620px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: clamp(44px, 3.8vw, 62px) clamp(44px, 3.8vw, 62px) clamp(40px, 3.4vw, 54px);
+  box-shadow: var(--shadow-elevation);
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: clamp(20px, 1.6vw, 26px);
+}
+
+.logoImg {
+  width: 100%;
+  max-width: clamp(205px, 15.5vw, 248px);
+  height: auto;
+  display: block;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 2.4vw, 36px);
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 0 0 clamp(28px, 2.4vw, 36px);
+  font-size: clamp(15px, 1.05vw, 17px);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* =========================
+   FORM
+========================= */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 1.4vw, 20px);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field label {
+  font-size: clamp(13px, 0.95vw, 14px);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.8vw, 10px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-control);
+  padding: 0 clamp(14px, 1.1vw, 16px);
+  background-color: var(--bg-surface-2);
+  transition: all 0.2s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px var(--brand-soft);
+}
+
+.inputWrapper input {
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  padding: clamp(15px, 1.25vw, 18px) 0;
+  font-size: clamp(14px, 1vw, 15px);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.inputWrapper input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  color: var(--text-secondary);
+}
+
+.togglePassword {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.togglePassword svg {
+  width: 19px;
+  height: 19px;
+}
+
+.togglePassword:hover {
+  color: var(--text-primary);
+}
+
+.fieldError {
+  margin: 0;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: clamp(13px, 0.95vw, 14px);
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+
+.error {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: var(--radius-control);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =========================
+   BOTÓN
+========================= */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+  padding: clamp(16px, 1.35vw, 19px);
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  font-size: clamp(15px, 1vw, 16px);
+  font-weight: 700;
+  font-family: var(--font-body);
+  background: var(--brand-primary);
+  color: var(--on-accent);
+  transition: all 0.2s ease;
+}
+
+.button svg {
+  width: 19px;
+  height: 19px;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-elevation);
+}
+
+.button:active:not(:disabled) {
+  background: var(--brand-primary-active);
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* =========================
+   SEPARADOR
+========================= */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: clamp(24px, 2vw, 30px) 0 clamp(20px, 1.7vw, 25px);
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.dividerText {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* =========================
+   ACCESO DEMO
+========================= */
+.demoBlock {
+  padding: clamp(18px, 1.6vw, 24px) clamp(20px, 1.7vw, 26px);
+  border-radius: var(--radius-control);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+}
+
+.demoLabel {
+  margin: 0 0 11px;
+  font-size: clamp(13px, 0.95vw, 14px);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.demoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.demoInfo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.demoIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--text-secondary);
+}
+
+.demoInfo p {
+  margin: 0;
+  font-size: clamp(12.5px, 0.9vw, 13.5px);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.demoButton {
+  flex-shrink: 0;
+  padding: clamp(9px, 0.8vw, 11px) clamp(16px, 1.3vw, 19px);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: clamp(13px, 0.9vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demoButton:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1023px) {
+  .container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .leftPanel {
+    display: none;
+  }
+
+  .rightPanel {
+    flex: 1 1 100%;
+    min-height: 100vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .rightPanel {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 32px 22px 24px;
+  }
+
+  .demoRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .demoButton {
+    width: 100%;
+  }
+}

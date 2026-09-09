@@ -25,6 +25,23 @@
   flex-shrink: 0;
 }
 
+/* Variante "lg" (pasada visual del dashboard, Sprint 3A-escala): más
+   jerarquía y más aire respecto a los KPIs. Solo se activa con
+   `size="lg"`, así que el resto de pantallas que reutilizan PageHeader
+   no cambian. */
+.lg {
+  margin-bottom: var(--space-10);
+}
+
+.lg .title {
+  font-size: clamp(2.1rem, 1.4vw + 1.7rem, 2.75rem);
+}
+
+.lg .subtitle {
+  font-size: 1.05rem;
+  margin-top: 8px;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;

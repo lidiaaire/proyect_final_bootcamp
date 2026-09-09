@@ -7,17 +7,21 @@ import styles from "./MetricCard.module.css";
 // puramente de presentación (asocian el chip a un color semántico ya
 // existente en la paleta). `sublabel` es una segunda línea descriptiva
 // opcional (p.ej. "Requieren tu revisión") -- mismo dato, más contexto.
-export default function MetricCard({ value, label, sublabel, href, icon: Icon, tone = "neutral" }) {
+// `size="lg"` (pasada visual del dashboard) añade una clase modificadora
+// y agranda el icono -- el resto de pantallas sigue con el tamaño md.
+export default function MetricCard({ value, label, sublabel, href, icon: Icon, tone = "neutral", size = "md" }) {
   const toneVars = {
     "--tone": `var(--${tone})`,
     "--tone-bg": `var(--${tone}-bg)`,
   };
+  const cardClassName = `${styles.card} ${size === "lg" ? styles.lg : ""}`;
+  const iconSize = size === "lg" ? 24 : 20;
 
   const content = (
     <>
       {Icon && (
         <span className={styles.iconChip}>
-          <Icon size={20} strokeWidth={1.75} />
+          <Icon size={iconSize} strokeWidth={1.75} />
         </span>
       )}
       {href && (
@@ -33,14 +37,14 @@ export default function MetricCard({ value, label, sublabel, href, icon: Icon, t
 
   if (href) {
     return (
-      <Link href={href} className={styles.card} style={toneVars}>
+      <Link href={href} className={cardClassName} style={toneVars}>
         {content}
       </Link>
     );
   }
 
   return (
-    <div className={styles.card} style={toneVars}>
+    <div className={cardClassName} style={toneVars}>
       {content}
     </div>
   );

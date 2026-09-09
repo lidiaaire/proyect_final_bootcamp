@@ -67,3 +67,37 @@ a.card:hover .arrow {
   color: var(--text-faint);
   margin-top: 2px;
 }
+
+/* Variante "lg" (pasada visual del dashboard, Sprint 3A-escala): ~20-25%
+   más de altura, número claramente mayor, más aire interno. Solo se
+   activa con `size="lg"` -- solicitudes/policyholders siguen en md. */
+.lg {
+  padding: 28px;
+}
+
+.lg .iconChip {
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-5);
+}
+
+.lg .arrow {
+  top: var(--space-6);
+  right: var(--space-6);
+  width: 32px;
+  height: 32px;
+}
+
+.lg .value {
+  font-size: clamp(2.1rem, 1.6vw + 1.5rem, 2.6rem);
+}
+
+.lg .label {
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+
+.lg .sublabel {
+  font-size: 0.82rem;
+  margin-top: 3px;
+}

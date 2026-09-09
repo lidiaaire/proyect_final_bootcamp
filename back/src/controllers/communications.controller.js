@@ -1,7 +1,16 @@
-const { MongoClient } = require("mongodb");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
-const uri = process.env.MONGO_URI;
+// Antes cada petición abría (`new MongoClient(uri); await client.connect()`)
+// y cerraba su propia conexión a MongoDB Atlas -- una negociación TLS
+// completa por cada carga de canal, en vez de reutilizar la conexión de
+// Mongoose que la app ya mantiene abierta desde el arranque
+// (configuration/db.js). Con 5 canales cargando en paralelo desde
+// /comunicaciones (recuento de mensajes) más la navegación a un canal,
+// esto podía tardar varios segundos o fallar de forma intermitente --
+// causa real del bug "no puedo entrar en ningún canal". Se usa
+// `mongoose.connection.db`, el mismo handle nativo de la conexión ya
+// abierta, sin cambiar la forma de las consultas.
 
 const channelMap = {
   "avisos-oficiales": "Avisos Oficiales",
@@ -12,8 +21,6 @@ const channelMap = {
 };
 
 async function getMessages(req, res) {
-  let client;
-
   try {
     const { channel } = req.params;
 
@@ -24,10 +31,7 @@ async function getMessages(req, res) {
       return res.status(400).json({ error: "Canal no válido" });
     }
 
-    client = new MongoClient(uri);
-    await client.connect();
-
-    const db = client.db("flowly");
+    const db = mongoose.connection.db;
 
     const communications = await db
       .collection("communications")
@@ -39,19 +43,12 @@ async function getMessages(req, res) {
   } catch (error) {
     console.error("ERROR LOADING COMMUNICATIONS:", error);
     res.status(500).json({ error: "Error loading communications" });
-  } finally {
-    if (client) await client.close();
   }
 }
 
 async function sendMessage(req, res) {
-  let client;
-
   try {
-    client = new MongoClient(uri);
-    await client.connect();
-
-    const db = client.db();
+    const db = mongoose.connection.db;
 
     const newCommunication = {
       ...req.body,
@@ -65,8 +62,6 @@ async function sendMessage(req, res) {
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: "Error sending communication" });
-  } finally {
-    if (client) await client.close();
   }
 }
 

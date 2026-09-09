@@ -10,13 +10,13 @@ import {
   Mail,
   MapPin,
   FileText,
-  ShieldCheck,
   Eye,
   Download,
 } from "lucide-react";
 import StatusBadge from "@/components/ui/StatusBadge/StatusBadge";
 import styles from "@/styles/PolicyholderProfile.module.css";
 import buttonStyles from "@/styles/Button.module.css";
+import { resolverUrlDocumento } from "@/utils/documentoUrl";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const ROLES_PERMITIDOS = ["PRESTACIONES", "ADMIN"];
@@ -175,6 +175,76 @@ export default function PolicyholderProfile() {
   const inicioHistorial = (paginaHistorialSegura - 1) * HISTORIAL_PAGE_SIZE;
   const requestsPagina = requests.slice(inicioHistorial, inicioHistorial + HISTORIAL_PAGE_SIZE);
 
+  // Historial de solicitudes -- aparece tanto en "Resumen" (referencia
+  // visual contractual: columna izquierda, bajo Datos del asegurado)
+  // como en la tab "Solicitudes" dedicada. Misma tabla, mismos datos
+  // reales y misma paginación -- se extrae aquí para no duplicar el JSX.
+  const historialSolicitudes = (
+    <div className={styles.card}>
+      <h3 className={styles.cardTitle}>Historial de solicitudes</h3>
+
+      {requests.length === 0 ? (
+        <p className={styles.placeholder}>Este asegurado no tiene solicitudes registradas.</p>
+      ) : (
+        <>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Solicitud</th>
+                  <th>Prueba</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {requestsPagina.map((r) => {
+                  const requestId = r._id || r.id;
+                  return (
+                    <tr key={requestId}>
+                      <td className={styles.mono}>{r.numeroSolicitud || `#${String(requestId).slice(-5)}`}</td>
+                      <td>{r.nombrePrueba}</td>
+                      <td>{r.createdAt ? new Date(r.createdAt).toLocaleDateString("es-ES") : "—"}</td>
+                      <td>
+                        <StatusBadge status={r.estadoInterno} />
+                      </td>
+                      <td>
+                        <Link href={`/solicitudes/${requestId}`} className={`${buttonStyles.btn} ${buttonStyles.secondary}`}>
+                          Ver
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPaginasHistorial > 1 && (
+            <div className={styles.pagination}>
+              <button
+                onClick={() => setHistorialPagina((p) => Math.max(1, p - 1))}
+                disabled={paginaHistorialSegura === 1}
+              >
+                ‹ Anterior
+              </button>
+              <span className={styles.paginationLabel}>
+                Página {paginaHistorialSegura} de {totalPaginasHistorial}
+              </span>
+              <button
+                onClick={() => setHistorialPagina((p) => Math.min(totalPaginasHistorial, p + 1))}
+                disabled={paginaHistorialSegura === totalPaginasHistorial}
+              >
+                Siguiente ›
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+
   return (
     <div>
       <Link href="/policyholders" className={styles.backLink}>
@@ -182,72 +252,21 @@ export default function PolicyholderProfile() {
         Volver a Asegurados
       </Link>
 
-      <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>{policyholder.name}</h1>
-          <p className={styles.subtitle}>
-            DNI {policyholder.dni} · Póliza {policyholder.id}
-            {antiguedad !== null ? ` · ${antiguedad} años de antigüedad` : ""}
-            {tipoMeta ? ` · ${tipoMeta.label}` : ""}
-          </p>
-        </div>
-
-        <div className={styles.headerActions}>
-          <div className={styles.menuWrap}>
-            <button
-              type="button"
-              className={styles.menuTrigger}
-              aria-label="Más acciones"
-              onClick={() => setMenuAbierto((v) => !v)}
-            >
-              <MoreHorizontal size={18} strokeWidth={1.75} />
-            </button>
-
-            {menuAbierto && (
-              <div className={styles.menuDropdown}>
-                <button
-                  type="button"
-                  className={styles.menuItem}
-                  onClick={() => {
-                    copiar("dni", policyholder.dni);
-                    setMenuAbierto(false);
-                  }}
-                >
-                  {copiado === "dni" ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={1.75} />}
-                  {copiado === "dni" ? "Copiado" : "Copiar DNI"}
-                </button>
-                <button
-                  type="button"
-                  className={styles.menuItem}
-                  onClick={() => {
-                    copiar("poliza", policyholder.id);
-                    setMenuAbierto(false);
-                  }}
-                >
-                  {copiado === "poliza" ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={1.75} />}
-                  {copiado === "poliza" ? "Copiado" : "Copiar nº de póliza"}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {puedeCrearSolicitud && (
-            <Link href={`/solicitudes/nueva?numeroPoliza=${policyholder.id}`}>
-              <button className={`${buttonStyles.btn} ${buttonStyles.primary}`}>+ Nueva solicitud</button>
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* Card de identidad -- siempre visible por encima de las tabs */}
-      <div className={styles.identityCard}>
-        <div className={styles.identityTop}>
-          <div className={styles.identityBlock}>
+      {/* Hero de perfil -- avatar circular + nombre son el elemento
+          dominante de la página (PERSONA). Cabecera y card de identidad
+          anteriores se fusionan en una única superficie para dar más
+          presencia vertical, sin añadir contenido nuevo. */}
+      <div className={styles.heroCard}>
+        <div className={styles.heroTop}>
+          <div className={styles.heroIdentity}>
             <span className={styles.avatar}>{(policyholder.name || "?").charAt(0).toUpperCase()}</span>
             <div>
-              <div className={styles.identityName}>{policyholder.name}</div>
-              <div className={styles.identitySub}>DNI: {policyholder.dni}</div>
-              {antiguedad !== null && <div className={styles.identitySub}>{antiguedad} años de antigüedad</div>}
+              <span className={styles.kicker}>Asegurado</span>
+              <h1 className={styles.title}>{policyholder.name}</h1>
+              <p className={styles.subtitle}>
+                DNI {policyholder.dni} · Póliza {policyholder.id}
+                {antiguedad !== null ? ` · ${antiguedad} años de antigüedad` : ""}
+              </p>
               {tipoMeta && (
                 <span
                   className={styles.tipoBadge}
@@ -259,46 +278,69 @@ export default function PolicyholderProfile() {
             </div>
           </div>
 
-          <div className={styles.identityContacto}>
-            {policyholder.telefono && (
-              <span>
-                <Phone size={13} strokeWidth={1.75} /> {policyholder.telefono}
-              </span>
-            )}
-            {policyholder.email && (
-              <span>
-                <Mail size={13} strokeWidth={1.75} /> {policyholder.email}
-              </span>
-            )}
-            {policyholder.direccion && (
-              <span>
-                <MapPin size={13} strokeWidth={1.75} /> {policyholder.direccion}
-              </span>
-            )}
-          </div>
+          <div className={styles.headerActions}>
+            <div className={styles.menuWrap}>
+              <button
+                type="button"
+                className={styles.menuTrigger}
+                aria-label="Más acciones"
+                onClick={() => setMenuAbierto((v) => !v)}
+              >
+                <MoreHorizontal size={18} strokeWidth={1.75} />
+              </button>
 
-          <div className={styles.identityFacts}>
-            <div className={styles.factChip}>
-              <span className={styles.factIcon}>
-                <ShieldCheck size={15} strokeWidth={1.75} />
-              </span>
-              <div>
-                <dt>Nº de póliza</dt>
-                <dd>{policyholder.id}</dd>
-              </div>
-            </div>
-            {tipoMeta && (
-              <div className={styles.factChip}>
-                <span className={styles.factIcon}>
-                  <ShieldCheck size={15} strokeWidth={1.75} />
-                </span>
-                <div>
-                  <dt>Tipo de póliza</dt>
-                  <dd>{tipoMeta.label}</dd>
+              {menuAbierto && (
+                <div className={styles.menuDropdown}>
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => {
+                      copiar("dni", policyholder.dni);
+                      setMenuAbierto(false);
+                    }}
+                  >
+                    {copiado === "dni" ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={1.75} />}
+                    {copiado === "dni" ? "Copiado" : "Copiar DNI"}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => {
+                      copiar("poliza", policyholder.id);
+                      setMenuAbierto(false);
+                    }}
+                  >
+                    {copiado === "poliza" ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={1.75} />}
+                    {copiado === "poliza" ? "Copiado" : "Copiar nº de póliza"}
+                  </button>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {puedeCrearSolicitud && (
+              <Link href={`/solicitudes/nueva?numeroPoliza=${policyholder.id}`}>
+                <button className={`${buttonStyles.btn} ${buttonStyles.primary}`}>+ Nueva solicitud</button>
+              </Link>
             )}
           </div>
+        </div>
+
+        <div className={styles.identityContacto}>
+          {policyholder.telefono && (
+            <span>
+              <Phone size={13} strokeWidth={1.75} /> {policyholder.telefono}
+            </span>
+          )}
+          {policyholder.email && (
+            <span>
+              <Mail size={13} strokeWidth={1.75} /> {policyholder.email}
+            </span>
+          )}
+          {policyholder.direccion && (
+            <span>
+              <MapPin size={13} strokeWidth={1.75} /> {policyholder.direccion}
+            </span>
+          )}
         </div>
       </div>
 
@@ -318,46 +360,50 @@ export default function PolicyholderProfile() {
 
       {activeTab === "resumen" && (
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <h3 className={styles.cardTitle}>Datos del asegurado</h3>
-            <dl className={styles.factGrid}>
-              <div>
-                <dt>Nombre completo</dt>
-                <dd>{policyholder.name}</dd>
-              </div>
-              <div>
-                <dt>DNI</dt>
-                <dd>{policyholder.dni}</dd>
-              </div>
-              <div>
-                <dt>Teléfono</dt>
-                <dd>{policyholder.telefono || "—"}</dd>
-              </div>
-              <div>
-                <dt>Email</dt>
-                <dd>{policyholder.email || "—"}</dd>
-              </div>
-              <div>
-                <dt>Dirección</dt>
-                <dd>{policyholder.direccion || "—"}</dd>
-              </div>
-              <div>
-                <dt>Nº de póliza</dt>
-                <dd>{policyholder.id}</dd>
-              </div>
-              {tipoMeta && (
+          <div className={styles.mainColumn}>
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>Datos del asegurado</h3>
+              <dl className={styles.factGrid}>
                 <div>
-                  <dt>Tipo de póliza</dt>
-                  <dd>{tipoMeta.label}</dd>
+                  <dt>Nombre completo</dt>
+                  <dd>{policyholder.name}</dd>
                 </div>
-              )}
-              {policyholder.policyStartDate && (
                 <div>
-                  <dt>Fecha de alta</dt>
-                  <dd>{new Date(policyholder.policyStartDate).toLocaleDateString("es-ES")}</dd>
+                  <dt>DNI</dt>
+                  <dd>{policyholder.dni}</dd>
                 </div>
-              )}
-            </dl>
+                <div>
+                  <dt>Teléfono</dt>
+                  <dd>{policyholder.telefono || "—"}</dd>
+                </div>
+                <div>
+                  <dt>Email</dt>
+                  <dd>{policyholder.email || "—"}</dd>
+                </div>
+                <div>
+                  <dt>Dirección</dt>
+                  <dd>{policyholder.direccion || "—"}</dd>
+                </div>
+                <div>
+                  <dt>Nº de póliza</dt>
+                  <dd>{policyholder.id}</dd>
+                </div>
+                {tipoMeta && (
+                  <div>
+                    <dt>Tipo de póliza</dt>
+                    <dd>{tipoMeta.label}</dd>
+                  </div>
+                )}
+                {policyholder.policyStartDate && (
+                  <div>
+                    <dt>Fecha de alta</dt>
+                    <dd>{new Date(policyholder.policyStartDate).toLocaleDateString("es-ES")}</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+
+            {historialSolicitudes}
           </div>
 
           <div className={styles.sideColumn}>
@@ -367,7 +413,7 @@ export default function PolicyholderProfile() {
                 <p className={styles.placeholder}>Sin notas registradas.</p>
               ) : (
                 <div className={styles.notesList}>
-                  {policyholder.internalNotes.slice(0, 3).map((note, index) => (
+                  {policyholder.internalNotes.map((note, index) => (
                     <div key={index} className={styles.noteCard}>
                       <div className={styles.noteHeader}>
                         <span className={styles.noteAuthor}>{note.author || "Sistema"}</span>
@@ -397,74 +443,7 @@ export default function PolicyholderProfile() {
         </div>
       )}
 
-      {activeTab === "solicitudes" && (
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Historial de solicitudes</h3>
-
-          {requests.length === 0 ? (
-            <p className={styles.placeholder}>Este asegurado no tiene solicitudes registradas.</p>
-          ) : (
-            <>
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Solicitud</th>
-                      <th>Prueba</th>
-                      <th>Fecha</th>
-                      <th>Estado</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {requestsPagina.map((r) => {
-                      const requestId = r._id || r.id;
-                      return (
-                        <tr key={requestId}>
-                          <td className={styles.mono}>{r.numeroSolicitud || `#${String(requestId).slice(-5)}`}</td>
-                          <td>{r.nombrePrueba}</td>
-                          <td>{r.createdAt ? new Date(r.createdAt).toLocaleDateString("es-ES") : "—"}</td>
-                          <td>
-                            <StatusBadge status={r.estadoInterno} />
-                          </td>
-                          <td>
-                            <Link
-                              href={`/solicitudes/${requestId}`}
-                              className={`${buttonStyles.btn} ${buttonStyles.secondary}`}
-                            >
-                              Ver
-                            </Link>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {totalPaginasHistorial > 1 && (
-                <div className={styles.pagination}>
-                  <button
-                    onClick={() => setHistorialPagina((p) => Math.max(1, p - 1))}
-                    disabled={paginaHistorialSegura === 1}
-                  >
-                    ‹ Anterior
-                  </button>
-                  <span className={styles.paginationLabel}>
-                    Página {paginaHistorialSegura} de {totalPaginasHistorial}
-                  </span>
-                  <button
-                    onClick={() => setHistorialPagina((p) => Math.min(totalPaginasHistorial, p + 1))}
-                    disabled={paginaHistorialSegura === totalPaginasHistorial}
-                  >
-                    Siguiente ›
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {activeTab === "solicitudes" && historialSolicitudes}
 
       {activeTab === "documentacion" && (
         <div className={styles.card}>
@@ -491,7 +470,7 @@ export default function PolicyholderProfile() {
                   <div className={styles.docActions}>
                     <a
                       className={styles.docActionBtn}
-                      href={`${API_BASE}/docs/${doc.nombre}`}
+                      href={resolverUrlDocumento(doc)}
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Ver documento"
@@ -500,7 +479,7 @@ export default function PolicyholderProfile() {
                     </a>
                     <a
                       className={styles.docActionBtn}
-                      href={`${API_BASE}/docs/${doc.nombre}`}
+                      href={resolverUrlDocumento(doc)}
                       download
                       aria-label="Descargar documento"
                     >

@@ -56,6 +56,15 @@ app.use(
   "/autorizaciones",
   express.static(path.join(process.cwd(), "public/autorizaciones")),
 );
+// Documentos clínicos reales generados por back/src/services/documentos/
+// (VOLANTE_MEDICO y, en pasos posteriores, el resto de familias) --
+// carpeta propia, separada a propósito de /docs (los 4 PDF de demo
+// antiguos, sin relación con ninguna solicitud) y de /autorizaciones
+// (VOLANTE_AUTORIZACION, circuito distinto).
+app.use(
+  "/documentos-clinicos",
+  express.static(path.join(process.cwd(), "public/documentos-clinicos")),
+);
 
 // Rutas
 app.use("/api/auth", authRoutes);

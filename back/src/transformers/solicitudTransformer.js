@@ -19,6 +19,12 @@ function mapSolicitud(solicitud) {
 
     // ✅ DOCUMENTOS NORMALIZADOS (CLAVE DEL BUG)
     documentos: (solicitud.documentos || []).map((doc) => ({
+      // `tipo` es obligatorio en el subesquema documental (ver
+      // solicitudModel.js#TIPOS_DOCUMENTO) -- necesario para que el
+      // frontend pueda agrupar "Documentación aportada" vs "Resolución"
+      // (Paso 7).
+      tipo: doc.tipo || null,
+
       nombre: doc.nombre || doc.nombreArchivo || doc.filename,
 
       subidoPor:

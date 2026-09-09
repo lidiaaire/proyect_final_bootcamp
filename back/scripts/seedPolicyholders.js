@@ -8,6 +8,8 @@ const POLICY_TYPES = [
   "POLIZA FUNCIONARIO",
 ];
 
+const SEXOS = ["MASCULINO", "FEMENINO"];
+
 async function seedPolicyholders() {
   try {
     await Policyholder.deleteMany();
@@ -32,15 +34,23 @@ async function seedPolicyholders() {
         ]),
       }));
 
+      // `sexo` se decide primero para que `name` sea coherente con él
+      // (faker.person.fullName acepta `sex` para no mezclar nombre y
+      // sexo al azar).
+      const sexo = faker.helpers.arrayElement(SEXOS);
+      const fakerSex = sexo === "MASCULINO" ? "male" : "female";
+
       policyholders.push({
         id: faker.string.numeric(6),
-        name: faker.person.fullName(),
+        name: faker.person.fullName({ sex: fakerSex }),
         dni: faker.string.alphanumeric(9),
         telefono: faker.phone.number(),
         email: faker.internet.email(),
         direccion: faker.location.streetAddress(),
         policyType: faker.helpers.arrayElement(POLICY_TYPES),
         policyStartDate: faker.date.past({ years: 10 }),
+        fechaNacimiento: faker.date.birthdate({ min: 18, max: 90, mode: "age" }),
+        sexo,
         internalNotes: notes,
       });
     }

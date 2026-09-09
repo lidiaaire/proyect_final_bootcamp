@@ -1,7 +1,12 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-const Communication = require("../src/models/communicationModel");
+// El fichero real está mal escrito ("comunicationModel", sin la
+// segunda "m") -- este seed apuntaba a "communicationModel" (correcto
+// ortográficamente pero inexistente), lo que rompía `npm run seed` con
+// MODULE_NOT_FOUND. Se corrige la ruta sin renombrar el modelo
+// (fuera de alcance de este paso; no lo usa nada más que este seed).
+const Communication = require("../src/models/comunicationModel");
 
 // 🔹 CANALES
 const channels = [

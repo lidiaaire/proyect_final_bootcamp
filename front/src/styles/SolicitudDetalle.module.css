@@ -16,41 +16,91 @@
 /* CABECERA */
 /* ============================= */
 
+/* Superficie propia del expediente: matiz azul/cian oscuro y muy
+   desaturado (exclusivo de esta cabecera y de la card de contexto de
+   más abajo) -- el resto de la página sigue en el verde/grafito de
+   Flowly. Valores literales locales a este módulo, no tokens globales. */
 .header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-6);
-  margin-bottom: var(--space-6);
+  gap: var(--space-5);
+  background: #1b232c;
+  border: 1px solid #2a3948;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-elevation);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
   flex-wrap: wrap;
 }
 
 .headerMain {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
   min-width: 0;
 }
 
+/* Icono de expediente -- contenedor cuadrado/redondeado claramente más
+   grande que el avatar del asegurado, geometría documental. */
+.solicitudIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-control);
+  background: #24313d;
+  border: 1px solid #35485c;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.solicitudTitleText {
+  min-width: 0;
+}
+
+.kicker {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #8fa8c2;
+  margin-bottom: 6px;
+}
+
+.titleLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
 .title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.7rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.9rem;
+  letter-spacing: 0.01em;
   color: var(--text-primary);
   margin: 0;
 }
 
 .subtitle {
-  font-size: 0.87rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  margin: 4px 0 0;
+  margin: 6px 0 0;
 }
 
-.statusRow {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin-top: var(--space-3);
+.headerMetaInline {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin: var(--space-2) 0 0;
 }
 
 .departmentBadge {
+  display: inline-block;
+  margin-top: var(--space-3);
   font-size: 0.78rem;
   color: var(--text-secondary);
   background: var(--bg-surface-2);
@@ -59,28 +109,11 @@
   border-radius: var(--radius-control);
 }
 
-.headerSide {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-3);
-  flex-shrink: 0;
-}
-
-.headerMeta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  text-align: right;
-}
-
 .headerActions {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .menuWrap {
@@ -206,14 +239,15 @@
 }
 
 /* ============================= */
-/* ASEGURADO + PRESTACIÓN -- card horizontal única (referencia
-   contractual de /solicitudes/[id]: identidad + contacto + póliza en
-   una fila, prestación integrada debajo de la misma card) */
+/* CONTEXTO DEL EXPEDIENTE -- asegurado + centro médico como
+   información RELACIONADA (fila 1) y hechos de póliza (fila 2). Mismo
+   matiz azul/cian muy desaturado que la cabecera, para que ambas
+   superficies se lean como una sola zona de "expediente". */
 /* ============================= */
 
 .aseguradoCard {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  background: #1b232c;
+  border: 1px solid #2a3948;
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-elevation);
   padding: var(--space-5) var(--space-6);
@@ -222,16 +256,9 @@
 
 .aseguradoTop {
   display: grid;
-  grid-template-columns: 1.3fr 1.2fr 1.5fr;
+  grid-template-columns: 1.6fr 1fr;
   gap: var(--space-6);
   align-items: start;
-}
-
-/* Sin acceso real a la ficha de asegurado (Dirección Médica/Asesoría
-   Jurídica, RBAC de 2F): la identidad ocupa toda la fila en vez de
-   dejar dos columnas vacías. */
-.aseguradoTopSolo {
-  grid-template-columns: 1fr;
 }
 
 .aseguradoIdentity {
@@ -241,15 +268,16 @@
   min-width: 0;
 }
 
+/* Icono genérico (no iniciales) en contenedor cuadrado/redondeado --
+   deliberadamente no circular ni lima: el asegurado aquí es dato
+   relacionado, no la identidad protagonista de la página. */
 .aseguradoAvatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--bg-surface-2);
-  color: var(--text-primary);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.2rem;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-control);
+  background: #24313d;
+  border: 1px solid #35485c;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -277,41 +305,6 @@
   margin-top: 2px;
 }
 
-.aseguradoContacto {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-left: var(--space-6);
-  border-left: 1px solid var(--border-color);
-}
-
-.aseguradoContacto span {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 0.83rem;
-  color: var(--text-secondary);
-}
-
-.aseguradoContacto svg {
-  color: var(--text-faint);
-  flex-shrink: 0;
-}
-
-.aseguradoFacts {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
-  padding-left: var(--space-6);
-  border-left: 1px solid var(--border-color);
-}
-
-.factChip {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-2);
-}
-
 .verPolizaLink {
   display: inline-flex;
   align-items: center;
@@ -327,23 +320,42 @@
   text-decoration: underline;
 }
 
+.centroMedicoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding-left: var(--space-6);
+  border-left: 1px solid #2a3948;
+}
+
+.centroMedicoValue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.centroMedicoValue svg {
+  color: var(--text-faint);
+  flex-shrink: 0;
+}
+
 .aseguradoDivider {
   height: 1px;
-  background: var(--border-color);
+  background: #2a3948;
   margin: var(--space-5) 0;
 }
 
-/* ============================= */
-/* PRESTACIÓN */
-/* ============================= */
-
-.prestacionGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-4);
+.aseguradoFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
 }
 
-.prestacionFact {
+.factChip {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);
@@ -353,7 +365,7 @@
   width: 30px;
   height: 30px;
   border-radius: var(--radius-control);
-  background: var(--bg-surface-2);
+  background: #24313d;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -361,7 +373,6 @@
   flex-shrink: 0;
 }
 
-.prestacionFact dt,
 .factChip dt {
   font-size: 0.66rem;
   text-transform: uppercase;
@@ -370,7 +381,6 @@
   margin-bottom: 2px;
 }
 
-.prestacionFact dd,
 .factChip dd {
   margin: 0;
   font-size: 0.86rem;
@@ -607,35 +617,35 @@
     grid-template-columns: 1fr;
   }
 
-  .prestacionGrid,
-  .aseguradoFacts {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .aseguradoTop {
     grid-template-columns: 1fr;
     row-gap: var(--space-4);
   }
 
-  .aseguradoContacto,
-  .aseguradoFacts {
+  .centroMedicoBlock {
     padding-left: 0;
     border-left: none;
     padding-top: var(--space-4);
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid #2a3948;
   }
 
   .header {
     flex-direction: column;
   }
 
-  .headerSide {
-    align-items: flex-start;
+  .headerActions {
     width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 520px) {
+  .solicitudIcon {
+    width: 48px;
+    height: 48px;
   }
 
-  .headerMeta {
-    align-items: flex-start;
-    text-align: left;
+  .title {
+    font-size: 1.5rem;
   }
 }

@@ -13,12 +13,8 @@ import {
   Check,
   Download,
   Eye,
-  Activity,
-  Stethoscope,
   Building2,
-  Phone,
-  Mail,
-  MapPin,
+  User,
   ShieldCheck,
   ExternalLink,
 } from "lucide-react";
@@ -33,6 +29,7 @@ import { ESTADO_META, esEstadoFinal } from "@/core/constants/estados";
 import { ACCIONES, getAccionesDisponibles, getMotivoSinAcciones } from "@/core/permissions/accionesSolicitud";
 import { ROLE_CONFIG } from "@/core/constants/roles";
 import { getPolicyholder } from "@/api/policyholders";
+import { resolverUrlDocumento } from "@/utils/documentoUrl";
 
 import {
   getRequest,
@@ -168,6 +165,13 @@ function calcularAntiguedad(startDate) {
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < start.getDate())) years--;
   return years;
 }
+
+// Valores semánticos reales del modelo (policyholderModel.js#sexo) --
+// solo se traducen aquí a texto legible, no se inventa el dato.
+const SEXO_LABEL = {
+  MASCULINO: "Masculino",
+  FEMENINO: "Femenino",
+};
 
 const ACTOR_LABEL = {
   SYSTEM_MIGRATION: "Sistema (migración)",
@@ -352,6 +356,10 @@ export default function SolicitudDetallePage() {
   const ultimoEvento = solicitud.historial?.[solicitud.historial.length - 1];
   const accionPrincipal = acciones[0] ? actionConfig[acciones[0]] : null;
   const antiguedad = calcularAntiguedad(asegurado?.policyStartDate);
+  // Misma función (años transcurridos desde una fecha), aplicada a la
+  // fecha de nacimiento real del asegurado (policyholderModel.js#fechaNacimiento,
+  // ya expuesta por GET /policyholders/:id).
+  const edadAsegurado = calcularAntiguedad(asegurado?.fechaNacimiento);
 
   const hint =
     acciones.length > 0
@@ -375,167 +383,145 @@ export default function SolicitudDetallePage() {
         Volver a Solicitudes
       </Link>
 
-      {/* Cabecera */}
+      {/* Cabecera de expediente -- superficie propia con matiz azul/cian
+          muy desaturado (solo aquí y en la card de contexto): icono
+          documental + SOL-XXXX son la identidad principal de la página
+          (EXPEDIENTE). El asegurado pasa a información relacionada,
+          más abajo. */}
       <div className={styles.header}>
         <div className={styles.headerMain}>
-          <h1 className={styles.title}>{solicitud.nombreCompleto}</h1>
-          <p className={styles.subtitle}>
-            {solicitud.numeroSolicitud} · Póliza {solicitud.numeroPoliza} · DNI {solicitud.dni}
-          </p>
-          <div className={styles.statusRow}>
-            <StatusBadge status={solicitud.estadoInterno} />
+          <span className={styles.solicitudIcon}>
+            <FileText size={26} strokeWidth={1.75} />
+          </span>
+          <div className={styles.solicitudTitleText}>
+            <span className={styles.kicker}>Solicitud de autorización</span>
+            <div className={styles.titleLine}>
+              <h1 className={styles.title}>{solicitud.numeroSolicitud}</h1>
+              <StatusBadge status={solicitud.estadoInterno} />
+            </div>
+            <p className={styles.subtitle}>
+              {solicitud.nombrePrueba}
+              {solicitud.especialidad ? ` · ${solicitud.especialidad}` : ""}
+            </p>
+            <p className={styles.headerMetaInline}>
+              Creada el {formatDate(solicitud.createdAt)}
+              {ultimoEvento ? ` · Último movimiento ${tiempoRelativo(ultimoEvento.fecha)}` : ""}
+            </p>
             {responsable && <span className={styles.departmentBadge}>A cargo de {responsable.label}</span>}
           </div>
         </div>
 
-        <div className={styles.headerSide}>
-          <div className={styles.headerMeta}>
-            <span>Creada el {formatDate(solicitud.createdAt)}</span>
-            {ultimoEvento && <span>Último movimiento {tiempoRelativo(ultimoEvento.fecha)}</span>}
-          </div>
+        <div className={styles.headerActions}>
+          <div className={styles.menuWrap}>
+            <button
+              type="button"
+              className={styles.menuTrigger}
+              aria-label="Más acciones"
+              onClick={() => setMenuAbierto((v) => !v)}
+            >
+              <MoreHorizontal size={18} strokeWidth={1.75} />
+            </button>
 
-          <div className={styles.headerActions}>
-            <div className={styles.menuWrap}>
-              <button
-                type="button"
-                className={styles.menuTrigger}
-                aria-label="Más acciones"
-                onClick={() => setMenuAbierto((v) => !v)}
-              >
-                <MoreHorizontal size={18} strokeWidth={1.75} />
-              </button>
-
-              {menuAbierto && (
-                <div className={styles.menuDropdown}>
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      copiarNumero();
-                      setMenuAbierto(false);
-                    }}
-                  >
-                    {copiado ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={1.75} />}
-                    {copiado ? "Copiado" : "Copiar nº de solicitud"}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {accionPrincipal && (
-              <button
-                className={`${buttonStyles.btn} ${buttonStyles.primary}`}
-                onClick={() => setModalAction(acciones[0])}
-              >
-                <accionPrincipal.Icon size={15} strokeWidth={2} />
-                {accionPrincipal.label}
-              </button>
+            {menuAbierto && (
+              <div className={styles.menuDropdown}>
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  onClick={() => {
+                    copiarNumero();
+                    setMenuAbierto(false);
+                  }}
+                >
+                  {copiado ? <Check size={13} strokeWidth={2} /> : <Copy size={13} strokeWidth={1.75} />}
+                  {copiado ? "Copiado" : "Copiar nº de solicitud"}
+                </button>
+              </div>
             )}
           </div>
+
+          {accionPrincipal && (
+            <button
+              className={`${buttonStyles.btn} ${buttonStyles.primary}`}
+              onClick={() => setModalAction(acciones[0])}
+            >
+              <accionPrincipal.Icon size={15} strokeWidth={2} />
+              {accionPrincipal.label}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Asegurado + Prestación -- una sola card horizontal (referencia
-          contractual de /solicitudes/[id]), no dos cards apiladas. La
-          ficha de contacto/póliza solo aparece con datos reales y para
-          los roles con acceso real a policyholders (Sprint 2F). */}
+      {/* Contexto del expediente -- asegurado + centro médico como
+          información RELACIONADA (no protagonista), en la misma
+          superficie con matiz azul/cian de la cabecera. Solo datos
+          reales del modelo/API: sin médico solicitante, cobertura ni
+          segmento porque el backend no los expone hoy. */}
       <div className={styles.aseguradoCard}>
-        <div className={`${styles.aseguradoTop} ${puedeVerAsegurado && asegurado ? "" : styles.aseguradoTopSolo}`}>
+        <div className={styles.aseguradoTop}>
           <div className={styles.aseguradoIdentity}>
             <span className={styles.aseguradoAvatar}>
-              {solicitud.nombreCompleto ? solicitud.nombreCompleto.charAt(0).toUpperCase() : "?"}
+              <User size={18} strokeWidth={1.75} />
             </span>
             <div>
               <div className={styles.aseguradoLabel}>Asegurado</div>
               <div className={styles.aseguradoNombre}>{solicitud.nombreCompleto}</div>
-              <div className={styles.aseguradoSub}>DNI {solicitud.dni} · Póliza {solicitud.numeroPoliza}</div>
+              <div className={styles.aseguradoSub}>
+                DNI {solicitud.dni}
+                {edadAsegurado !== null ? ` · ${edadAsegurado} años` : ""}
+                {asegurado?.sexo ? ` · ${SEXO_LABEL[asegurado.sexo] || asegurado.sexo}` : ""}
+              </div>
               {puedeVerAsegurado && asegurado && (
                 <Link href={`/policyholders/${solicitud.numeroPoliza}`} className={styles.verPolizaLink}>
                   <ExternalLink size={12} strokeWidth={1.75} />
-                  Ver ficha completa
+                  Ver perfil del asegurado
                 </Link>
               )}
             </div>
           </div>
 
-          {puedeVerAsegurado && asegurado && (
-            <div className={styles.aseguradoContacto}>
-              {asegurado.telefono && (
-                <span>
-                  <Phone size={13} strokeWidth={1.75} /> {asegurado.telefono}
-                </span>
-              )}
-              {asegurado.email && (
-                <span>
-                  <Mail size={13} strokeWidth={1.75} /> {asegurado.email}
-                </span>
-              )}
-              {asegurado.direccion && (
-                <span>
-                  <MapPin size={13} strokeWidth={1.75} /> {asegurado.direccion}
-                </span>
-              )}
+          <div className={styles.centroMedicoBlock}>
+            <span className={styles.aseguradoLabel}>Centro médico</span>
+            <div className={styles.centroMedicoValue}>
+              <Building2 size={15} strokeWidth={1.75} />
+              {solicitud.centroMedico}
             </div>
-          )}
-
-          {puedeVerAsegurado && asegurado && (asegurado.policyType || antiguedad !== null) && (
-            <div className={styles.aseguradoFacts}>
-              {asegurado.policyType && (
-                <div className={styles.factChip}>
-                  <span className={styles.factIcon}>
-                    <ShieldCheck size={15} strokeWidth={1.75} />
-                  </span>
-                  <div>
-                    <dt>Tipo de póliza</dt>
-                    <dd>{asegurado.policyType}</dd>
-                  </div>
-                </div>
-              )}
-              {antiguedad !== null && (
-                <div className={styles.factChip}>
-                  <span className={styles.factIcon}>
-                    <ShieldCheck size={15} strokeWidth={1.75} />
-                  </span>
-                  <div>
-                    <dt>Antigüedad</dt>
-                    <dd>{antiguedad} años</dd>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          </div>
         </div>
 
         <div className={styles.aseguradoDivider} />
 
-        <div className={styles.prestacionGrid}>
-          <div className={styles.prestacionFact}>
+        <div className={styles.aseguradoFacts}>
+          <div className={styles.factChip}>
             <span className={styles.factIcon}>
-              <Activity size={16} strokeWidth={1.75} />
+              <ShieldCheck size={15} strokeWidth={1.75} />
             </span>
             <div>
-              <dt>Prueba</dt>
-              <dd>{solicitud.nombrePrueba}</dd>
+              <dt>Nº de póliza</dt>
+              <dd>{solicitud.numeroPoliza}</dd>
             </div>
           </div>
-          <div className={styles.prestacionFact}>
-            <span className={styles.factIcon}>
-              <Stethoscope size={16} strokeWidth={1.75} />
-            </span>
-            <div>
-              <dt>Especialidad</dt>
-              <dd>{solicitud.especialidad}</dd>
+          {puedeVerAsegurado && asegurado?.policyType && (
+            <div className={styles.factChip}>
+              <span className={styles.factIcon}>
+                <ShieldCheck size={15} strokeWidth={1.75} />
+              </span>
+              <div>
+                <dt>Tipo de póliza</dt>
+                <dd>{asegurado.policyType}</dd>
+              </div>
             </div>
-          </div>
-          <div className={styles.prestacionFact}>
-            <span className={styles.factIcon}>
-              <Building2 size={16} strokeWidth={1.75} />
-            </span>
-            <div>
-              <dt>Centro médico</dt>
-              <dd>{solicitud.centroMedico}</dd>
+          )}
+          {puedeVerAsegurado && antiguedad !== null && (
+            <div className={styles.factChip}>
+              <span className={styles.factIcon}>
+                <ShieldCheck size={15} strokeWidth={1.75} />
+              </span>
+              <div>
+                <dt>Antigüedad</dt>
+                <dd>{antiguedad} años</dd>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -557,7 +543,7 @@ export default function SolicitudDetallePage() {
                     <button
                       className={styles.docActionBtn}
                       onClick={() =>
-                        setDocumentoSeleccionado(documentoSeleccionado === doc.nombre ? null : doc.nombre)
+                        setDocumentoSeleccionado(documentoSeleccionado?.nombre === doc.nombre ? null : doc)
                       }
                       aria-label="Ver documento"
                     >
@@ -565,7 +551,7 @@ export default function SolicitudDetallePage() {
                     </button>
                     <a
                       className={styles.docActionBtn}
-                      href={`${API_BASE}/docs/${doc.nombre}`}
+                      href={resolverUrlDocumento(doc)}
                       download
                       aria-label="Descargar documento"
                     >
@@ -581,7 +567,7 @@ export default function SolicitudDetallePage() {
 
             {documentoSeleccionado && (
               <div className={styles.pdfWrapper}>
-                <PDFViewer url={`${API_BASE}/docs/${documentoSeleccionado}`} />
+                <PDFViewer url={resolverUrlDocumento(documentoSeleccionado)} />
               </div>
             )}
           </div>

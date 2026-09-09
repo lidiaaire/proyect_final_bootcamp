@@ -250,6 +250,7 @@ export default function Home() {
   return (
     <div>
       <PageHeader
+        size="lg"
         title={`Hola, ${userName || "de nuevo"}.`}
         subtitle={
           rol === "ADMIN"

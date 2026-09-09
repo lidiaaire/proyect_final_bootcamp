@@ -17,6 +17,11 @@ export function normalizeSolicitud(solicitud) {
        DOCUMENTOS
     ========================= */
     documentos: (solicitud.documentos || []).map((doc) => ({
+      // `tipo` es obligatorio en el subesquema documental del backend
+      // (ver solicitudModel.js#TIPOS_DOCUMENTO) -- necesario para poder
+      // agrupar "Documentación aportada" vs "Resolución" (Paso 7).
+      tipo: doc.tipo || null,
+
       nombre: doc.nombre || doc.nombreArchivo || doc.filename,
 
       subidoPor:
