@@ -391,7 +391,7 @@ export default function SolicitudDetallePage() {
       <div className={styles.header}>
         <div className={styles.headerMain}>
           <span className={styles.solicitudIcon}>
-            <FileText size={26} strokeWidth={1.75} />
+            <FileText size={30} strokeWidth={1.75} />
           </span>
           <div className={styles.solicitudTitleText}>
             <span className={styles.kicker}>Solicitud de autorización</span>

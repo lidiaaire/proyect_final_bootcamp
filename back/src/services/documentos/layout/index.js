@@ -14,7 +14,7 @@ const { IDENTIDAD_BRAUN, pintarFranjaMarca, pintarTituloConMetadatos, pintarCabe
 const { pintarPiePagina, TEXTO_IDENTIDAD_DEMO } = require("./piePagina");
 const { pintarDatosPaciente, calcularAltoDatosPaciente } = require("./datosPaciente");
 const { pintarBloqueSeccion, calcularColumnas, calcularAltoBloqueSeccion } = require("./bloqueSeccion");
-const { pintarBloqueFirma } = require("./bloqueFirma");
+const { pintarBloqueFirma, calcularAltoBloqueFirma } = require("./bloqueFirma");
 const { asegurarEspacio, pintarPiesDeTodasLasPaginas } = require("./paginacion");
 
 module.exports = {
@@ -46,6 +46,7 @@ module.exports = {
   calcularAltoBloqueSeccion,
   // firma
   pintarBloqueFirma,
+  calcularAltoBloqueFirma,
   // paginación (informes A4 que pueden ocupar más de una página)
   asegurarEspacio,
   pintarPiesDeTodasLasPaginas,

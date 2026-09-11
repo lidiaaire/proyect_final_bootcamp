@@ -13,9 +13,14 @@ const { COLORS, FONTS, SIZES, PAGE } = require("./theme");
 const { anchoContenido } = require("./utils");
 
 const COLUMNAS = 4;
-const ALTO_CABECERA = 22;
-const ALTO_FILA = 30;
+// Igual que en bloqueSeccion.js: cabecera, relleno superior y hueco
+// tras el bloque ajustados (sin tocar tamaños de fuente) para que los
+// informes A4 aprovechen mejor la página cuando el contenido real cabe.
+const ALTO_CABECERA = 17;
+const ALTO_FILA = 25;
 const PADDING_X = 14;
+const PADDING_SUPERIOR = 6;
+const HUECO_TRAS_BLOQUE = 8;
 
 /**
  * @param {number} y
@@ -26,7 +31,7 @@ function pintarDatosPaciente(doc, y, { titulo = "Datos del paciente", campos }) 
   const left = PAGE.margin;
   const width = anchoContenido(doc);
   const filas = Math.ceil(campos.length / COLUMNAS);
-  const altoCaja = ALTO_CABECERA + filas * ALTO_FILA + 8;
+  const altoCaja = ALTO_CABECERA + filas * ALTO_FILA + PADDING_SUPERIOR;
 
   // Cabecera de sección (fondo suave + título).
   doc.rect(left, y, width, ALTO_CABECERA).fill(COLORS.sectionBg);
@@ -34,7 +39,7 @@ function pintarDatosPaciente(doc, y, { titulo = "Datos del paciente", campos }) 
     .font(FONTS.bold)
     .fontSize(SIZES.sectionTitle)
     .fillColor(COLORS.text)
-    .text(titulo, left + PADDING_X, y + 6, { lineBreak: false });
+    .text(titulo, left + PADDING_X, y + 4, { lineBreak: false });
 
   // Caja de datos.
   const cajaY = y + ALTO_CABECERA;
@@ -50,13 +55,13 @@ function pintarDatosPaciente(doc, y, { titulo = "Datos del paciente", campos }) 
     const fila = Math.floor(index / COLUMNAS);
     const columna = index % COLUMNAS;
     const campoX = left + PADDING_X + columna * colWidth;
-    const campoY = cajaY + 8 + fila * ALTO_FILA;
+    const campoY = cajaY + PADDING_SUPERIOR + fila * ALTO_FILA;
 
     doc
       .font(FONTS.regular)
       .fontSize(SIZES.label)
       .fillColor(COLORS.textMuted)
-      .text(campo.label, campoX, campoY, { width: colWidth - 10, height: 11, ellipsis: true });
+      .text(campo.label, campoX, campoY, { width: colWidth - 10, height: 10, ellipsis: true });
     doc
       .font(FONTS.bold)
       .fontSize(SIZES.meta)
@@ -68,16 +73,16 @@ function pintarDatosPaciente(doc, y, { titulo = "Datos del paciente", campos }) 
       // desactivado. Forzar `height` + `ellipsis: true` sí impide
       // cualquier segunda línea: el valor se trunca con "…" en vez de
       // desbordar sobre el resto de la tarjeta.
-      .text(campo.value || "—", campoX, campoY + 12, { width: colWidth - 10, height: 12, ellipsis: true });
+      .text(campo.value || "—", campoX, campoY + 11, { width: colWidth - 10, height: 12, ellipsis: true });
   });
 
-  return y + altoCaja + 12;
+  return y + altoCaja + HUECO_TRAS_BLOQUE;
 }
 
 /** Altura que ocupará `pintarDatosPaciente` sin dibujar nada (ver bloqueSeccion.js#calcularAltoBloqueSeccion, mismo propósito). */
 function calcularAltoDatosPaciente(campos) {
   const filas = Math.ceil(campos.length / COLUMNAS);
-  return ALTO_CABECERA + filas * ALTO_FILA + 8 + 12;
+  return ALTO_CABECERA + filas * ALTO_FILA + PADDING_SUPERIOR + HUECO_TRAS_BLOQUE;
 }
 
 module.exports = { pintarDatosPaciente, calcularAltoDatosPaciente };

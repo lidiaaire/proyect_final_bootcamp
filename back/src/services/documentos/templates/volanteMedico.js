@@ -36,7 +36,6 @@ const PDFDocument = require("pdfkit");
 
 const {
   pintarFranjaMarca,
-  pintarBloqueFirma,
   pintarPiePagina,
   formatearFecha,
   formatearSexo,
@@ -127,6 +126,58 @@ function dibujarCheckbox(doc, x, y, { label, marcado }) {
   return x + size + 6 + doc.widthOfString(label);
 }
 
+/**
+ * Firma compacta EXCLUSIVA del volante: el bloque compartido
+ * `pintarBloqueFirma` (hasta 4 líneas: nombre, especialidad, colegiado,
+ * centro por separado) está pensado para el ancho sobrado de un informe
+ * A4 y no cabe en la franja inferior, mucho más baja, del volante sin
+ * solapar con el aviso de validez y el pie -- de ahí que se resuelva
+ * aquí con una versión propia de 3 líneas (especialidad y colegiado
+ * combinados en una sola), en vez de tocar `pintarBloqueFirma` (que
+ * sigue exactamente igual para los otros 5 documentos).
+ */
+function dibujarFirmaCompacta(doc, x, y, width, { nombreMedico, especialidadLabel, numeroColegiado, centro }) {
+  doc
+    .font(FONTS.regular)
+    .fontSize(SIZES.label - 1)
+    .fillColor(VOLANTE_COLORS.accent)
+    .text("FIRMA Y SELLO DEL PROFESIONAL", x, y, { width, lineBreak: false });
+
+  const lineaY = y + 10;
+  doc.strokeColor(COLORS.border).lineWidth(1).moveTo(x, lineaY).lineTo(x + 110, lineaY).stroke();
+
+  let cursorY = lineaY + 4;
+  doc
+    .font(FONTS.bold)
+    .fontSize(9)
+    .fillColor(COLORS.text)
+    .text(nombreMedico, x, cursorY, { width, height: 10, ellipsis: true });
+  cursorY += 10;
+
+  const detalle = [especialidadLabel, numeroColegiado ? `Nº col. ${numeroColegiado}` : null]
+    .filter(Boolean)
+    .join(" · ");
+  if (detalle) {
+    doc
+      .font(FONTS.regular)
+      .fontSize(7.5)
+      .fillColor(COLORS.textMuted)
+      .text(detalle, x, cursorY, { width, height: 9, ellipsis: true });
+    cursorY += 9;
+  }
+
+  if (centro) {
+    doc
+      .font(FONTS.regular)
+      .fontSize(7.5)
+      .fillColor(COLORS.textMuted)
+      .text(centro, x, cursorY, { width, height: 9, ellipsis: true });
+    cursorY += 9;
+  }
+
+  return cursorY;
+}
+
 /** Barras decorativas (NO es un código de barras real/escaneable) a partir de un texto, solo para dar la apariencia visual de la referencia. */
 function dibujarBarrasDecorativas(doc, x, y, width, height, semilla) {
   let hash = 0;
@@ -188,7 +239,12 @@ function dibujarVolante(doc, datos) {
   let y = pintarFranjaMarca(doc);
 
   const panelTop = y;
-  const panelBottom = doc.page.height - 40 - 46; // deja hueco para pie + aviso de validez
+  // El panel encierra el formulario (hasta el final de la fila de
+  // firma/fecha/identificador, ~y 524 con la estructura actual) y deja
+  // un hueco en blanco antes del pie para el aviso de validez -- igual
+  // que en la referencia visual, donde ese aviso vive fuera del recuadro
+  // amarillo, a la misma altura que "Documento simulado · Flowly Demo".
+  const panelBottom = doc.page.height - 40 - 27;
   const panelHeight = panelBottom - panelTop;
 
   doc
@@ -297,67 +353,86 @@ function dibujarVolante(doc, datos) {
   });
 
   // --- Firma / fecha de prescripción / identificador de volante ---
+  // Las tres columnas de esta fila se dibujan con alturas fijas y
+  // ajustadas (no con los helpers "anchos" pensados para un informe
+  // A4) porque, a diferencia de las filas de arriba, aquí ya no queda
+  // margen de sobra hasta el pie -- el Y real donde termina cada
+  // columna se usa para calcular dónde empieza el aviso de validez, en
+  // vez de una posición fija adivinada (esa desincronización entre
+  // "dónde adivinaba que terminaba la firma" y "dónde se colocaba el
+  // aviso" era la causa exacta del solapamiento).
   filaY += 64;
   const firmaWidth = innerWidth * 0.4;
   const fechaPrescripcionX = innerLeft + firmaWidth + 20;
   const fechaPrescripcionWidth = innerWidth * 0.24;
   const identificadorX = fechaPrescripcionX + fechaPrescripcionWidth + 20;
   const identificadorWidth = innerWidth - firmaWidth - fechaPrescripcionWidth - 40;
+  const ALTO_CAMPO_INFERIOR = 24;
 
-  doc
-    .font(FONTS.regular)
-    .fontSize(SIZES.label)
-    .fillColor(VOLANTE_COLORS.accent)
-    .text("FIRMA Y SELLO DEL PROFESIONAL", innerLeft, filaY, { width: firmaWidth, lineBreak: false });
-
-  pintarBloqueFirma(doc, filaY + 16, {
+  const finFirma = dibujarFirmaCompacta(doc, innerLeft, filaY, firmaWidth, {
     nombreMedico: datos.medicoNombre || "—",
     especialidadLabel: datos.medicoEspecialidadLabel,
     numeroColegiado: datos.medicoColegiado,
     centro: datos.centroMedico,
-    x: innerLeft,
-    width: firmaWidth,
   });
 
-  dibujarCampoCaja(doc, fechaPrescripcionX, filaY, fechaPrescripcionWidth, {
+  const finFecha = dibujarCampoCaja(doc, fechaPrescripcionX, filaY, fechaPrescripcionWidth, {
     label: "Fecha de la prescripción",
     value: datos.fechaPrescripcion,
+    alto: ALTO_CAMPO_INFERIOR,
   });
 
+  // Mismo offset (+13) que usa dibujarCampoCaja internamente para la
+  // caja de "Fecha de la prescripción" -- así quedan alineadas de
+  // verdad, no solo "por poco".
+  const identificadorCajaY = filaY + 13;
   doc
-    .roundedRect(identificadorX, filaY + 13, identificadorWidth, 32, 3)
+    .roundedRect(identificadorX, identificadorCajaY, identificadorWidth, ALTO_CAMPO_INFERIOR, 3)
     .fillAndStroke(COLORS.white, VOLANTE_COLORS.fieldBorder);
   doc
     .font(FONTS.regular)
-    .fontSize(SIZES.label - 0.5)
+    .fontSize(SIZES.label - 1)
     .fillColor(COLORS.textMuted)
-    .text("Nº Identificador de Volante", identificadorX, filaY + 17, {
+    .text("Nº Identificador de Volante", identificadorX, identificadorCajaY + 3, {
       width: identificadorWidth,
       align: "center",
       lineBreak: false,
     });
   doc
     .font(FONTS.bold)
-    .fontSize(SIZES.meta)
+    .fontSize(SIZES.label + 1)
     .fillColor(COLORS.text)
-    .text(datos.identificadorVolante, identificadorX, filaY + 30, {
+    .text(datos.identificadorVolante, identificadorX, identificadorCajaY + 13, {
       width: identificadorWidth,
       align: "center",
       lineBreak: false,
     });
-  dibujarBarrasDecorativas(doc, identificadorX + 10, filaY + 50, identificadorWidth - 20, 12, datos.identificadorVolante);
+  const barrasY = identificadorCajaY + ALTO_CAMPO_INFERIOR + 2;
+  dibujarBarrasDecorativas(doc, identificadorX + 10, barrasY, identificadorWidth - 20, 5, datos.identificadorVolante);
+  const finIdentificador = barrasY + 5;
 
-  // --- Aviso de validez (dentro del panel, franja inferior) ---
-  const avisoY = panelBottom - 24;
+  // Fin real de la fila (fecha e identificador quedan alineados por
+  // arriba -- ver identificadorCajaY = filaY + 11, igual que el offset
+  // interno de dibujarCampoCaja -- y ambos usan la misma altura de
+  // campo; solo la firma, con más líneas de texto, puede sobresalir
+  // por debajo).
+  const finFila = Math.max(finFirma, finFecha, finIdentificador);
+
+  // --- Aviso de validez: fuera del panel (que ya termina en
+  // panelBottom, justo debajo de la fila de firma), en el hueco blanco
+  // antes del pie -- siempre calculado a partir de dónde terminó
+  // realmente la fila anterior, nunca en una posición fija que pudiera
+  // pisarla ---
+  const avisoY = finFila + 5;
   doc
     .font(FONTS.regular)
-    .fontSize(SIZES.footer)
+    .fontSize(SIZES.footer - 1)
     .fillColor(COLORS.textMuted)
     .text(
       "Este volante tiene una validez de 6 meses desde la fecha de emisión. Para cualquier duda, contacte con su profesional médico.",
       innerLeft,
       avisoY,
-      { width: innerWidth },
+      { width: innerWidth, height: 9, ellipsis: true },
     );
 
   pintarPiePagina(doc, {

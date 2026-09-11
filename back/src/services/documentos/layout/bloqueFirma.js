@@ -105,4 +105,21 @@ function pintarBloqueFirma(
   return Math.max(cursorY, y + 20) + 4;
 }
 
-module.exports = { pintarBloqueFirma };
+/**
+ * Altura real que ocupará `pintarBloqueFirma` sin dibujar nada --
+ * replica exactamente los mismos incrementos que el propio dibujo
+ * (8 inicial + 13 de la línea de nombre + 12 por cada campo opcional
+ * presente), para que quien compone una plantilla pueda reservar el
+ * espacio justo en vez de una estimación fija que podía quedarse corta
+ * (con los 3 campos opcionales presentes la altura real es ~57, no los
+ * 40 que se reservaban antes) o sobrar página de más.
+ */
+function calcularAltoBloqueFirma({ especialidadLabel, numeroColegiado, centro }) {
+  let altura = 8 + 13;
+  if (especialidadLabel) altura += 12;
+  if (numeroColegiado) altura += 12;
+  if (centro) altura += 12;
+  return Math.max(altura, 20) + 4;
+}
+
+module.exports = { pintarBloqueFirma, calcularAltoBloqueFirma };

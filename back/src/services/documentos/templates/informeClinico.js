@@ -21,6 +21,7 @@ const {
   pintarBloqueSeccion,
   calcularAltoBloqueSeccion,
   pintarBloqueFirma,
+  calcularAltoBloqueFirma,
   pintarPiePagina,
   asegurarEspacio,
   pintarPiesDeTodasLasPaginas,
@@ -103,15 +104,16 @@ function dibujarInformeClinico(doc, datos, { solicitud, policyholder }) {
     y = pintarBloqueSeccion(doc, left, y, width, seccion);
   });
 
-  y = asegurarEspacio(doc, y, 40);
-  pintarBloqueFirma(doc, y, {
+  const opcionesFirma = {
     nombreMedico: datos.medicoNombre || "—",
     especialidadLabel: datos.especialidad ? `Especialista en ${datos.especialidad}` : null,
     numeroColegiado: datos.medicoColegiado,
     centro: datos.centroMedico,
     fechaLabel: "Fecha de validación",
     fechaValor: datos.fecha,
-  });
+  };
+  y = asegurarEspacio(doc, y, calcularAltoBloqueFirma(opcionesFirma));
+  pintarBloqueFirma(doc, y, opcionesFirma);
 
   pintarPiesDeTodasLasPaginas(doc, pintarPiePagina, {
     numeroDocumento: datos.numeroInforme,

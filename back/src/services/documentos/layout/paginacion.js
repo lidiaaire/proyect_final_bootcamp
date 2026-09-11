@@ -7,9 +7,16 @@
 const { PAGE } = require("./theme");
 const { pintarFranjaMarca } = require("./cabecera");
 
-// Hueco que se reserva siempre al final de la página para el pie
-// (pintarPiePagina ocupa ~20px desde el margen inferior).
-const MARGEN_INFERIOR_RESERVADO = 50;
+// Hueco que se reserva siempre al final de la página para el pie.
+// pintarPiePagina dibuja su línea divisoria en
+// `page.height - PAGE.margin - 14` y el texto ~6px por debajo -- es
+// decir, el pie necesita ~20px de esta zona. El valor anterior (50)
+// reservaba más del doble de lo necesario en TODAS las páginas de los
+// 5 informes A4, lo que hacía que secciones cortas (p. ej.
+// "Recomendaciones" o "Conclusión") se empujaran a una segunda página
+// casi vacía sin necesidad real. 24 dejan ~10px de aire visual entre el
+// contenido y la línea del pie, suficiente sin desperdiciar página.
+const MARGEN_INFERIOR_RESERVADO = 24;
 
 function limiteInferior(doc) {
   return doc.page.height - PAGE.margin - MARGEN_INFERIOR_RESERVADO;

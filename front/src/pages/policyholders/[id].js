@@ -327,19 +327,37 @@ export default function PolicyholderProfile() {
 
         <div className={styles.identityContacto}>
           {policyholder.telefono && (
-            <span>
-              <Phone size={13} strokeWidth={1.75} /> {policyholder.telefono}
-            </span>
+            <div className={styles.contactItem}>
+              <span className={styles.contactIcon}>
+                <Phone size={16} strokeWidth={1.75} />
+              </span>
+              <div>
+                <div className={styles.contactValue}>{policyholder.telefono}</div>
+                <div className={styles.contactLabel}>Teléfono</div>
+              </div>
+            </div>
           )}
           {policyholder.email && (
-            <span>
-              <Mail size={13} strokeWidth={1.75} /> {policyholder.email}
-            </span>
+            <div className={styles.contactItem}>
+              <span className={styles.contactIcon}>
+                <Mail size={16} strokeWidth={1.75} />
+              </span>
+              <div>
+                <div className={styles.contactValue}>{policyholder.email}</div>
+                <div className={styles.contactLabel}>Email</div>
+              </div>
+            </div>
           )}
           {policyholder.direccion && (
-            <span>
-              <MapPin size={13} strokeWidth={1.75} /> {policyholder.direccion}
-            </span>
+            <div className={styles.contactItem}>
+              <span className={styles.contactIcon}>
+                <MapPin size={16} strokeWidth={1.75} />
+              </span>
+              <div>
+                <div className={styles.contactValue}>{policyholder.direccion}</div>
+                <div className={styles.contactLabel}>Dirección</div>
+              </div>
+            </div>
           )}
         </div>
       </div>

@@ -11,8 +11,14 @@
 const { COLORS, FONTS, SIZES, PAGE } = require("./theme");
 const { anchoContenido } = require("./utils");
 
-const ALTO_CABECERA = 20;
-const PADDING = 12;
+// Cabecera de sección, relleno interior y hueco tras el bloque --
+// ajustados (sin tocar ningún tamaño de fuente) para que los informes
+// A4 con varias secciones quepan en una página cuando el contenido real
+// lo permite, en vez de dejar una segunda página con una sola sección
+// suelta por un margen de aire innecesario entre bloques.
+const ALTO_CABECERA = 16;
+const PADDING = 9;
+const HUECO_TRAS_BLOQUE = 8;
 
 /**
  * Calcula X/ancho para `n` columnas iguales dentro del ancho de
@@ -149,7 +155,7 @@ function pintarBloqueSeccion(doc, x, y, width, { titulo, tono = "normal", conten
     .font(FONTS.bold)
     .fontSize(SIZES.sectionTitle)
     .fillColor(COLORS.text)
-    .text(titulo, x + PADDING, y + 5, { width: width - PADDING * 2, lineBreak: false });
+    .text(titulo, x + PADDING, y + 3, { width: width - PADDING * 2, lineBreak: false });
 
   const cajaY = y + ALTO_CABECERA;
   doc
@@ -163,7 +169,7 @@ function pintarBloqueSeccion(doc, x, y, width, { titulo, tono = "normal", conten
 
   pintarCuerpo(doc, x, cajaY + PADDING, width, contenido);
 
-  return cajaY + alturaCaja + 12;
+  return cajaY + alturaCaja + HUECO_TRAS_BLOQUE;
 }
 
 /**
@@ -175,7 +181,7 @@ function pintarBloqueSeccion(doc, x, y, width, { titulo, tono = "normal", conten
  * desincronizarse de la altura real.
  */
 function calcularAltoBloqueSeccion(doc, width, contenido) {
-  return ALTO_CABECERA + altoContenido(doc, width, contenido) + PADDING * 2 + 12;
+  return ALTO_CABECERA + altoContenido(doc, width, contenido) + PADDING * 2 + HUECO_TRAS_BLOQUE;
 }
 
 module.exports = { pintarBloqueSeccion, calcularColumnas, calcularAltoBloqueSeccion };

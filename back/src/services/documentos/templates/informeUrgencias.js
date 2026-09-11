@@ -19,6 +19,7 @@ const {
   calcularColumnas,
   calcularAltoBloqueSeccion,
   pintarBloqueFirma,
+  calcularAltoBloqueFirma,
   pintarPiePagina,
   asegurarEspacio,
   pintarPiesDeTodasLasPaginas,
@@ -129,15 +130,16 @@ function dibujarInformeUrgencias(doc, datos, { solicitud, policyholder }) {
   const yB3 = pintarBloqueSeccion(doc, colB.x, y, colB.width, seccionDestino);
   y = Math.max(yA3, yB3);
 
-  y = asegurarEspacio(doc, y, 40);
-  pintarBloqueFirma(doc, y, {
+  const opcionesFirma = {
     nombreMedico: datos.medicoNombre || "—",
     especialidadLabel: "Facultativo/a especialista en Medicina de Urgencias",
     numeroColegiado: datos.medicoColegiado,
     centro: datos.centroMedico,
     fechaLabel: "Fecha de validación",
     fechaValor: datos.fecha,
-  });
+  };
+  y = asegurarEspacio(doc, y, calcularAltoBloqueFirma(opcionesFirma));
+  pintarBloqueFirma(doc, y, opcionesFirma);
 
   pintarPiesDeTodasLasPaginas(doc, pintarPiePagina, {
     numeroDocumento: datos.numeroInforme,
