@@ -1,332 +1,305 @@
-# Flowly - Sistema de Gestión de Autorizaciones
+# Flowly
 
-> Proyecto orientado a simular un flujo real de gestión de autorizaciones médicas con control de roles, estados y trazabilidad.
+### Healthcare Authorization Management Platform
 
----
+Flowly is a full-stack B2B application designed to manage healthcare authorization workflows across multiple departments.
 
-## 📌 Descripción
-
-Flowly es una aplicación fullstack diseñada para gestionar solicitudes
-de autorización médica con un flujo de estados bien definido, roles
-diferenciados y trazabilidad completa.
+The project is inspired by real operational processes in the healthcare insurance sector and focuses on one core problem: turning complex authorization workflows into a structured, traceable and role-based digital process.
 
 ---
 
-## 🧱 Arquitectura
+## Overview
 
-### Backend
+Healthcare authorization requests often involve several departments, documentation exchanges, clinical review and multiple status transitions.
 
-- Node.js + Express
-- MongoDB (base de datos: **flowly**)
-- Estructura:
+Flowly centralizes that workflow into a single application where each team can see what requires their attention, perform the actions available to their role and follow the complete history of every request.
 
-  src/
-  ├── configuration/
-  ├── controllers/
-  ├── services/
-  ├── routes/
-  ├── models/
-  ├── middlewares/
-  ├── utils/
+The application is built around four operational roles:
+
+- **Prestaciones**
+- **Dirección Médica**
+- **Asesoría Jurídica**
+- **Admin**
+
+Each role has its own permissions, work queue and available actions.
+
+---
+
+## Key Features
+
+### Role-Based Access Control
+
+Authentication and authorization are handled through JWT and role-based middleware.
+
+Users only have access to the routes, information and workflow actions associated with their role.
+
+### Authorization Workflow
+
+Requests move through controlled states rather than arbitrary status changes.
+
+The system validates transitions and determines which actions are available depending on:
+
+- Current request status
+- Responsible department
+- User role
+- Previous workflow history
+
+### Role-Specific Dashboards
+
+Each role receives an operational dashboard focused on the work that requires attention.
+
+Dashboards include:
+
+- Key operational metrics
+- Priority work queue
+- Recent activity
+- Request status distribution
+- Contextual next actions
+
+### Request Management
+
+Authorization requests include:
+
+- Insured person information
+- Requested healthcare service
+- Current status
+- Responsible department
+- Documentation
+- Internal notes
+- Complete activity history
+- Contextual workflow actions
+
+### Policyholder Management
+
+Users with the appropriate permissions can access policyholder profiles and review their associated authorization requests.
+
+### Document Management
+
+Flowly manages documents associated with authorization requests and supports the generation of structured PDF documents for healthcare workflows.
+
+Generated documents include authorization documents and several clinical document families.
+
+### Traceability
+
+Relevant actions are recorded in the request history, providing a chronological view of:
+
+- Status changes
+- Department transfers
+- User actions
+- Documentation events
+- Workflow decisions
+
+### Internal Communications
+
+The platform includes internal communication channels for operational coordination between departments.
+
+---
+
+## Tech Stack
 
 ### Frontend
 
 - Next.js
-- Consumo de API REST
-- Estilos en carpeta `/styles`
+- React
+- CSS Modules
+- Lucide Icons
+- REST API integration
+
+### Backend
+
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT authentication
+- Role-based authorization
+- PDF generation
+
+### Architecture
+
+The backend follows a layered structure:
+
+```text
+routes
+   ↓
+controllers
+   ↓
+services
+   ↓
+models
+   ↓
+MongoDB
+```
+
+Cross-cutting concerns such as authentication, authorization and validation are handled through middleware.
 
 ---
 
-## ⚙️ Instalación
+## Core Domain
 
-### 1. Clonar repositorio
+Flowly models a healthcare authorization process around several connected entities:
 
-    git clone <repo>
-    cd proyect_final_bootcamp-main
-
----
-
-## 🚀 Ejecución paso a paso
-
-### 1. Backend
-
-    cd back
-    npm install
-
-Configurar `.env`:
-
-    PORT=4000
-    MONGO_URI=mongodb+srv://flowly_user:Flowly1234@cluster0.d3tputi.mongodb.net/flowly?retryWrites=true&w=majority
-    JWT_SECRET=your_secret_key
-
-Ejecutar seeds:
-
-    node scripts/seedAll.cjs
-
-Arrancar backend:
-
-    npm start
+```text
+User
+  │
+  ├── Role
+  │
+  ▼
+Authorization Request
+  │
+  ├── Policyholder
+  ├── Healthcare Service
+  ├── Documents
+  ├── Internal Notes
+  ├── Current Department
+  ├── Current Status
+  └── Activity History
+```
 
 ---
 
-### 2. Frontend
+## Workflow
 
-    cd front
-    npm install
+A request can require different actions throughout its lifecycle, including:
 
-Crear `.env.local`:
+```text
+Request created
+      ↓
+Initial review
+      ↓
+Documentation required
+      ↓
+Clinical / operational review
+      ↓
+Medical or legal escalation
+      ↓
+Final decision
+      ↓
+Authorized / Rejected
+```
 
-    NEXT_PUBLIC_API_URL=http://localhost:4000
+The exact path depends on the request and the actions performed by each department.
 
-Arrancar:
-
-    npm run dev
-
----
-
-### 3. Acceso
-
-Abrir en navegador:
-
-    http://localhost:3000
-
----
-
-## 🔑 Acceso de prueba
-
-    Email: prestaciones@empresa.com
-    Password: 123456
+Workflow transitions are validated by the backend to prevent unauthorized or inconsistent state changes.
 
 ---
 
-## 🔐 Restricción de acceso
+## Roles
 
-El sistema solo permite el registro y login con emails corporativos:
-
-    *@empresa.com
-
-Ejemplo válido:
-
-    prestaciones@empresa.com
-
-Esta validación se aplica tanto en frontend como en backend.
+| Role | Responsibility |
+|---|---|
+| **PRESTACIONES** | Initial management and operational processing of authorization requests |
+| **DIRECCION_MEDICA** | Medical review and clinical decision support |
+| **ASESORIA_JURIDICA** | Legal review when required by the workflow |
+| **ADMIN** | Global operational visibility and platform administration |
 
 ---
 
-## 🌐 API - Endpoints
+## Project Structure
 
-Todos los endpoints usan prefijo:
-
-    /api
-
-> 🔒 Los endpoints (excepto login y register) requieren autenticación mediante JWT:
-
-    Authorization: Bearer <token>
-
----
-
-### Auth
-
-    POST /api/auth/login
-    POST /api/auth/register
-
-#### Respuesta login
-
-    {
-      token,
-      user
-    }
-
----
-
-### Users
-
-    PUT /api/users/:id
-    DELETE /api/users/:id
+```text
+flowly/
+│
+├── back/
+│   ├── src/
+│   │   ├── configuration/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── utils/
+│   │
+│   ├── scripts/
+│   └── tests/
+│
+└── front/
+    ├── src/
+    │   ├── components/
+    │   ├── pages/
+    │   └── styles/
+    │
+    └── public/
+```
 
 ---
 
-### Solicitudes
+## Local Development
 
-    GET /api/solicitudes
-    GET /api/solicitudes/:id
-    GET /api/solicitudes/policyholder/:numeroPoliza
+Clone the repository:
 
-    POST /api/solicitudes/:id/autorizar
-    POST /api/solicitudes/:id/rechazar
-    POST /api/solicitudes/:id/solicitar-documentacion
-    POST /api/solicitudes/:id/enviar-direccion-medica
-    POST /api/solicitudes/:id/enviar-asesoria-juridica
+```bash
+git clone https://github.com/lidiaaire/flowly.git
+cd flowly
+```
 
----
+### Backend
 
-### Policyholders
+```bash
+cd back
+npm install
+```
 
-    GET /api/policyholders
-    GET /api/policyholders/:id
+Create the required environment configuration and start the API:
 
----
+```bash
+npm start
+```
 
-### Communications
+### Frontend
 
-    GET /api/communications/:channel
-    POST /api/communications
+From the project root:
 
----
+```bash
+cd front
+npm install
+npm run dev
+```
 
-## 🧾 Modelo de Datos
-
-### Policyholder
-
-    {
-     id,
-     name,
-     dni,
-     telefono,
-     email,
-     direccion,
-     policyType,
-     policyStartDate,
-     internalNotes
-    }
-
-### Solicitud
-
-    {
-     numeroSolicitud,
-     numeroPoliza,
-     estadoInterno,
-     currentDepartment,
-     documentos,
-     historial,
-     notas,
-     autorizacionPdf
-    }
+The frontend will be available on the local Next.js development server.
 
 ---
 
-## 🔄 Flujo de Estados
+## Security
 
-Estados del sistema:
+Flowly implements several authorization layers:
 
-    PENDIENTE_INICIO_GESTION
-    DOCUMENTACION_SOLICITADA
-    EN_REVISION
-    AUTORIZADA
-    RECHAZADA
+- JWT authentication
+- Protected API routes
+- Role-based access control
+- Backend workflow validation
+- Restricted actions based on role and request state
 
-Estados adicionales (mapeados en frontend):
-
-    PENDIENTE_DOCUMENTACION_DEL_ASEGURADO → DOCUMENTACION_SOLICITADA
-    PENDIENTE_ASESORIA_JURIDICA → EN_REVISION
+Authorization rules are enforced on the backend rather than relying exclusively on frontend visibility.
 
 ---
 
-## 📊 Timeline
+## Product Approach
 
-El timeline del frontend usa estados normalizados mediante un mapper
-para evitar inconsistencias visuales.
+Flowly was designed around a real operational problem rather than around isolated technical exercises.
 
----
+The main product principles are:
 
-## 🌱 Seeds
-
-Sistema automatizado para generar datos de prueba con relaciones reales.
-
-### Ejecución
-
-    node scripts/seedAll.cjs
-
-### Orden interno
-
-1. Users
-2. Policyholders
-3. Solicitudes
-4. Communications
-
-### Genera
-
-- Usuarios con roles:
-  - PRESTACIONES
-  - DIRECCION_MEDICA
-  - ASESORIA_JURIDICA
-  - ADMIN
-- 100 policyholders
-- 300 solicitudes
-- Comunicaciones por canal
+- **Actionability** — users should immediately understand what requires their attention.
+- **Traceability** — important actions and decisions must remain visible.
+- **Role clarity** — each department should see the information and actions relevant to its work.
+- **Workflow integrity** — requests cannot move through invalid states.
+- **Operational usability** — interfaces prioritize speed, hierarchy and readability for daily administrative work.
 
 ---
 
-## 📂 Documentos
+## Case Study
 
-Ruta:
+The complete product and UX case study is available in my portfolio:
 
-    /back/public/docs
-
-Acceso:
-
-    http://localhost:4000/docs/<archivo.pdf>
+**[View Flowly Case Study](https://portfolio-lidia-one.vercel.app/projects/flowly)**
 
 ---
 
-## 🔐 Autenticación
+## Author
 
-- JWT
-- Middleware `verifyToken`
-- Roles:
+**Lidia García**
 
-  PRESTACIONES  
-   DIRECCION_MEDICA  
-   ASESORIA_JURIDICA  
-   ADMIN
+Full Stack Developer focused on B2B applications, digital products and Healthcare Tech.
 
----
-
-## 🧪 Validación del sistema
-
-- Login funcional ✔
-- Registro con validación de dominio ✔
-- Listado de solicitudes ✔
-- Detalle con documentos ✔
-- Timeline coherente ✔
-- Policyholders completos ✔
-- Historial y notas ✔
-- Generación de PDF ✔
-- Edición de usuario ✔
-- Eliminación de usuario con logout ✔
-
----
-
-## 🧠 Decisiones técnicas
-
-- Separación controller/service
-- Uso consistente de async/await
-- Validación en frontend + backend
-- Restricción de dominio corporativo
-- Normalización de estados en frontend
-- Prefijo global `/api`
-- Persistencia de sesión con localStorage
-- Arquitectura orientada a flujo de negocio
-
----
-
-## 👤 Gestión de Usuario
-
-- Edición de datos (nombreCompleto y email)
-- Eliminación de cuenta con logout automático
-- Persistencia de sesión
-- Sincronización frontend/backend
-
----
-
-## 📌 Notas
-
-El sistema está diseñado para simular un flujo real de negocio,
-priorizando coherencia de datos, trazabilidad y experiencia de usuario.
-
----
-
-## 👩‍💻 Autora
-
-Lidia Garcia Torregrosa  
-Proyecto Final Bootcamp FullStack CodeSpace
+[Portfolio](https://portfolio-lidia-one.vercel.app/) · [LinkedIn](https://www.linkedin.com/in/lidiagarciatorregrosa) · [GitHub](https://github.com/lidiaaire)
